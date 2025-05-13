@@ -1,0 +1,39 @@
+import { useState } from "react";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import "./App.css";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import Layout from "./components/Layout.jsx";
+import Contests from "./pages/Contests.jsx";
+import Profile from "./pages/Profile.jsx";
+import Practice from "./pages/Practice.jsx";
+import AuthPage from "./pages/AuthPage.jsx";
+import Leaderboard from "./pages/Leaderboard.jsx";
+import Dashboard from "./components/Dashboard.jsx";
+import CodeEditor from "./pages/CodeEditor.jsx";
+import Index from "./pages/Index.jsx";
+import Learn from "./pages/Learn.jsx";
+import AIChatAgent from "./components/AIChatAgent.jsx"
+const queryClient = new QueryClient();
+function App() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Layout />}>
+            <Route index element={<Index />} />
+            <Route path="contests" element={<Contests />} />
+            <Route path="auth" element={<AuthPage />} />
+            <Route path="profile" element={<Profile />} />
+            <Route path="practice" element={<Practice />} />
+            <Route path="leaderboard" element={<Leaderboard />} />
+            <Route path="editor" element={<CodeEditor/>}/>
+            <Route path="learn" element={<Learn/>} />
+            <Route path="ai" element={<AIChatAgent/>}/>
+          </Route>
+        </Routes>
+      </BrowserRouter>
+    </QueryClientProvider>
+  );
+}
+
+export default App;
