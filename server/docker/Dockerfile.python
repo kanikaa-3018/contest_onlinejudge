@@ -1,0 +1,9 @@
+# Dockerfile for Python
+FROM python:3.10
+
+WORKDIR /app
+
+COPY code.py /app/code.py
+COPY input.txt /app/input.txt
+
+CMD ["python3", "/app/code.py"]
