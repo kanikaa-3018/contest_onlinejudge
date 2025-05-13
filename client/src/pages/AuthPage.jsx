@@ -12,6 +12,7 @@ const AuthPage = () => {
     email: "",
     password: "",
     cfHandle: "",
+    role: "user",
   });
   const [error, setError] = useState("");
   const navigate = useNavigate();
@@ -47,19 +48,20 @@ const AuthPage = () => {
           email: formData.email,
           password: formData.password,
           cfHandle: formData.cfHandle,
+          role: formData.role,
         };
 
     try {
       const res = await axios.post(url, payload);
-      const { token, _id } = res.data;
+      const { token, _id, role, cfHandle } = res.data;
 
-  
       localStorage.setItem("token", token);
       localStorage.setItem("userId", _id);
-      localStorage.setItem("user", JSON.stringify(res.data)); 
-      localStorage.setItem("cfHandle", formData.cfHandle || res.data.cfHandle);
+      localStorage.setItem("user", JSON.stringify(res.data));
+      localStorage.setItem("cfHandle", cfHandle || formData.cfHandle);
+      localStorage.setItem("role", role);
 
-      navigate("/");
+      navigate(role === "admin" ? "/admin" : "/");
     } catch (err) {
       setError(err.response?.data?.message || "Something went wrong");
     }
@@ -92,6 +94,15 @@ const AuthPage = () => {
                   value={formData.cfHandle}
                   onChange={handleChange}
                 />
+                <select
+                  name="role"
+                  value={formData.role}
+                  onChange={handleChange}
+                  className="bg-[#31304D] text-[#F0ECE5] p-2 w-full rounded"
+                >
+                  <option value="user">User</option>
+                  <option value="admin">Admin</option>
+                </select>
               </>
             )}
             <Input

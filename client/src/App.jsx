@@ -9,7 +9,9 @@ import Practice from "./pages/Practice.jsx";
 import AuthPage from "./pages/AuthPage.jsx";
 import Leaderboard from "./pages/Leaderboard.jsx";
 import Dashboard from "./components/Dashboard.jsx";
+import AdminDashboard from "./pages/AdminDashboard.jsx";
 import CodeEditor from "./pages/CodeEditor.jsx";
+import QuestionsList from "./pages/QuestionsList.jsx";
 import Index from "./pages/Index.jsx";
 import Learn from "./pages/Learn.jsx";
 import AIChatAgent from "./components/AIChatAgent.jsx"
@@ -25,11 +27,14 @@ function App() {
             <Route path="auth" element={<AuthPage />} />
             <Route path="profile" element={<Profile />} />
             <Route path="practice" element={<Practice />} />
+            <Route path="questions" element={<QuestionsList />} />
+            <Route path="editor/:id" element={<CodeEditor />} />
             <Route path="leaderboard" element={<Leaderboard />} />
-            <Route path="editor" element={<CodeEditor/>}/>
+            {/* <Route path="editor" element={<CodeEditor/>}/> */}
             <Route path="learn" element={<Learn/>} />
             <Route path="ai" element={<AIChatAgent/>}/>
           </Route>
+          <Route path="/admin" element={<AdminDashboard />} />
         </Routes>
       </BrowserRouter>
     </QueryClientProvider>
