@@ -41,6 +41,7 @@ const AuthPage = () => {
       ? {
           email: formData.email,
           password: formData.password,
+          cfHandle: formData.cfHandle, // CF Handle for login
         }
       : {
           name: formData.username,
@@ -68,29 +69,29 @@ const AuthPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#161A30] flex items-center justify-center px-4">
-      <Card className="w-full max-w-md bg-[#1E1E2E] text-[#F0ECE5] rounded-2xl shadow-xl">
-        <CardContent className="p-6 space-y-6">
-          <h2 className="text-2xl font-bold text-center">
+    <div className="min-h-screen bg-gradient-to-r from-[#31304D] to-[#161A30] flex items-center justify-center px-4">
+      <Card className="w-full max-w-md bg-[#1E1E2E] text-[#F0ECE5] rounded-2xl shadow-xl hover:scale-105 transition-transform duration-300 ease-in-out">
+        <CardContent className="p-8 space-y-6">
+          <h2 className="text-3xl font-bold text-center mb-4">
             {isLogin ? "Login" : "Register"}
           </h2>
 
-          {error && <p className="text-red-400 text-center text-sm">{error}</p>}
+          {error && <p className="text-red-400 text-center text-sm mb-4">{error}</p>}
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-6">
             {!isLogin && (
               <>
                 <Input
                   name="username"
                   placeholder="Username"
-                  className="bg-[#31304D] text-[#F0ECE5]"
+                  className="bg-[#31304D] text-[#F0ECE5] focus:ring-2 focus:ring-[#00C8A9] transition-all"
                   value={formData.username}
                   onChange={handleChange}
                 />
                 <Input
                   name="cfHandle"
                   placeholder="Codeforces Handle"
-                  className="bg-[#31304D] text-[#F0ECE5]"
+                  className="bg-[#31304D] text-[#F0ECE5] focus:ring-2 focus:ring-[#00C8A9] transition-all"
                   value={formData.cfHandle}
                   onChange={handleChange}
                 />
@@ -98,7 +99,7 @@ const AuthPage = () => {
                   name="role"
                   value={formData.role}
                   onChange={handleChange}
-                  className="bg-[#31304D] text-[#F0ECE5] p-2 w-full rounded"
+                  className="bg-[#31304D] text-[#F0ECE5] focus:ring-2 focus:ring-[#00C8A9] p-3 w-full rounded transition-all"
                 >
                   <option value="user">User</option>
                   <option value="admin">Admin</option>
@@ -109,7 +110,7 @@ const AuthPage = () => {
               name="email"
               placeholder="Email"
               type="email"
-              className="bg-[#31304D] text-[#F0ECE5]"
+              className="bg-[#31304D] text-[#F0ECE5] focus:ring-2 focus:ring-[#00C8A9] transition-all"
               value={formData.email}
               onChange={handleChange}
             />
@@ -117,23 +118,32 @@ const AuthPage = () => {
               name="password"
               placeholder="Password"
               type="password"
-              className="bg-[#31304D] text-[#F0ECE5]"
+              className="bg-[#31304D] text-[#F0ECE5] focus:ring-2 focus:ring-[#00C8A9] transition-all"
               value={formData.password}
               onChange={handleChange}
             />
+            {isLogin && (
+              <Input
+                name="cfHandle"
+                placeholder="Codeforces Handle (for login)"
+                className="bg-[#31304D] text-[#F0ECE5] focus:ring-2 focus:ring-[#00C8A9] transition-all"
+                value={formData.cfHandle}
+                onChange={handleChange}
+              />
+            )}
             <Button
               type="submit"
-              className="w-full bg-[#31304D] text-[#F0ECE5] hover:bg-[#F0ECE5] hover:text-[#161A30] transition-all"
+              className="w-full bg-[#00C8A9] text-[#161A30] hover:bg-[#F0ECE5] hover:text-[#161A30] transition-all p-3 rounded-full"
             >
               {isLogin ? "Login" : "Register"}
             </Button>
           </form>
 
-          <p className="text-center text-sm text-[#B6BBC4]">
+          <p className="text-center text-sm text-[#B6BBC4] mt-4">
             {isLogin ? "Don't have an account?" : "Already have an account?"}{" "}
             <button
               onClick={toggleMode}
-              className="text-blue-400 hover:underline"
+              className="text-[#00C8A9] hover:underline"
             >
               {isLogin ? "Register" : "Login"}
             </button>

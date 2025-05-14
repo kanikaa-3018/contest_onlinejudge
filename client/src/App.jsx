@@ -15,6 +15,7 @@ import QuestionsList from "./pages/QuestionsList.jsx";
 import Index from "./pages/Index.jsx";
 import Learn from "./pages/Learn.jsx";
 import AIChatAgent from "./components/AIChatAgent.jsx"
+import MyCalendar from "./components/MyCalendar.jsx";
 const queryClient = new QueryClient();
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Layout />}>
             <Route index element={<Index />} />
+            <Route path="cal" element={<MyCalendar/>} />
             <Route path="contests" element={<Contests />} />
             <Route path="auth" element={<AuthPage />} />
             <Route path="profile" element={<Profile />} />
