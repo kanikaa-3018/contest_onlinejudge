@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import Editor from "@monaco-editor/react";
+import Split from "react-split";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -39,7 +40,6 @@ const languageMap = {
 
 const CodeEditor = () => {
   const { id } = useParams();
-  //console.log(id)
   const [question, setQuestion] = useState(null);
   const [language, setLanguage] = useState("C++");
   const [code, setCode] = useState(boilerplates["cpp"]);
@@ -51,16 +51,12 @@ const CodeEditor = () => {
     const fetchQuestion = async () => {
       try {
         const res = await fetch(`http://localhost:8080/api/questions/${id}`);
-        if (!res.ok) {
-          throw new Error(`HTTP error! status: ${res.status}`);
-        }
+        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
         const data = await res.json();
         setQuestion(data);
-        // const fam= data.testCases[0]
-        // console.log("ques",fam.input);
       } catch (err) {
         console.error("Failed to fetch question", err);
-        setQuestion(null); 
+        setQuestion(null);
       }
     };
 
@@ -78,25 +74,19 @@ const CodeEditor = () => {
     try {
       const response = await fetch("http://localhost:8080/execute", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           language: languageMap[language],
           code,
-          input,
+          input, // manually entered input
         }),
       });
-
       const result = await response.json();
       if (result.output) {
         setOutput(result.output);
         setVerdict("Success");
-      } else if (result.error) {
-        setOutput(result.error);
-        setVerdict("Error");
       } else {
-        setOutput("Unknown error");
+        setOutput(result.error || "Unknown error");
         setVerdict("Error");
       }
     } catch (err) {
@@ -105,59 +95,101 @@ const CodeEditor = () => {
     }
   };
 
+  const handleSubmit = async () => {
+    setVerdict("Running all test cases...");
+    setOutput("");
+
+    try {
+      const response = await fetch(
+        `http://localhost:8080/api/questions/${id}/submit`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            language: languageMap[language],
+            code,
+          }),
+        }
+      );
+
+      const result = await response.json();
+
+      if (result.success) {
+        setOutput("All test cases passed!");
+        setVerdict("Success");
+      } else {
+        setOutput(
+          `Failed on test case #${result.failedCaseIndex + 1}.\nExpected: ${
+            result.expected
+          }\nGot: ${result.actual}`
+        );
+        setVerdict("Failed");
+      }
+    } catch (err) {
+      setOutput("Submission error");
+      setVerdict("Error");
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-[#161A30] text-white p-6">
+    <div className="min-h-screen bg-[#161A30] text-white p-4">
       {question ? (
-        <div className="grid md:grid-cols-2 gap-6">
-          {/* Left Panel: Question Details */}
-          <div className="bg-[#1E1E2E] p-6 rounded-xl shadow-lg space-y-6">
+        <Split
+          className="flex h-[calc(100vh-40px)] gap-4"
+          sizes={[50, 50]}
+          minSize={300}
+          gutterSize={10}
+          direction="horizontal"
+        >
+          {/* Left Panel */}
+          <div className="bg-[#1E1E2E] p-6 rounded-xl shadow-lg overflow-auto">
             <h1 className="text-3xl font-bold text-blue-400">
               {question.title}
             </h1>
-            <p className="text-gray-300 leading-relaxed">
+            <p className="text-gray-300 mt-4 leading-relaxed">
               {question.description}
             </p>
 
             {question.constraints && (
-              <div className="bg-[#282c34] p-4 rounded-lg border border-gray-700">
-                <h3 className="text-lg font-semibold text-white mb-2">
-                  Constraints:
-                </h3>
+              <div className="p-4 mt-4 rounded-lg border border-gray-700">
+                <h3 className="text-lg font-semibold mb-2">Constraints:</h3>
                 <pre className="text-gray-300 whitespace-pre-wrap">
                   {question.constraints}
                 </pre>
               </div>
             )}
 
-            {(question.testCases[0].input || question.testCases[0].output) && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {(question.testCases[0].input) && (
+            {question.testCases.slice(0, 2).map((tc, index) => (
+              <div
+                key={index}
+                className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 mt-3"
+              >
+                {tc.input && (
                   <div className="bg-[#10131c] p-4 rounded-lg border border-[#2e354a]">
-                    <h3 className="text-md font-medium text-gray-300 mb-1">
-                      💡 Example Input
+                    <h3 className="text-md font-medium text-gray-300 mb-1 mt-1">
+                      💡 Input #{index + 1}
                     </h3>
                     <pre className="bg-[#1e1e2e] text-green-400 p-3 rounded overflow-auto whitespace-pre-wrap">
-                      {question.testCases[0].input}
+                      {tc.input}
                     </pre>
                   </div>
                 )}
-
-                {(question.testCases[0].output )&& (
+                {tc.output && (
                   <div className="bg-[#10131c] p-4 rounded-lg border border-[#2e354a]">
-                    <h3 className="text-md font-medium text-gray-300 mb-1">
-                      ✅ Expected Output
+                    <h3 className="text-md font-medium text-gray-300 mb-1 mt-1">
+                      ✅ Output #{index + 1}
                     </h3>
                     <pre className="bg-[#1e1e2e] text-yellow-300 p-3 rounded overflow-auto whitespace-pre-wrap">
-                      {question.testCases[0].output }
+                      {tc.output}
                     </pre>
                   </div>
                 )}
               </div>
-            )}
+            ))}
           </div>
 
-          {/* Right Panel: Code Editor UI */}
-          <div className="space-y-4">
+          {/* Right Panel */}
+          <div className="flex flex-col space-y-4 overflow-auto p-2">
             <div className="flex justify-between items-center">
               <Select value={language} onValueChange={handleLanguageChange}>
                 <SelectTrigger className="w-[180px]">
@@ -170,7 +202,12 @@ const CodeEditor = () => {
                   <SelectItem value="JavaScript">JavaScript</SelectItem>
                 </SelectContent>
               </Select>
-              <Button onClick={handleRun}>Submit</Button>
+              <div className="space-x-2">
+                <Button variant="secondary" onClick={handleRun}>
+                  Run
+                </Button>
+                <Button onClick={handleSubmit}>Submit</Button>
+              </div>
             </div>
 
             <div className="border rounded overflow-hidden">
@@ -220,7 +257,7 @@ const CodeEditor = () => {
               </p>
             </div>
           </div>
-        </div>
+        </Split>
       ) : (
         <p className="text-white">Loading question...</p>
       )}
