@@ -67,7 +67,7 @@ export const Sidebar = () => {
         <NavItem
           icon={<Terminal className="h-4 w-4 text-[#B6BBC4]" />}
           label="Code Editor"
-          href="/editor"
+          href="/questions"
           isCollapsed={isCollapsed}
         />
         <NavItem

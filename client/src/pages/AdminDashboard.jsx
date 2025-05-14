@@ -42,7 +42,10 @@ const AdminDashboard = () => {
   };
 
   const addTestCase = () => {
-    setForm({ ...form, testCases: [...form.testCases, { input: "", output: "" }] });
+    setForm({
+      ...form,
+      testCases: [...form.testCases, { input: "", output: "" }],
+    });
   };
 
   const handleSubmit = async (e) => {
@@ -76,7 +79,8 @@ const AdminDashboard = () => {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this question?")) return;
+    if (!window.confirm("Are you sure you want to delete this question?"))
+      return;
     try {
       await axios.delete(`http://localhost:8080/api/questions/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
@@ -109,7 +113,9 @@ const AdminDashboard = () => {
       {/* Hero Section */}
       <div className="text-center mb-10">
         <h1 className="text-4xl font-bold">Admin Dashboard</h1>
-        <p className="text-gray-400 mt-2">Manage coding questions and test cases efficiently</p>
+        <p className="text-gray-400 mt-2">
+          Manage coding questions and test cases efficiently
+        </p>
       </div>
 
       {/* Question Table */}
@@ -125,17 +131,28 @@ const AdminDashboard = () => {
           </thead>
           <tbody>
             {questions.map((q, index) => (
-              <tr key={q._id} className="border-t border-gray-700 even:bg-[#22243D] hover:bg-[#2A2C4D]">
+              <tr
+                key={q._id}
+                className="border-t border-gray-700 even:bg-[#22243D] hover:bg-[#2A2C4D]"
+              >
                 <td className="px-6 py-4">{index + 1}</td>
                 <td className="px-6 py-4">{q.title}</td>
                 <td className="px-6 py-4">
-                  {q.constraints?.length > 50 ? `${q.constraints.substring(0, 50)}...` : q.constraints}
+                  {q.constraints?.length > 50
+                    ? `${q.constraints.substring(0, 50)}...`
+                    : q.constraints}
                 </td>
                 <td className="px-6 py-4 flex justify-center gap-4">
-                  <button onClick={() => handleEdit(q)} className="text-yellow-400 hover:text-yellow-300 transition">
+                  <button
+                    onClick={() => handleEdit(q)}
+                    className="text-yellow-400 hover:text-yellow-300 transition"
+                  >
                     <FaEdit size={18} />
                   </button>
-                  <button onClick={() => handleDelete(q._id)} className="text-red-500 hover:text-red-400 transition">
+                  <button
+                    onClick={() => handleDelete(q._id)}
+                    className="text-red-500 hover:text-red-400 transition"
+                  >
                     <FaTrash size={18} />
                   </button>
                 </td>
@@ -147,9 +164,20 @@ const AdminDashboard = () => {
 
       {/* Modal Form */}
       {formOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
-          <div className="bg-[#1E1E2E] p-6 rounded-xl max-w-lg w-full space-y-4 shadow-2xl">
-            <h2 className="text-2xl font-semibold text-center">
+        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4 overflow-y-auto">
+          <div
+            className="bg-[#1E1E2E] p-6 rounded-xl w-full max-w-lg shadow-2xl max-h-[90vh] overflow-y-auto"
+            style={{ scrollbarWidth: "none" }}
+          >
+            <style>
+              {`
+          /* Hide scrollbar for WebKit browsers */
+          div::-webkit-scrollbar {
+            display: none;
+          }
+        `}
+            </style>
+            <h2 className="text-2xl font-semibold text-center mb-4">
               {editId ? "Edit Question" : "Add Question"}
             </h2>
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -179,20 +207,22 @@ const AdminDashboard = () => {
               <h3 className="font-semibold">Test Cases</h3>
               {form.testCases.map((tc, i) => (
                 <div key={i} className="space-y-2">
-                  <input
-                    type="text"
+                  <textarea
                     placeholder="Input"
                     className="w-full p-2 rounded bg-[#31304D] text-white"
                     value={tc.input}
-                    onChange={(e) => handleTestCaseChange(i, "input", e.target.value)}
+                    onChange={(e) =>
+                      handleTestCaseChange(i, "input", e.target.value)
+                    }
                     required
                   />
-                  <input
-                    type="text"
+                  <textarea
                     placeholder="Output"
                     className="w-full p-2 rounded bg-[#31304D] text-white"
                     value={tc.output}
-                    onChange={(e) => handleTestCaseChange(i, "output", e.target.value)}
+                    onChange={(e) =>
+                      handleTestCaseChange(i, "output", e.target.value)
+                    }
                     required
                   />
                 </div>

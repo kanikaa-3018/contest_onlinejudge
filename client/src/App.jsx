@@ -30,7 +30,6 @@ function App() {
             <Route path="questions" element={<QuestionsList />} />
             <Route path="editor/:id" element={<CodeEditor />} />
             <Route path="leaderboard" element={<Leaderboard />} />
-            {/* <Route path="editor" element={<CodeEditor/>}/> */}
             <Route path="learn" element={<Learn/>} />
             <Route path="ai" element={<AIChatAgent/>}/>
           </Route>
