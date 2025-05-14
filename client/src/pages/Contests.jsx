@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { DayPicker } from "react-day-picker";
 import MyCalendar from "../components/MyCalendar";
 import "react-day-picker/dist/style.css";
+import { motion } from "framer-motion";
 import {
   FaCode,
   FaTrophy,
@@ -19,7 +20,7 @@ import {
   TooltipTrigger,
   TooltipContent,
 } from "@/components/ui/tooltip";
-import { motion } from "framer-motion";
+
 
 const fetchContests = async (url) => {
   const response = await fetch(url);
@@ -163,7 +164,7 @@ const Contests = () => {
   };
 
   return (
-    <div className="p-6 bg-[#161A30] min-h-screen font-sans">
+    <motion.div className="p-6 bg-[#161A30] min-h-screen font-sans">
       
       <h2 className="text-3xl font-bold text-[#F0ECE5] mb-6">
         Contests Dashboard
@@ -171,7 +172,7 @@ const Contests = () => {
 
       <div className="flex flex-col md:flex-row md:justify-between items-start gap-4 mb-6">
         <select
-          className="bg-[#31304D] text-[#F0ECE5] p-3 rounded-md text-sm shadow"
+          className="bg-[#31304D] text-[#F0ECE5] py-2 px-3 rounded-md text-sm shadow"
           onChange={(e) => setPlatformFilter(e.target.value)}
           value={platformFilter}
         >
@@ -180,7 +181,7 @@ const Contests = () => {
           <option value="codeforces">Codeforces</option>
         </select>
         {/* Wrapper for calendar */}
-        <div className="flex-1 max-w-full">
+        <div className="flex-1 max-w-full mr-26">
           <MyCalendar />
         </div>
 
@@ -330,7 +331,7 @@ const Contests = () => {
           )}
         </section>
       )}
-    </div>
+    </motion.div>
   );
 };
 

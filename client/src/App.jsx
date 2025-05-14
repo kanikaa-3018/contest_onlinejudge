@@ -24,7 +24,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Layout />}>
             <Route index element={<Index />} />
-            <Route path="cal" element={<MyCalendar/>} />
+            {/* <Route path="cal" element={<MyCalendar/>} /> */}
             <Route path="contests" element={<Contests />} />
             <Route path="auth" element={<AuthPage />} />
             <Route path="profile" element={<Profile />} />
