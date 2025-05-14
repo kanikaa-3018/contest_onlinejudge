@@ -1,0 +1,31 @@
+.custom-date-cell {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+  
+  .dot {
+    position: absolute;
+    bottom: 4px;
+    right: 4px;
+    width: 8px;
+    height: 8px;
+    background-color: #facc15; /* Yellow dot */
+    border-radius: 50%;
+  }
+  
+  .tooltip {
+    position: absolute;
+    top: 25px;
+    left: 0;
+    z-index: 1000;
+    background-color: #1e1e2e;
+    color: #f0ece5;
+    padding: 8px;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.4);
+    white-space: nowrap;
+    pointer-events: none;
+  }
+  

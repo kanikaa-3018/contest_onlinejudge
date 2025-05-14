@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { DayPicker } from "react-day-picker";
+import MyCalendar from "../components/MyCalendar";
 import "react-day-picker/dist/style.css";
 import {
   FaCode,
@@ -18,17 +19,21 @@ import {
   TooltipTrigger,
   TooltipContent,
 } from "@/components/ui/tooltip";
+import { motion } from "framer-motion";
 
 const fetchContests = async (url) => {
   const response = await fetch(url);
   if (!response.ok) throw new Error("Failed to fetch contests");
   return response.json();
 };
+
 const handleAddToCalendar = (contest) => {
   const event = new Date(contest.start).toISOString();
-  const url = `https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(contest.name)}&dates=${event}/${event}`;
+  const url = `https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(
+    contest.name
+  )}&dates=${event}/${event}`;
   window.open(url, "_blank");
-  };
+};
 
 const Contests = () => {
   const [platformFilter, setPlatformFilter] = useState("all");
@@ -95,51 +100,58 @@ const Contests = () => {
     );
 
   const ContestCard = ({ contest }) => (
-    <Card className="bg-[#1E1E2E] text-[#F0ECE5] w-full rounded-2xl shadow hover:shadow-2xl">
-      <CardContent className="px-4 py-3 space-y-3">
-        <div className="flex justify-between items-center">
-          <h3 className="text-lg font-semibold flex items-center gap-2">
-            {getIcon(contest.site)} {contest.name}
-          </h3>
-          <span className="text-xs uppercase bg-[#31304D] px-2 py-1 rounded">
-            {contest.site}
-          </span>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
-          <div className="flex gap-2 items-center">
-            <FaCalendarAlt className="text-[#B6BBC4]" />
-            <span>
-              <strong>Start:</strong> {contest.start.toLocaleString()}
+    <motion.div
+      className="w-full"
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.3 }}
+    >
+      <Card className="bg-[#1E1E2E] text-[#F0ECE5] w-full rounded-2xl shadow hover:shadow-2xl">
+        <CardContent className="px-4 py-3 space-y-3">
+          <div className="flex justify-between items-center">
+            <h3 className="text-lg font-semibold flex items-center gap-2">
+              {getIcon(contest.site)} {contest.name}
+            </h3>
+            <span className="text-xs uppercase bg-[#31304D] px-2 py-1 rounded">
+              {contest.site}
             </span>
           </div>
-          <div className="flex gap-2 items-center">
-            <FaClock className="text-[#B6BBC4]" />
-            <span>
-              <strong>End:</strong> {contest.end.toLocaleString()}
-            </span>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
+            <div className="flex gap-2 items-center">
+              <FaCalendarAlt className="text-[#B6BBC4]" />
+              <span>
+                <strong>Start:</strong> {contest.start.toLocaleString()}
+              </span>
+            </div>
+            <div className="flex gap-2 items-center">
+              <FaClock className="text-[#B6BBC4]" />
+              <span>
+                <strong>End:</strong> {contest.end.toLocaleString()}
+              </span>
+            </div>
           </div>
-        </div>
-        <p className="text-sm">
-          <strong>Duration:</strong>{" "}
-          {(contest.durationSeconds / 3600).toFixed(2)} hrs
-        </p>
-        {contest.url && (
-          <a
-            href={contest.url}
-            target="_blank"
-            className="text-blue-300 hover:text-blue-100 text-sm underline flex gap-1 items-center"
+          <p className="text-sm">
+            <strong>Duration:</strong>{" "}
+            {(contest.durationSeconds / 3600).toFixed(2)} hrs
+          </p>
+          {contest.url && (
+            <a
+              href={contest.url}
+              target="_blank"
+              className="text-blue-300 hover:text-blue-100 text-sm underline flex gap-1 items-center"
+            >
+              <IoLogoGithub /> View Contest
+            </a>
+          )}
+          <button
+            onClick={() => handleAddToCalendar(contest)}
+            className="mt-2 px-3 py-1 bg-blue-600 rounded text-white hover:bg-blue-700 flex items-center gap-1"
           >
-            <IoLogoGithub /> View Contest
-          </a>
-        )}
-        <button
-          onClick={() => handleAddToCalendar(contest)}
-          className="mt-2 px-3 py-1 bg-blue-600 rounded text-white hover:bg-blue-700 flex items-center gap-1"
-        >
-          <FaCalendarPlus /> Add to Calendar
-        </button>
-      </CardContent>
-    </Card>
+            <FaCalendarPlus /> Add to Calendar
+          </button>
+        </CardContent>
+      </Card>
+    </motion.div>
   );
 
   const handleDateHover = (date) => {
@@ -152,6 +164,7 @@ const Contests = () => {
 
   return (
     <div className="p-6 bg-[#161A30] min-h-screen font-sans">
+      
       <h2 className="text-3xl font-bold text-[#F0ECE5] mb-6">
         Contests Dashboard
       </h2>
@@ -166,40 +179,60 @@ const Contests = () => {
           <option value="codechef">Codechef</option>
           <option value="codeforces">Codeforces</option>
         </select>
+        {/* Wrapper for calendar */}
+        <div className="flex-1 max-w-full">
+          <MyCalendar />
+        </div>
 
-        <Tooltip>
+        {/* <Tooltip>
           <TooltipTrigger asChild>
             <div onMouseLeave={() => setHoveredDate(null)} className="relative">
-              <DayPicker
-                mode="single"
-                onDayMouseEnter={handleDateHover}
-                modifiers={{
-                  highlighted: allContests.map((c) => c.start),
-                }}
-                modifiersClassNames={{
-                  highlighted: "bg-[#31304D] text-white font-bold rounded-full",
-                }}
+              <motion.div
                 className="rounded-xl border border-[#31304D] shadow-lg text-[#F0ECE5] p-4 flex items-center justify-center text-center"
-              />
+                whileHover={{ scale: 1.05 }} // Adding hover scale effect
+                whileTap={{ scale: 0.95 }} // Adding tap effect
+              >
+                <DayPicker
+                  mode="single"
+                  onDayMouseEnter={handleDateHover}
+                  modifiers={{
+                    highlighted: allContests.map((c) => c.start),
+                  }}
+                  modifiersClassNames={{
+                    highlighted:
+                      "bg-[#31304D] text-white font-bold rounded-full",
+                  }}
+                  className="p-4"
+                />
+              </motion.div>
             </div>
           </TooltipTrigger>
+
+          
           {hoveredDate && tooltipContent && (
             <TooltipContent
               side="bottom"
               align="start"
               className="bg-[#1E1E2E] text-white p-4 rounded-lg shadow-lg max-w-sm"
             >
-              <strong>Contests on {hoveredDate.toDateString()}</strong>
-              <p>{tooltipContent}</p>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.3 }}
+              >
+                <strong>Contests on {hoveredDate.toDateString()}</strong>
+                <p>{tooltipContent}</p>
+              </motion.div>
             </TooltipContent>
           )}
-        </Tooltip>
+        </Tooltip> */}
+    
       </div>
 
       {/* Tabs */}
-      <div className="flex justify-center gap-6 mb-6">
+      <div className="flex justify-center gap-6 mb-6 mt-28">
         {["upcoming", "past", "registered"].map((tab) => (
-          <button
+          <motion.button
             key={tab}
             onClick={() => setActiveTab(tab)}
             className={`px-4 py-2 rounded-lg font-semibold ${
@@ -207,9 +240,12 @@ const Contests = () => {
                 ? "bg-[#31304D] text-white"
                 : "bg-transparent text-[#B6BBC4] hover:text-white"
             }`}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3 }}
           >
             {tab.charAt(0).toUpperCase() + tab.slice(1)} Contests
-          </button>
+          </motion.button>
         ))}
       </div>
 
@@ -219,7 +255,12 @@ const Contests = () => {
           <h3 className="text-2xl text-[#F0ECE5] font-semibold mb-4 flex items-center gap-2">
             <FaHourglassHalf className="text-yellow-300" /> Upcoming Contests
           </h3>
-          <div className="grid gap-4">
+          <motion.div
+            className="grid gap-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+          >
             {upcomingContests.length ? (
               upcomingContests.map((c, i) => (
                 <ContestCard key={i} contest={c} />
@@ -227,7 +268,7 @@ const Contests = () => {
             ) : (
               <p className="text-[#B6BBC4]">No upcoming contests.</p>
             )}
-          </div>
+          </motion.div>
         </section>
       )}
 
@@ -237,13 +278,18 @@ const Contests = () => {
           <h3 className="text-2xl text-[#F0ECE5] font-semibold mb-4 flex items-center gap-2">
             <FaCheckCircle className="text-green-400" /> Past Contests
           </h3>
-          <div className="grid gap-4">
+          <motion.div
+            className="grid gap-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+          >
             {(showAllPast ? pastContests : pastContests.slice(0, 5)).map(
               (c, i) => (
                 <ContestCard key={i} contest={c} />
               )
             )}
-          </div>
+          </motion.div>
           {pastContests.length > 5 && (
             <button
               onClick={() => setShowAllPast((prev) => !prev)}
@@ -261,14 +307,19 @@ const Contests = () => {
           <h3 className="text-2xl text-[#F0ECE5] font-semibold mb-4 flex items-center gap-2">
             <FaCheckCircle className="text-blue-400" /> Registered Contests
           </h3>
-          <div className="grid gap-4">
+          <motion.div
+            className="grid gap-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+          >
             {(showAllRegistered
               ? registeredContests
               : registeredContests.slice(0, 5)
             ).map((c, i) => (
               <ContestCard key={i} contest={c} />
             ))}
-          </div>
+          </motion.div>
           {registeredContests.length > 5 && (
             <button
               onClick={() => setShowAllRegistered((prev) => !prev)}
