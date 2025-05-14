@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 
 export const Header = () => {
   const [darkMode, setDarkMode] = useState(false);
+  const userLoggedIn= localStorage.getItem("user");
 
   useEffect(() => {
     const storedTheme = localStorage.getItem("theme");
@@ -83,12 +84,15 @@ export const Header = () => {
         >
           Notifications
         </Button>
+        {userLoggedIn?
         <Avatar>
-          <AvatarImage src="" />
-          <AvatarFallback style={{ backgroundColor: "#B6BBC4", color: "#161A30" }}>
-            US
-          </AvatarFallback>
-        </Avatar>
+        <AvatarImage src="" />
+        <AvatarFallback style={{ backgroundColor: "#B6BBC4", color: "#161A30" }}>
+          US
+        </AvatarFallback>
+      </Avatar>:
+      <a>Login Now</a> }
+        
       </div>
     </header>
   );
