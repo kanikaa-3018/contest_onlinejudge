@@ -3,14 +3,14 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Search, Moon, Sun } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { Link } from "react-router-dom"; // for Vite + React Router
+import { Link } from "react-router-dom";
 
 export const Header = () => {
   const [darkMode, setDarkMode] = useState(false);
   const [usernameInitials, setUsernameInitials] = useState(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
-    // Theme preference
     const storedTheme = localStorage.getItem("theme");
     if (storedTheme === "dark") {
       setDarkMode(true);
@@ -20,19 +20,19 @@ export const Header = () => {
       document.documentElement.classList.remove("dark");
     }
 
-    // Username initials setup
     const user = localStorage.getItem("user");
     if (user) {
       try {
         const parsed = JSON.parse(user);
-        const username = parsed.username || parsed.name || ""; // fallback
+        const username = parsed.username || parsed.name || ""; 
         if (username) {
           const initials = username
             .split(" ")
-            .map((word) => word[0]?.toUpperCase()) // Removed ": string"
+            .map((word) => word[0]?.toUpperCase()) 
             .join("")
             .slice(0, 2);
           setUsernameInitials(initials || "US");
+          setIsLoggedIn(true); 
         }
       } catch {
         console.warn("Failed to parse user from localStorage.");
@@ -47,6 +47,13 @@ export const Header = () => {
       localStorage.setItem("theme", newMode ? "dark" : "light");
       return newMode;
     });
+  };
+
+  const handleLogout = () => {
+    // Clear user data from localStorage
+    localStorage.removeItem("user");
+    setIsLoggedIn(false);
+    setUsernameInitials(null);
   };
 
   return (
@@ -102,15 +109,28 @@ export const Header = () => {
           Notifications
         </Button>
 
-        {usernameInitials ? (
-          <Avatar>
-            <AvatarImage src="" alt="User Avatar" />
-            <AvatarFallback
-              style={{ backgroundColor: "#B6BBC4", color: "#161A30" }}
+        {isLoggedIn ? (
+          <div className="flex items-center gap-2">
+            <Avatar>
+              <AvatarImage src="" alt="User Avatar" />
+              <AvatarFallback
+                style={{ backgroundColor: "#B6BBC4", color: "#161A30" }}
+              >
+                {usernameInitials}
+              </AvatarFallback>
+            </Avatar>
+            <Button
+              size="sm"
+              onClick={handleLogout}
+              style={{
+                backgroundColor: "#31304D",
+                color: "#F0ECE5",
+                border: "none",
+              }}
             >
-              {usernameInitials}
-            </AvatarFallback>
-          </Avatar>
+              Logout
+            </Button>
+          </div>
         ) : (
           <Link to="/auth">
             <Button
