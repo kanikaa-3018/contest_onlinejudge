@@ -3,12 +3,14 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Search, Moon, Sun } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { Link } from "react-router-dom"; // for Vite + React Router
 
 export const Header = () => {
   const [darkMode, setDarkMode] = useState(false);
-  const userLoggedIn= localStorage.getItem("user");
+  const [usernameInitials, setUsernameInitials] = useState(null);
 
   useEffect(() => {
+    // Theme preference
     const storedTheme = localStorage.getItem("theme");
     if (storedTheme === "dark") {
       setDarkMode(true);
@@ -17,18 +19,32 @@ export const Header = () => {
       setDarkMode(false);
       document.documentElement.classList.remove("dark");
     }
+
+    // Username initials setup
+    const user = localStorage.getItem("user");
+    if (user) {
+      try {
+        const parsed = JSON.parse(user);
+        const username = parsed.username || parsed.name || ""; // fallback
+        if (username) {
+          const initials = username
+            .split(" ")
+            .map((word) => word[0]?.toUpperCase()) // Removed ": string"
+            .join("")
+            .slice(0, 2);
+          setUsernameInitials(initials || "US");
+        }
+      } catch {
+        console.warn("Failed to parse user from localStorage.");
+      }
+    }
   }, []);
 
   const toggleDarkMode = () => {
-    setDarkMode((prevMode) => {
-      const newMode = !prevMode;
-      if (newMode) {
-        document.documentElement.classList.add("dark");
-        localStorage.setItem("theme", "dark");
-      } else {
-        document.documentElement.classList.remove("dark");
-        localStorage.setItem("theme", "light");
-      }
+    setDarkMode((prev) => {
+      const newMode = !prev;
+      document.documentElement.classList.toggle("dark", newMode);
+      localStorage.setItem("theme", newMode ? "dark" : "light");
       return newMode;
     });
   };
@@ -74,6 +90,7 @@ export const Header = () => {
             {darkMode ? "Light Mode" : "Dark Mode"}
           </span>
         </Button>
+
         <Button
           size="sm"
           style={{
@@ -84,15 +101,30 @@ export const Header = () => {
         >
           Notifications
         </Button>
-        {userLoggedIn?
-        <Avatar>
-        <AvatarImage src="" />
-        <AvatarFallback style={{ backgroundColor: "#B6BBC4", color: "#161A30" }}>
-          US
-        </AvatarFallback>
-      </Avatar>:
-      <a>Login Now</a> }
-        
+
+        {usernameInitials ? (
+          <Avatar>
+            <AvatarImage src="" alt="User Avatar" />
+            <AvatarFallback
+              style={{ backgroundColor: "#B6BBC4", color: "#161A30" }}
+            >
+              {usernameInitials}
+            </AvatarFallback>
+          </Avatar>
+        ) : (
+          <Link to="/auth">
+            <Button
+              size="sm"
+              style={{
+                backgroundColor: "#31304D",
+                color: "#F0ECE5",
+                border: "none",
+              }}
+            >
+              Login
+            </Button>
+          </Link>
+        )}
       </div>
     </header>
   );

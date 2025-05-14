@@ -20,7 +20,6 @@ import VSCodeTypewriter from "./VSCodeTypewriter";
 
 export const Dashboard = () => {
   const userData = localStorage.getItem("user");
-  
 
   const [output, setOutput] = useState("");
   const textLines = [
@@ -117,7 +116,7 @@ export const Dashboard = () => {
           ))}
         </div>
       </motion.div>
-      <VSCodeTypewriter/>
+      <VSCodeTypewriter />
 
       {/* Greeting Section */}
       <motion.div
@@ -134,21 +133,9 @@ export const Dashboard = () => {
         </p>
       </motion.div>
 
-      {/* Typewriter Effect for AI-Powered Dashboard Data */}
-      <motion.div
-        className="bg-[#1E1E2F] p-6 rounded-lg mt-8"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1 }}
-      >
-        <div className="text-gray-300 text-sm font-mono space-y-2">
-          <p>{output}</p>
-        </div>
-      </motion.div>
-
       {/* Main Dashboard Grid */}
       <motion.div
-        className="grid gap-6 md:grid-cols-2 lg:grid-cols-3"
+        className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 items-stretch"
         initial="hidden"
         animate="visible"
         variants={{
@@ -161,33 +148,43 @@ export const Dashboard = () => {
         }}
       >
         <motion.div
-          className="flex flex-col h-full" 
+          className="h-full flex flex-col"
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
-          <StatsDashboard />
+          <StatsDashboard className="h-full flex flex-col" />
         </motion.div>
 
         <motion.div
-          className="flex flex-col h-full"
+          className="h-full flex flex-col"
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7 }}
         >
-          <UpcomingContests />
+          <UpcomingContests className="h-full flex flex-col" />
         </motion.div>
 
         <motion.div
-          className="flex flex-col h-full" 
+          className="h-full flex flex-col"
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
         >
-          <RecentSubmissions />
+          <RecentSubmissions className="h-full flex flex-col" />
         </motion.div>
       </motion.div>
 
+      <motion.div
+        className="p-6 rounded-lg mt-8"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 1 }}
+      >
+        <div className="text-gray-300 text-sm font-mono space-y-2">
+          <p>{output}</p>
+        </div>
+      </motion.div>
       <motion.div
         initial={{ opacity: 0, y: 40 }}
         animate={{ opacity: 1, y: 0 }}
