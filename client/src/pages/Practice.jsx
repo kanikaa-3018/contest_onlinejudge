@@ -1,82 +1,98 @@
-import React, { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { Card, CardContent } from '@/components/ui/card';
-import { BookOpen, Tag, ExternalLink } from 'lucide-react';
+import React, { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { Card, CardContent } from "@/components/ui/card";
+import { BookOpen, Tag, ExternalLink } from "lucide-react";
 
 const TAGS = [
-  'implementation', 'greedy', 'dp', 'math', 'brute force',
-  'data structures', 'constructive algorithms', 'graphs',
-  'sortings', 'binary search', 'dfs and similar', 'trees', 'two pointers',
+  "implementation",
+  "greedy",
+  "dp",
+  "math",
+  "brute force",
+  "data structures",
+  "constructive algorithms",
+  "graphs",
+  "sortings",
+  "binary search",
+  "dfs and similar",
+  "trees",
+  "two pointers",
+  "Array",
+  "Hash Table",
+  "String",
+  "Dynamic Programming",
+  "Math",
+  "Sorting",
+  "Greedy",
+  "Tree",
+  "Depth-First Search",
+  "Breadth-First Search",
 ];
+
+const DIFFICULTIES = ["Easy", "Medium", "Hard"];
 
 const RATINGS = [
-  800, 900, 1000, 1100, 1200, 1300, 1400,
-  1500, 1600, 1700, 1800, 1900, 2000,
+  800, 900, 1000, 1100, 1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000,
 ];
 
-const PLATFORMS = ['All', 'Codeforces', 'LeetCode'];
+const PLATFORMS = ["All", "Codeforces", "LeetCode"];
 
-// Fetch Codeforces problems with optional filters
 const fetchCodeforcesProblems = async (tag, rating) => {
-  const url = 'https://codeforces.com/api/problemset.problems';
+  const url = "https://codeforces.com/api/problemset.problems";
   const response = await fetch(url);
-  if (!response.ok) throw new Error('Failed to fetch Codeforces problems');
+  if (!response.ok) throw new Error("Failed to fetch Codeforces problems");
   const data = await response.json();
   let problems = data.result.problems;
-  if (tag) problems = problems.filter(p => p.tags.includes(tag));
-  if (rating) problems = problems.filter(p => p.rating === parseInt(rating));
+  if (tag) problems = problems.filter((p) => p.tags.includes(tag));
+  if (rating && typeof rating === "number")
+    problems = problems.filter((p) => p.rating === parseInt(rating));
   return problems;
 };
 
-// Fetch LeetCode problems through your proxy
-const fetchLeetCodeProblems = async () => {
-  const query = `
-    query {
-      problemsetQuestionList(limit: 50) {
-        questions {
-          title
-          titleSlug
-          difficulty
-          topicTags {
-            name
-          }
-        }
-      }
-    }
-  `;
-  const response = await fetch('http://localhost:8080/leetcode', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ query }),
-  });
-  if (!response.ok) throw new Error('Failed to fetch LeetCode problems');
-  const result = await response.json();
-  return result.data.problemsetQuestionList.questions;
+const fetchLeetCodeProblems = async (difficulty) => {
+  const response = await fetch(
+    "https://alfa-leetcode-api.onrender.com/problems"
+  );
+  if (!response.ok) throw new Error("Failed to fetch LeetCode problems");
+  const data = await response.json();
+  let problems = data.problemsetQuestionList;
+  if (difficulty)
+    problems = problems.filter((p) => p.difficulty === difficulty);
+  return problems;
 };
 
 const Practice = () => {
-  const [platform, setPlatform] = useState('All');
-  const [selectedTag, setSelectedTag] = useState('');
-  const [selectedRating, setSelectedRating] = useState('');
+  const [platform, setPlatform] = useState("All");
+  const [selectedTag, setSelectedTag] = useState("");
+  const [selectedRating, setSelectedRating] = useState("");
+  const [selectedDifficulty, setSelectedDifficulty] = useState("");
 
   const { data, isLoading, isError } = useQuery({
-    queryKey: ['practiceProblems', platform, selectedTag, selectedRating],
+    queryKey: [
+      "practiceProblems",
+      platform,
+      selectedTag,
+      selectedRating,
+      selectedDifficulty,
+    ],
     queryFn: async () => {
-      if (platform === 'Codeforces') {
+      if (platform === "Codeforces") {
         return await fetchCodeforcesProblems(selectedTag, selectedRating);
-      } else if (platform === 'LeetCode') {
-        return await fetchLeetCodeProblems();
+      } else if (platform === "LeetCode") {
+        return await fetchLeetCodeProblems(selectedDifficulty);
       } else {
         const [cf, lc] = await Promise.all([
           fetchCodeforcesProblems(selectedTag, selectedRating),
-          fetchLeetCodeProblems(),
+          fetchLeetCodeProblems(selectedDifficulty),
         ]);
+        if (platform === "Codeforces") return cf;
+        if (platform === "LeetCode") return lc;
         return [...cf, ...lc];
       }
     },
   });
 
-  const isCF = (problem) => 'contestId' in problem;
+  const isCF = (problem) => "contestId" in problem;
 
   return (
     <div className="p-6 bg-gradient-to-tr from-[#0f0f23] via-[#161A30] to-[#1f1f3b] min-h-screen text-[#F0ECE5]">
@@ -88,23 +104,26 @@ const Practice = () => {
         <select
           value={platform}
           onChange={(e) => setPlatform(e.target.value)}
-          className="bg-[#1F1D36] text-white p-3 rounded-xl min-w-[150px]"
+          className="bg-[#1F1D36] text-white p-3 rounded-xl"
         >
           {PLATFORMS.map((p) => (
-            <option key={p} value={p}>{p}</option>
+            <option key={p} value={p}>
+              {p}
+            </option>
           ))}
         </select>
 
-        {/* Tag (only for CF) */}
+        {/* Tag (both) */}
         <select
           value={selectedTag}
           onChange={(e) => setSelectedTag(e.target.value)}
-          className="bg-[#1F1D36] text-white p-3 rounded-xl min-w-[150px]"
-          disabled={platform === 'LeetCode'}
+          className="bg-[#1F1D36] text-white p-3 rounded-xl"
         >
           <option value="">All Tags</option>
           {TAGS.map((tag) => (
-            <option key={tag} value={tag}>{tag}</option>
+            <option key={tag} value={tag}>
+              {tag}
+            </option>
           ))}
         </select>
 
@@ -113,18 +132,34 @@ const Practice = () => {
           value={selectedRating}
           onChange={(e) => setSelectedRating(e.target.value)}
           className="bg-[#1F1D36] text-white p-3 rounded-xl min-w-[150px]"
-          disabled={platform === 'LeetCode'}
+          disabled={platform === "LeetCode"}
         >
           <option value="">All Ratings</option>
           {RATINGS.map((rating) => (
-            <option key={rating} value={rating}>{rating}</option>
+            <option key={rating} value={rating}>
+              {rating}
+            </option>
+          ))}
+        </select>
+        <select
+          value={selectedDifficulty}
+          onChange={(e) => setSelectedDifficulty(e.target.value)}
+          className="bg-[#1F1D36] text-white p-3 rounded-xl"
+        >
+          <option value="">All Difficulties</option>
+          {DIFFICULTIES.map((diff) => (
+            <option key={diff} value={diff}>
+              {diff}
+            </option>
           ))}
         </select>
       </div>
 
       {/* Loading / Error */}
       {isLoading && <div className="text-center">Loading problems...</div>}
-      {isError && <div className="text-center text-red-400">Failed to load problems.</div>}
+      {isError && (
+        <div className="text-center text-red-400">Failed to load problems.</div>
+      )}
 
       {/* Problem Cards */}
       {!isLoading && !isError && (
@@ -141,18 +176,23 @@ const Practice = () => {
                     ? `${problem.contestId}${problem.index}: ${problem.name}`
                     : problem.title}
                 </div>
-                
 
                 <div className="flex flex-wrap gap-2 text-sm text-[#B6BBC4]">
                   <Tag size={16} />
                   {isCF(problem)
                     ? problem.tags?.map((tag) => (
-                        <span key={tag} className="bg-[#31304D]/60 px-2 py-1 rounded-lg text-xs">
+                        <span
+                          key={tag}
+                          className="bg-[#31304D]/60 px-2 py-1 rounded-lg text-xs"
+                        >
                           {tag}
                         </span>
                       ))
                     : problem.topicTags?.map((tag) => (
-                        <span key={tag.name} className="bg-[#31304D]/60 px-2 py-1 rounded-lg text-xs">
+                        <span
+                          key={tag.name}
+                          className="bg-[#31304D]/60 px-2 py-1 rounded-lg text-xs"
+                        >
                           {tag.name}
                         </span>
                       ))}
@@ -169,7 +209,7 @@ const Practice = () => {
                   className="mt-2 inline-flex items-center gap-1 text-sm text-blue-300 hover:underline"
                 >
                   <ExternalLink size={16} />
-                  {isCF(problem) ? 'View on Codeforces' : 'View on LeetCode'}
+                  {isCF(problem) ? "View on Codeforces" : "View on LeetCode"}
                 </a>
               </CardContent>
             </Card>
