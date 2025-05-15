@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Trophy } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import axios from 'axios';
 
 // Helper function for CodeForces rating colors
 function getRatingColor(rating) {
@@ -13,7 +14,44 @@ function getRatingColor(rating) {
   return 'text-red-500'; // Grandmaster+
 }
 
-const LeaderboardTable = ({ users, setSelectedUser }) => {
+const LeaderboardTable = () => {
+  const [users, setUsers] = useState([]);
+  const [visibleUsers, setVisibleUsers] = useState(5);
+
+  useEffect(() => {
+    const fetchLeaderboard = async () => {
+      try {
+        const response = await fetch("http://localhost:8080/api/global-leaderboard");
+        const data = await response.json();
+
+        if (!Array.isArray(data)) {
+          console.error("Unexpected data format:", data);
+          return;
+        }
+
+        const formattedUsers = data.slice(0, 100).map((user, index) => ({
+          id: index + 1,
+          rank: index + 1,
+          name: `${user.firstName || ''} ${user.lastName || ''}`.trim(),
+          username: user.handle,
+          rating: user.rating,
+          avatar: user.avatar || "https://userpic.codeforces.org/no-avatar.png",
+          rankTitle: user.rank,
+          country: user.country || "N/A",
+          organization: user.organization || "N/A",
+        }));
+        setUsers(formattedUsers);
+      } catch (error) {
+        console.error("Error fetching global leaderboard:", error);
+      }
+    };
+    fetchLeaderboard();
+  }, []);
+
+  const loadMore = () => {
+    setVisibleUsers((prev) => prev + 10);
+  };
+
   return (
     <div className="overflow-x-auto">
       <table className="w-full">
@@ -21,13 +59,13 @@ const LeaderboardTable = ({ users, setSelectedUser }) => {
           <tr className="border-b border-[#403E43]">
             <th className="text-left py-4 px-3 text-gray-400">Rank</th>
             <th className="text-left py-4 px-3 text-gray-400">User</th>
-            <th className="text-left py-4 px-3 text-gray-400 hidden md:table-cell">LeetCode</th>
-            <th className="text-left py-4 px-3 text-gray-400 hidden md:table-cell">CodeForces</th>
-            <th className="text-right py-4 px-3 text-gray-400">Actions</th>
+            <th className="text-left py-4 px-3 text-gray-400">Rating</th>
+            <th className="text-left py-4 px-3 text-gray-400">Country</th>
+            <th className="text-left py-4 px-3 text-gray-400">Organization</th>
           </tr>
         </thead>
         <tbody>
-          {users.map((user) => (
+          {users.slice(0, visibleUsers).map((user) => (
             <tr key={user.id} className="border-b border-[#403E43] hover:bg-[#2d2a33]">
               <td className="py-4 px-3">
                 <div className="flex items-center">
@@ -40,45 +78,39 @@ const LeaderboardTable = ({ users, setSelectedUser }) => {
               </td>
               <td className="py-4 px-3">
                 <div className="flex items-center">
-                  {user.avatar ? (
-                    <img src={user.avatar} alt={user.name} className="w-8 h-8 rounded-full mr-3" />
-                  ) : (
-                    <div className="w-8 h-8 rounded-full bg-[#403E43] mr-3"></div>
-                  )}
+                  <img
+                    src={user.avatar}
+                    alt={user.username}
+                    className="w-8 h-8 rounded-full mr-3"
+                  />
                   <div>
                     <div className="font-medium">{user.name}</div>
                     <div className="text-sm text-gray-400">@{user.username}</div>
                   </div>
                 </div>
               </td>
-              <td className="py-4 px-3 hidden md:table-cell">
-                <div>
-                  <div className="text-[#33C3F0]">{user.leetcode.contestRating}</div>
-                  <div className="text-sm text-gray-400">{user.leetcode.totalSolved} problems</div>
-                </div>
+              <td className="py-4 px-3">
+                <span className={getRatingColor(user.rating)}>{user.rating}</span>
+                <div className="text-sm text-gray-400">{user.rankTitle}</div>
               </td>
-              <td className="py-4 px-3 hidden md:table-cell">
-                <div>
-                  <div className={getRatingColor(user.codeforces.rating)}>
-                    {user.codeforces.rating}
-                  </div>
-                  <div className="text-sm text-gray-400">{user.codeforces.rank}</div>
-                </div>
-              </td>
-              <td className="py-4 px-3 text-right">
-                <Button 
-                  variant="ghost" 
-                  size="sm"
-                  className="text-[#8B5CF6] hover:text-white hover:bg-[#8B5CF6]"
-                  onClick={() => setSelectedUser(user)}
-                >
-                  View Details
-                </Button>
-              </td>
+              <td className="py-4 px-3">{user.country}</td>
+              <td className="py-4 px-3">{user.organization}</td>
             </tr>
           ))}
         </tbody>
       </table>
+      {visibleUsers < users.length && (
+        <div className="text-center mt-4">
+          <Button 
+            variant="ghost" 
+            size="sm"
+            className="text-[#8B5CF6] hover:text-white hover:bg-[#8B5CF6]"
+            onClick={loadMore}
+          >
+            Load More
+          </Button>
+        </div>
+      )}
     </div>
   );
 };

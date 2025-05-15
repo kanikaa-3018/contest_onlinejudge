@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Trophy,
   Award,
@@ -34,7 +34,6 @@ import ContestHistory from "../components/ContestHistory.jsx";
 import ProblemDistribution from "../components/ProblemDistribution.jsx";
 import LeetcodeBadges from "../components/LeetcodeBadges.jsx";
 import LeaderboardTable from "../components/LeaderboardTable.jsx";
-// import { toast } from "@/components/ui/use-toast";
 
 const userStats = [
   {
@@ -174,54 +173,6 @@ const userStats = [
   },
 ];
 
-// Sample contest history data
-const fetchCodeforcesContestHistory = async (handle) => {
-  try {
-    const ratingResponse = await axios.get(
-      `https://codeforces.com/api/user.rating?handle=${handle}`
-    );
-    const contests = ratingResponse.data.result;
-
-    const contestHistory = contests.map((contest) => ({
-      name: contest.contestName,
-      rank: contest.rank,
-      solved: contest.rank ? Math.floor(Math.random() * 4) + 1 : 0, // Estimating solved problems
-      totalProblems: 4, // Assumption, can be improved
-      date: new Date(contest.ratingUpdateTimeSeconds * 1000)
-        .toISOString()
-        .split("T")[0],
-    }));
-
-    return contestHistory;
-  } catch (error) {
-    console.error("Failed to fetch Codeforces contest history:", error);
-    return [];
-  }
-};
-
-const fetchLeetCodeContestHistory = async (handle) => {
-  try {
-    const response = await axios.get(
-      `https://alfa-leetcode-api.onrender.com/${handle}/contest/history`
-    );
-    const contests = response.data;
-
-    const contestHistory = contests.map((contest) => ({
-      name: contest.title,
-      rank: contest.rank,
-      solved: contest.solvedProblems,
-      totalProblems: contest.totalProblems,
-      date: new Date(contest.timestamp * 1000).toISOString().split("T")[0],
-    }));
-
-    return contestHistory;
-  } catch (error) {
-    console.error("Failed to fetch LeetCode contest history:", error);
-    return [];
-  }
-};
-
-// For the problem distribution chart
 const problemData = [
   { name: "Easy", value: 214, color: "#4ade80" },
   { name: "Medium", value: 325, color: "#f59e0b" },
@@ -241,7 +192,12 @@ function getRatingColor(rating) {
 }
 
 const Lead = () => {
-  const [selectedUser, setSelectedUser] = useState(userStats[0]);
+  const [cfcontests, setCfcontests] = useState([]);
+  const [lcContests, setLcContests] = useState([]);
+  const [problemData, setProblemData] = useState([]);
+  const [ratingData, setRatingData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedUser, setSelectedUser] = useState(null);
   const [view, setView] = useState("overview");
   const [handles, setHandles] = useState({
     codeforces: "",
@@ -255,6 +211,29 @@ const Lead = () => {
     setHandles((prev) => ({ ...prev, [name]: value }));
   };
 
+  const fetchLeetCodeProblems = async (handle) => {
+    try {
+      const response = await axios.get(
+        `https://alfa-leetcode-api.onrender.com/${handle}/solved`
+      );
+      const data = response?.data;
+
+      const problemData = [
+        { name: "Easy", value: data?.easySolved || 0, color: "#4ade80" },
+        { name: "Medium", value: data?.mediumSolved || 0, color: "#f59e0b" },
+        { name: "Hard", value: data?.hardSolved || 0, color: "#ef4444" },
+      ];
+
+      return problemData;
+    } catch (error) {
+      console.error("Error fetching LeetCode problem data:", error);
+      return [
+        { name: "Easy", value: 0, color: "#4ade80" },
+        { name: "Medium", value: 0, color: "#f59e0b" },
+        { name: "Hard", value: 0, color: "#ef4444" },
+      ];
+    }
+  };
   const handleSubmit = async () => {
     setSubmitted(true);
     const codeforcesData = await fetchCodeforcesData(handles.codeforces);
@@ -385,8 +364,122 @@ const Lead = () => {
     });
   };
 
+  const fetchCodeforcesContestHistory = async (handle) => {
+    try {
+      const ratingResponse = await axios.get(
+        `https://codeforces.com/api/user.rating?handle=${handle}`
+      );
+      const contests = ratingResponse?.data?.result;
+
+      const contestHistory = contests.map((contest) => ({
+        name: contest.contestName,
+        rank: contest.rank,
+        solved: contest.rank ? Math.floor(Math.random() * 4) + 1 : 0, // Estimating solved problems
+        totalProblems: 6,
+        date: new Date(contest.ratingUpdateTimeSeconds * 1000)
+          .toISOString()
+          .split("T")[0],
+      }));
+
+      return contestHistory;
+    } catch (error) {
+      console.error("Failed to fetch Codeforces contest history:", error);
+      return [];
+    }
+  };
+
+  const fetchLeetCodeContestHistory = async (handle) => {
+    try {
+      const response = await axios.get(
+        `https://alfa-leetcode-api.onrender.com/${handle}/contest/history`
+      );
+
+      if (Array.isArray(response.data)) {
+        const contests = response.data;
+
+        const contestHistory = contests.map((contest) => ({
+          name: contest.title || "Unknown Contest",
+          rank: contest.rank || "N/A",
+          solved: contest.solvedProblems || 0,
+          totalProblems: contest.totalProblems || 0,
+          date: new Date((contest.timestamp || Date.now()) * 1000)
+            .toISOString()
+            .split("T")[0],
+        }));
+
+        return contestHistory;
+      } else {
+        console.error("Unexpected response format:", response.data);
+        return [];
+      }
+    } catch (error) {
+      console.error("Failed to fetch LeetCode contest history:", error);
+      return [];
+    }
+  };
+
+  const fetchContestData = async (handles) => {
+    try {
+      const [cfcontests, lcContests] = await Promise.all([
+        fetchCodeforcesContestHistory(handles.codeforces),
+        fetchLeetCodeContestHistory(handles.leetcode),
+      ]);
+
+      return { cfcontests, lcContests };
+    } catch (error) {
+      console.error("Error fetching contest data:", error);
+      return { cfcontests: [], lcContests: [] };
+    }
+  };
+
+  //   // Usage example
+  //   fetchContestData(handles).then(({ cfcontests, lcContests }) => {
+  //     console.log("Codeforces Contests:", cfcontests);
+  //     console.log("LeetCode Contests:", lcContests);
+  //   });
+
+  useEffect(() => {
+    const loadContestData = async () => {
+      setLoading(true);
+      const getRatingHistory = async () => {
+        const data = await fetchCodeforcesRatingHistory(handles.codeforces);
+        setRatingData(data);
+      };
+      getRatingHistory();
+      const { cfcontests, lcContests } = await fetchContestData(handles);
+      const problemData = await fetchLeetCodeProblems(handles?.leetcode);
+      setCfcontests(cfcontests || []);
+      setLcContests(lcContests || []);
+      setProblemData(problemData);
+      setLoading(false);
+    };
+
+    if (handles?.codeforces && handles?.leetcode) {
+      loadContestData();
+    }
+  }, [handles]);
+
+  const fetchCodeforcesRatingHistory = async (handle) => {
+    try {
+      const response = await axios.get(
+        `https://codeforces.com/api/user.rating?handle=${handle}`
+      );
+      const contests = response.data.result;
+
+      const ratingHistory = contests.map((contest, index) => ({
+        name: contest.contestName || `Contest ${index + 1}`,
+        rating: contest.newRating,
+      }));
+
+      return ratingHistory;
+    } catch (error) {
+      console.error("Error fetching Codeforces rating history:", error);
+      return [];
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#1A1F2C] to-[#121620] text-white px-4 py-8 md:px-8">
+    <div className="min-h-screen bg-gradient-to-b from-[#161a30] to-[#161a30] text-white px-4 py-8 md:px-8">
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
           <div>
@@ -422,10 +515,7 @@ const Lead = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <LeaderboardTable
-                users={userStats}
-                setSelectedUser={setSelectedUser}
-              />
+              <LeaderboardTable />
             </CardContent>
           </Card>
         </div>
@@ -493,7 +583,6 @@ const Lead = () => {
 
                 <TabsContent value="overview" className="mt-6">
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
- 
                     {/*user profile */}
                     <Card className="bg-[#221F26] border-[#403E43] text-white">
                       <CardContent className="pt-6">
@@ -723,7 +812,102 @@ const Lead = () => {
                         </CardTitle>
                       </CardHeader>
                       <CardContent>
-                        {/* <ContestHistory cfcontests={fetchCodeforcesContestHistory} lccontests={fetchLeetCodeContestHistory}/> */}
+                        <ContestHistory
+                          cfcontests={cfcontests}
+                          lcContests={lcContests}
+                        />
+
+                        {/* <div className="space-y-6">
+                          <div>
+                            <h3 className="text-xl font-semibold mb-2">
+                              Codeforces Contests
+                            </h3>
+                            {cfcontests.length > 0 ? (
+                              cfcontests.map((contest, index) => (
+                                <div
+                                  key={index}
+                                  className="bg-[#1A1F2C] p-3 rounded-lg"
+                                >
+                                  <div className="flex justify-between items-center">
+                                    <span className="font-medium">
+                                      {contest.name}
+                                    </span>
+                                    <span className="text-sm text-gray-400">
+                                      {contest.date}
+                                    </span>
+                                  </div>
+                                  <div className="flex justify-between mt-2">
+                                    <div>
+                                      <span className="text-sm text-gray-400">
+                                        Rank
+                                      </span>
+                                      <div className="text-lg font-medium">
+                                        {contest.rank}
+                                      </div>
+                                    </div>
+                                    <div>
+                                      <span className="text-sm text-gray-400">
+                                        Solved
+                                      </span>
+                                      <div className="text-lg font-medium">
+                                        {contest.solved}/{contest.totalProblems}
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              ))
+                            ) : (
+                              <p className="text-gray-400">
+                                No Codeforces contest history available.
+                              </p>
+                            )}
+                          </div>
+
+                          <div>
+                            <h3 className="text-xl font-semibold mb-2">
+                              LeetCode Contests
+                            </h3>
+                            {lcContests.length > 0 ? (
+                              lcContests.map((contest, index) => (
+                                <div
+                                  key={index}
+                                  className="bg-[#1A1F2C] p-3 rounded-lg"
+                                >
+                                  <div className="flex justify-between items-center">
+                                    <span className="font-medium">
+                                      {contest.name}
+                                    </span>
+                                    <span className="text-sm text-gray-400">
+                                      {contest.date}
+                                    </span>
+                                  </div>
+                                  <div className="flex justify-between mt-2">
+                                    <div>
+                                      <span className="text-sm text-gray-400">
+                                        Rank
+                                      </span>
+                                      <div className="text-lg font-medium">
+                                        {contest.rank}
+                                      </div>
+                                    </div>
+                                    <div>
+                                      <span className="text-sm text-gray-400">
+                                        Solved
+                                      </span>
+                                      <div className="text-lg font-medium">
+                                        {contest.solved}/{contest.totalProblems}
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              ))
+                            ) : (
+                              <p className="text-gray-400">
+                                No LeetCode contest history available.
+                              </p>
+                            )}
+                          </div>
+                        </div> */}
                       </CardContent>
                     </Card>
 
@@ -937,14 +1121,7 @@ const Lead = () => {
                         <div className="h-[300px]">
                           <ResponsiveContainer width="100%" height="100%">
                             <ReBarChart
-                              data={[
-                                { name: "Contest 1", rating: 1500 },
-                                { name: "Contest 2", rating: 1650 },
-                                { name: "Contest 3", rating: 1720 },
-                                { name: "Contest 4", rating: 1690 },
-                                { name: "Contest 5", rating: 1750 },
-                                { name: "Contest 6", rating: 1842 },
-                              ]}
+                              data={ratingData}
                               margin={{
                                 top: 20,
                                 right: 30,
@@ -1018,7 +1195,7 @@ const Lead = () => {
                                 Contests
                               </div>
                               <div className="text-xl font-bold text-white">
-                                {userData?.codeforcesData.contests.length}
+                                {userData?.codeforcesData?.contests?.length}
                               </div>
                             </div>
                             <div>
@@ -1026,7 +1203,7 @@ const Lead = () => {
                                 Problems
                               </div>
                               <div className="text-xl font-bold text-white">
-                                {userData?.codeforcesData.contests.length}
+                                {userData?.codeforcesData?.solvedCount}
                               </div>
                             </div>
                           </div>

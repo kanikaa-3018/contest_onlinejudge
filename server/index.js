@@ -3,6 +3,7 @@ const cors = require("cors");
 const dotenv = require("dotenv");
 const { exec } = require("child_process");
 const fs = require("fs");
+const axios=require("axios");
 const path = require("path");
 dotenv.config();
 const connectDB = require("./db/connectDB.js");
@@ -10,6 +11,7 @@ const progressRoutes = require("./routes/progress.js");
 const userRoutes = require("./routes/userRoutes.js");
 const questionRoutes= require("./routes/questionRoutes.js")
 const app = express();
+
 
 connectDB();
 
@@ -23,8 +25,20 @@ app.get("/", (req, res) => {
 
 app.use("/api/users", userRoutes);
 app.use("/api/progress", progressRoutes);
-app.use("/api/questions", questionRoutes)
+app.use("/api/questions", questionRoutes);
 
+//for global leaderboard
+app.get("/api/global-leaderboard", async (req, res) => {
+  try {
+    const response = await axios.get(
+      "https://codeforces.com/api/user.ratedList?activeOnly=true&includeRetired=false"
+    );
+    res.json(response.data.result);
+  } catch (error) {
+    console.error("Error fetching global leaderboard:", error.message);
+    res.status(500).json({ error: "Failed to fetch global leaderboard" });
+  }
+});
 
 
 app.use((err, req, res, next) => {
