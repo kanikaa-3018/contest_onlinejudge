@@ -184,49 +184,6 @@ const Contests = () => {
         <div className="flex-1 max-w-full mr-26">
           <MyCalendar />
         </div>
-
-        {/* <Tooltip>
-          <TooltipTrigger asChild>
-            <div onMouseLeave={() => setHoveredDate(null)} className="relative">
-              <motion.div
-                className="rounded-xl border border-[#31304D] shadow-lg text-[#F0ECE5] p-4 flex items-center justify-center text-center"
-                whileHover={{ scale: 1.05 }} // Adding hover scale effect
-                whileTap={{ scale: 0.95 }} // Adding tap effect
-              >
-                <DayPicker
-                  mode="single"
-                  onDayMouseEnter={handleDateHover}
-                  modifiers={{
-                    highlighted: allContests.map((c) => c.start),
-                  }}
-                  modifiersClassNames={{
-                    highlighted:
-                      "bg-[#31304D] text-white font-bold rounded-full",
-                  }}
-                  className="p-4"
-                />
-              </motion.div>
-            </div>
-          </TooltipTrigger>
-
-          
-          {hoveredDate && tooltipContent && (
-            <TooltipContent
-              side="bottom"
-              align="start"
-              className="bg-[#1E1E2E] text-white p-4 rounded-lg shadow-lg max-w-sm"
-            >
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.3 }}
-              >
-                <strong>Contests on {hoveredDate.toDateString()}</strong>
-                <p>{tooltipContent}</p>
-              </motion.div>
-            </TooltipContent>
-          )}
-        </Tooltip> */}
     
       </div>
 

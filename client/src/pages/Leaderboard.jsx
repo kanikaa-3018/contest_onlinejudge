@@ -23,6 +23,7 @@ const Leaderboard = () => {
   const [handles, setHandles] = useState({
     codeforces: "",
     github: "",
+    leetcode:"",
   });
   const [userData, setUserData] = useState(null);
   const [submitted, setSubmitted] = useState(false);
@@ -38,8 +39,14 @@ const Leaderboard = () => {
   const handleSubmit = async () => {
     setSubmitted(true);
     const codeforcesData = await fetchCodeforcesData(handles.codeforces);
+    let leetcodeData = null;
+    try {
+      leetcodeData = await fetchLeetCodeData(handles.leetcode);
+    } catch (error) {
+      console.error("LeetCode data not available:", error);
+    }
     const githubData = await fetchGithubData(handles.github);
-    setUserData({ codeforcesData, githubData });
+    setUserData({ codeforcesData, githubData, leetcodeData });
   };
 
   const fetchCodeforcesData = async (handle) => {
@@ -69,13 +76,12 @@ const Leaderboard = () => {
 
         if (!solvedSet.has(problemKey)) {
           solvedSet.add(problemKey);
-          // Count only first-time solves per problem per day
+          
           dailySolvesMap[date] = (dailySolvesMap[date] || 0) + 1;
         }
       }
     });
 
-    // Convert dailySolvesMap to array
     const dailySolves = Object.entries(dailySolvesMap).map(([date, count]) => ({
       date,
       count,
@@ -87,6 +93,37 @@ const Leaderboard = () => {
       solvedCount: solvedSet.size,
       dailySolves,
     };
+  };
+
+  const fetchLeetCodeData = async (handle) => {
+    try {
+      const profileResponse = await axios.get(
+        `https://alfa-leetcode-api.onrender.com/userProfile/${handle}`
+      );
+      const badgeResponse = await axios.get(
+        `https://alfa-leetcode-api.onrender.com/${handle}/badges`
+      );
+      const solvedResponse = await axios.get(
+        `https://alfa-leetcode-api.onrender.com/${handle}/solved`
+      );
+      const contestHistoryResponse = await axios.get(
+        `https://alfa-leetcode-api.onrender.com/${handle}/contest/history`
+      );
+      const submissionTreeResponse = await axios.get(
+        `https://alfa-leetcode-api.onrender.com/${handle}/acSubmission`
+      );
+
+      return {
+        profile: profileResponse.data,
+        badges: badgeResponse.data,
+        solved: solvedResponse.data,
+        contestHistory: contestHistoryResponse.data,
+        submissionTree: submissionTreeResponse.data,
+      };
+    } catch (error) {
+      console.error("Failed to fetch LeetCode data:", error);
+      return null;
+    }
   };
 
   const fetchGithubData = async (handle) => {
@@ -139,11 +176,17 @@ const Leaderboard = () => {
     <div className="p-6 bg-gradient-to-r from-[#161A30] via-[#1E1E2E] to-[#31304D] text-[#F0ECE5] min-h-screen">
       <h2 className="text-3xl font-bold mb-6">Developer Leaderboard</h2>
 
-      <div className="grid md:grid-cols-2 gap-4 mb-6">
+      <div className="grid md:grid-cols-3 gap-4 mb-6">
         <Input
           placeholder="Codeforces Handle"
           name="codeforces"
           value={handles.codeforces}
+          onChange={handleChange}
+        />
+        <Input
+          placeholder="LeetCode Handle"
+          name="leetcode"
+          value={handles.leetcode}
           onChange={handleChange}
         />
         <Input
@@ -152,6 +195,7 @@ const Leaderboard = () => {
           value={handles.github}
           onChange={handleChange}
         />
+
       </div>
 
       <Button
