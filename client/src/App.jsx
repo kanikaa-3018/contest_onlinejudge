@@ -32,9 +32,9 @@ function App() {
             <Route path="practice" element={<Practice />} />
             <Route path="questions" element={<QuestionsList />} />
             <Route path="editor/:id" element={<CodeEditor />} />
-            <Route path="leaderboard" element={<Leaderboard />} />
+            <Route path="leaderboard" element={<Lead />} />
             <Route path="learn" element={<Learn/>} />
-            <Route path="lead" element={<Lead/>}/>
+            
             <Route path="ai" element={<AIChatAgent/>}/>
           </Route>
           <Route path="/admin" element={<AdminDashboard />} />
