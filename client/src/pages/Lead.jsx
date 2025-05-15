@@ -391,18 +391,18 @@ const Lead = () => {
   const fetchLeetCodeContestHistory = async (handle) => {
     try {
       const response = await axios.get(
-        `https://alfa-leetcode-api.onrender.com/${handle}/contest/history`
+        `https://alfa-leetcode-api.onrender.com/userContestRankingInfo${handle}`
       );
 
       if (Array.isArray(response.data)) {
-        const contests = response.data;
+        const contests = response?.data?.userContestRankingHistory;
 
         const contestHistory = contests.map((contest) => ({
-          name: contest.title || "Unknown Contest",
-          rank: contest.rank || "N/A",
-          solved: contest.solvedProblems || 0,
-          totalProblems: contest.totalProblems || 0,
-          date: new Date((contest.timestamp || Date.now()) * 1000)
+          name: (contest?.attended) && contest?.contest?.title || "Unknown Contest",
+          rank: (contest?.attended) && contest.ranking || "N/A",
+          solved: (contest?.attended) && contest.problemsSolved || 0,
+          totalProblems: (contest?.attended) &&  contest.totalProblems || 0,
+          date: (contest?.attended) && new Date((contest?.contest?.startTime || Date.now()) * 1000)
             .toISOString()
             .split("T")[0],
         }));

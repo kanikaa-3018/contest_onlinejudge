@@ -13,10 +13,13 @@ import { User } from "lucide-react";
 
 const Profile = () => {
   const [userData, setUserData] = useState(null);
+  const [lcData, setLcData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [visibleSubmissions, setVisibleSubmissions] = useState(3);
   const [visibleContests, setVisibleContests] = useState(3);
   const handle = localStorage.getItem("cfHandle") || "tourist";
+  const leetcodeHandle = localStorage.getItem("lcHandle") || null;
+  console.log(leetcodeHandle);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -35,25 +38,69 @@ const Profile = () => {
             id: idx,
             name: c.contestName,
             rank: c.rank,
-            rating: `${c.newRating - c.oldRating >= 0 ? "+" : ""}${c.newRating - c.oldRating}`,
-            date: new Date(c.ratingUpdateTimeSeconds * 1000).toLocaleDateString(),
+            rating: `${c.newRating - c.oldRating >= 0 ? "+" : ""}${
+              c.newRating - c.oldRating
+            }`,
+            date: new Date(
+              c.ratingUpdateTimeSeconds * 1000
+            ).toLocaleDateString(),
             contestLink: `https://codeforces.com/contest/${c.contestId}`,
             standingsLink: `https://codeforces.com/contest/${c.contestId}/standings`,
           }));
 
-        const submissions = submissionsRes.data.result
-          .map((sub, idx) => ({
-            id: sub.id || idx,
-            problem: `${sub.problem.index}. ${sub.problem.name}`,
-            difficulty: sub.problem.rating || "N/A",
-            status: sub.verdict === "OK" ? "Accepted" : sub.verdict,
-            date: new Date(sub.creationTimeSeconds * 1000).toLocaleDateString(),
-            runtime: `${sub.timeConsumedMillis} ms`,
-            contestId: sub.contestId,
-            submissionId: sub.id,
-            problemLink: `https://codeforces.com/contest/${sub.contestId}/problem/${sub.problem.index}`,
-            submissionLink: `https://codeforces.com/contest/${sub.contestId}/submission/${sub.id}`,
-          }));
+        const submissions = submissionsRes.data.result.map((sub, idx) => ({
+          id: sub.id || idx,
+          problem: `${sub.problem.index}. ${sub.problem.name}`,
+          difficulty: sub.problem.rating || "N/A",
+          status: sub.verdict === "OK" ? "Accepted" : sub.verdict,
+          date: new Date(sub.creationTimeSeconds * 1000).toLocaleDateString(),
+          runtime: `${sub.timeConsumedMillis} ms`,
+          contestId: sub.contestId,
+          submissionId: sub.id,
+          problemLink: `https://codeforces.com/contest/${sub.contestId}/problem/${sub.problem.index}`,
+          submissionLink: `https://codeforces.com/contest/${sub.contestId}/submission/${sub.id}`,
+          platform: "Codeforces"
+        }));
+
+        let leetcodeContests = [];
+        let leetcodeSubmissions = [];
+
+        try {
+          const [lcContRes, lcSubRes] = await Promise.all([
+            axios.get(`https://alfa-leetcode-api.onrender.com/kanika_sin_08/contest/history`),
+            axios.get(`https://alfa-leetcode-api.onrender.com/kanika_sin_08/submission`),
+          ]);
+
+          if (lcContRes.data && lcContRes.data.contestHistory) {
+            leetcodeContests = lcContRes.data.contestHistory
+              .filter((contest) => contest.attended)
+              .map((contest, idx) => ({
+                id: idx,
+                name: contest.contest?.title || "Unknown Contest",
+                rank: contest.ranking || "N/A",
+                solved: contest.problemsSolved || 0,
+                totalProblems: contest.totalProblems || 0,
+                date: new Date((contest.contest?.startTime || Date.now()) * 1000).toLocaleDateString(),
+                platform: "LeetCode"
+              }));
+          }
+
+          if (lcSubRes.data && lcSubRes.data.submission) {
+            leetcodeSubmissions = lcSubRes.data.submission.map((sub, idx) => ({
+              id: idx,
+              problem: sub.title,
+              language: sub.lang,
+              status: sub.statusDisplay,
+              date: new Date(parseInt(sub.timestamp) * 1000).toLocaleDateString(),
+              link: `https://leetcode.com/problems/${sub.titleSlug}/`,
+              platform: "LeetCode"
+            }));
+          }
+        } catch (error) {
+          console.warn("LeetCode API fetch failed, skipping LeetCode data", error);
+        }
+          
+        
 
         setUserData({
           username: handle,
@@ -62,9 +109,11 @@ const Profile = () => {
           badge: userInfo.rank,
           rating: userInfo.rating,
           ranking: userInfo.maxRank,
-          recentSubmissions: submissions,
+          recentSubmissions: [...submissions, ...leetcodeSubmissions],
           contestHistory: contests,
+          leetcodeContests: leetcodeContests,
         });
+        console.log(userData.leetcodeContests);
         setLoading(false);
       } catch (err) {
         console.error("Failed to fetch Codeforces profile:", err);
@@ -73,12 +122,14 @@ const Profile = () => {
     };
 
     fetchUserData();
-  }, [handle]);
+  }, [handle, leetcodeHandle]);
 
-  const handleViewMoreSubmissions = () => setVisibleSubmissions((prev) => prev + 3);
+  const handleViewMoreSubmissions = () =>
+    setVisibleSubmissions((prev) => prev + 3);
   const handleViewMoreContests = () => setVisibleContests((prev) => prev + 3);
 
-  if (loading || !userData) return <div className="text-white p-6">Loading...</div>;
+  if (loading || !userData)
+    return <div className="text-white p-6">Loading...</div>;
 
   return (
     <div className="container py-6" style={{ backgroundColor: "#161A30" }}>
@@ -125,52 +176,76 @@ const Profile = () => {
         <div className="md:col-span-2">
           <Tabs defaultValue="submissions" className="space-y-4">
             <TabsList>
-              <TabsTrigger value="submissions" className="text-[#B6BBC4] hover:text-[#F0ECE5]">
+              <TabsTrigger
+                value="submissions"
+                className="text-[#B6BBC4] hover:text-[#F0ECE5]"
+              >
                 Submissions
               </TabsTrigger>
-              <TabsTrigger value="contests" className="text-[#B6BBC4] hover:text-[#F0ECE5]">
-                Contests
+              <TabsTrigger
+                value="contests"
+                className="text-[#B6BBC4] hover:text-[#F0ECE5]"
+              >
+                Codeforces Contests
+              </TabsTrigger>
+              <TabsTrigger
+                value="lcContests"
+                className="text-[#B6BBC4] hover:text-[#F0ECE5]"
+              >
+                Leetcode Contests
               </TabsTrigger>
             </TabsList>
 
             <TabsContent value="submissions">
-              {userData.recentSubmissions.slice(0, visibleSubmissions).map((sub) => (
-                <Card key={sub.id} className="mb-4 bg-[#31304D] text-[#B6BBC4]">
-                  <CardHeader>
-                    <a
-                      href={sub.problemLink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-[#F0ECE5] text-lg hover:underline"
-                    >
-                      {sub.problem}
-                    </a>
-                    <CardDescription className="-mb-2">
-                      <span className="font-bold">Date:</span> {sub.date}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <Badge
-                      className={`text-[#F0ECE5] mb-1 -mt-2 ${
-                        sub.status === "Accepted" ? "bg-[#4CAF50]" : "bg-[#EF4444]"
-                      }`}
-                    >
-                      {sub.status}
-                    </Badge>
-                    <div>Difficulty: {sub.difficulty} • Runtime: {sub.runtime}</div>
-                    <div className="mt-1 text-xs underline text-blue-400">
+              {userData.recentSubmissions
+                .slice(0, visibleSubmissions)
+                .map((sub) => (
+                  <Card
+                    key={sub.id}
+                    className="mb-4 bg-[#31304D] text-[#B6BBC4]"
+                  >
+                    <CardHeader>
+                      <div className="flex justify-between items-center">
                       <a
-                        href={sub.submissionLink}
+                        href={sub.problemLink}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="hover:text-white"
+                        className="text-[#F0ECE5] text-lg hover:underline"
                       >
-                        View Submission
+                        {sub.problem}
                       </a>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+                      <Badge className="text-black bg-[rgb(254,254,254,0.3)] rounded-sm hover:text-white hover:bg-[rgb(255,255,255,0.1)]">{sub.platform}</Badge>
+                      </div>
+                      <CardDescription className="-mb-2">
+                        <span className="font-bold">Date:</span> {sub.date}
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <Badge
+                        className={`text-[#F0ECE5] mb-1 -mt-2 ${
+                          sub.status === "Accepted"
+                            ? "bg-[#4CAF50]"
+                            : "bg-[#EF4444]"
+                        }`}
+                      >
+                        {sub.status}
+                      </Badge>
+                      <div>
+                        Difficulty: {sub.difficulty} • Runtime: {sub.runtime}
+                      </div>
+                      <div className="mt-1 text-xs underline text-blue-400">
+                        <a
+                          href={sub.submissionLink}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="hover:text-white"
+                        >
+                          View Submission
+                        </a>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
               {visibleSubmissions < userData.recentSubmissions.length && (
                 <button
                   onClick={handleViewMoreSubmissions}
@@ -182,34 +257,41 @@ const Profile = () => {
             </TabsContent>
 
             <TabsContent value="contests">
-              {userData.contestHistory.slice(0, visibleContests).map((contest) => (
-                <Card key={contest.id} className="mb-4 bg-[#31304D] text-[#B6BBC4]">
-                  <CardHeader>
-                    <a
-                      href={contest.contestLink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-[#F0ECE5] text-lg hover:underline"
-                    >
-                      {contest.name}
-                    </a>
-                    <CardDescription>{contest.date}</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div>Rank: {contest.rank} • Rating Change: {contest.rating}</div>
-                    <div className="mt-1 text-xs underline text-blue-400">
+              {userData.contestHistory
+                .slice(0, visibleContests)
+                .map((contest) => (
+                  <Card
+                    key={contest.id}
+                    className="mb-4 bg-[#31304D] text-[#B6BBC4]"
+                  >
+                    <CardHeader>
                       <a
-                        href={contest.standingsLink}
+                        href={contest.contestLink}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="hover:text-white"
+                        className="text-[#F0ECE5] text-lg hover:underline"
                       >
-                        View Standings
+                        {contest.name}
                       </a>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+                      <CardDescription>{contest.date}</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div>
+                        Rank: {contest.rank} • Rating Change: {contest.rating}
+                      </div>
+                      <div className="mt-1 text-xs underline text-blue-400">
+                        <a
+                          href={contest.standingsLink}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="hover:text-white"
+                        >
+                          View Standings
+                        </a>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
               {visibleContests < userData.contestHistory.length && (
                 <button
                   onClick={handleViewMoreContests}
@@ -217,6 +299,32 @@ const Profile = () => {
                 >
                   View More
                 </button>
+              )}
+            </TabsContent>
+            <TabsContent value="lcContests">
+              {userData.leetcodeContests &&
+              userData.leetcodeContests.length > 0 ? (
+                userData?.leetcodeContests?.map((contest) => (
+                  <Card
+                    key={contest.id}
+                    className="mb-4 bg-[#31304D] text-[#B6BBC4]"
+                  >
+                    <CardHeader>
+                      <CardTitle className="text-[#F0ECE5] text-lg hover:underline">{contest?.name}</CardTitle>
+                      <CardDescription>{contest?.date}</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <p>Rank: {contest?.rank} • Solved: {contest?.solved} / {contest?.totalProblems}</p>
+                      
+        
+                      
+                    </CardContent>
+                  </Card>
+                ))
+              ) : (
+                <div className="text-white">
+                  No LeetCode contest data available
+                </div>
               )}
             </TabsContent>
           </Tabs>

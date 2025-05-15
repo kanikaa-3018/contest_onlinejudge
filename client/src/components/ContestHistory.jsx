@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 
 const ContestHistory = ({ cfcontests = [], lcContests = [] }) => {
-  // State to track how many contests to show initially & increment on "Show More"
   const [cfVisible, setCfVisible] = useState(3);
   const [lcVisible, setLcVisible] = useState(3);
 
