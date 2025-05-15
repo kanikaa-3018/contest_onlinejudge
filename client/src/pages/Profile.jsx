@@ -13,7 +13,6 @@ import { User } from "lucide-react";
 
 const Profile = () => {
   const [userData, setUserData] = useState(null);
-  const [lcData, setLcData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [visibleSubmissions, setVisibleSubmissions] = useState(3);
   const [visibleContests, setVisibleContests] = useState(3);
@@ -64,12 +63,23 @@ const Profile = () => {
 
         let leetcodeContests = [];
         let leetcodeSubmissions = [];
+        let leetcodeData=null;
 
         try {
-          const [lcContRes, lcSubRes] = await Promise.all([
+          const [lcContRes, lcSubRes, lcProfileRes] = await Promise.all([
             axios.get(`https://alfa-leetcode-api.onrender.com/kanika_sin_08/contest/history`),
             axios.get(`https://alfa-leetcode-api.onrender.com/kanika_sin_08/submission`),
+            axios.get(`https://alfa-leetcode-api.onrender.com/kanika_sin_08`),
           ]);
+
+          leetcodeData = {
+            username: lcProfileRes.data.username,
+            rating: lcProfileRes.data.userContestRanking?.rating || "N/A",
+            globalRanking: lcProfileRes.data.ranking || "N/A",
+            attendedContests: lcProfileRes.data.userContestRanking?.attendedContestsCount || 0,
+            topPercentage: lcProfileRes.data.userContestRanking?.topPercentage || "N/A",
+            profileLink: `https://leetcode.com/${leetcodeHandle}`,
+          };
 
           if (lcContRes.data && lcContRes.data.contestHistory) {
             leetcodeContests = lcContRes.data.contestHistory
