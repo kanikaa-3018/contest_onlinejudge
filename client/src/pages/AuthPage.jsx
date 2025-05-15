@@ -12,6 +12,7 @@ const AuthPage = () => {
     email: "",
     password: "",
     cfHandle: "",
+    lcHandle: "",
     role: "user",
   });
   const [error, setError] = useState("");
@@ -41,7 +42,8 @@ const AuthPage = () => {
       ? {
           email: formData.email,
           password: formData.password,
-          cfHandle: formData.cfHandle, // CF Handle for login
+          cfHandle: formData.cfHandle,
+          lcHandle: formData. lcHandle,
         }
       : {
           name: formData.username,
@@ -49,18 +51,20 @@ const AuthPage = () => {
           email: formData.email,
           password: formData.password,
           cfHandle: formData.cfHandle,
+          lcHandle: formData. lcHandle,
           role: formData.role,
         };
 
     try {
       const res = await axios.post(url, payload);
-      const { token, _id, role, cfHandle } = res.data;
+      const { token, _id, role, cfHandle, lcHandle } = res.data;
 
       localStorage.setItem("token", token);
       localStorage.setItem("userId", _id);
       localStorage.setItem("user", JSON.stringify(res.data));
       localStorage.setItem("cfHandle", cfHandle || formData.cfHandle);
       localStorage.setItem("role", role);
+      localStorage.setItem("lchandle", lcHandle || formData.lcHandle);
 
       navigate(role === "admin" ? "/admin" : "/");
     } catch (err) {
@@ -76,7 +80,9 @@ const AuthPage = () => {
             {isLogin ? "Login" : "Register"}
           </h2>
 
-          {error && <p className="text-red-400 text-center text-sm mb-4">{error}</p>}
+          {error && (
+            <p className="text-red-400 text-center text-sm mb-4">{error}</p>
+          )}
 
           <form onSubmit={handleSubmit} className="space-y-6">
             {!isLogin && (
@@ -93,6 +99,13 @@ const AuthPage = () => {
                   placeholder="Codeforces Handle"
                   className="bg-[#31304D] text-[#F0ECE5] focus:ring-2 focus:ring-[#00C8A9] transition-all"
                   value={formData.cfHandle}
+                  onChange={handleChange}
+                />
+                <Input
+                  name="lcHandle"
+                  placeholder="Leetcode Handle"
+                  className="bg-[#31304D] text-[#F0ECE5] focus:ring-2 focus:ring-[#00C8A9] transition-all"
+                  value={formData.lcHandle}
                   onChange={handleChange}
                 />
                 <select
@@ -128,6 +141,15 @@ const AuthPage = () => {
                 placeholder="Codeforces Handle (for login)"
                 className="bg-[#31304D] text-[#F0ECE5] focus:ring-2 focus:ring-[#00C8A9] transition-all"
                 value={formData.cfHandle}
+                onChange={handleChange}
+              />
+            )}
+            {isLogin && (
+              <Input
+                name="lcHandle"
+                placeholder="Leetcode Handle"
+                className="bg-[#31304D] text-[#F0ECE5] focus:ring-2 focus:ring-[#00C8A9] transition-all"
+                value={formData.lcHandle}
                 onChange={handleChange}
               />
             )}
