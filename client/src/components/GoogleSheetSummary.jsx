@@ -9,67 +9,25 @@ const GoogleSheetSummary = () => {
     <>
       <style>
         {`
-          .container {
-            display: flex;
-            justify-content: center;
-            gap: 1.5rem;
-            margin-top: 3rem;
-            animation: fadeIn 0.8s ease forwards;
-            opacity: 0;
-            flex-wrap: wrap;
-          }
           @keyframes fadeIn {
+            from { opacity: 0; }
             to { opacity: 1; }
           }
-          .btn {
-            padding: 14px 32px;
-            font-size: 17px;
-            font-weight: 600;
-            border: none;
-            border-radius: 14px;
-            cursor: pointer;
-            color: white;
-            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.18);
-            transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            user-select: none;
-          }
-          .btn-google {
-            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
-          }
-          .btn-google:hover {
-            transform: scale(1.07);
-            box-shadow: 0 16px 32px rgba(38, 72, 224, 0.4);
-          }
-          .btn-notion {
-            background: linear-gradient(135deg, #000000 0%, #434343 100%);
-          }
-          .btn-notion:hover {
-            transform: scale(1.07);
-            box-shadow: 0 16px 32px rgba(68, 68, 68, 0.5);
-          }
-          .btn svg {
-            width: 20px;
-            height: 20px;
-            fill: currentColor;
-          }
-          @media (max-width: 480px) {
-            .container {
-              flex-direction: column;
-              gap: 1rem;
-            }
-            .btn {
-              width: 100%;
-              justify-content: center;
-            }
+          .fade-in {
+            animation: fadeIn 0.8s ease forwards;
           }
         `}
       </style>
-      <div className="container">
+
+      <div className="flex flex-wrap justify-center gap-6 mt-4 opacity-0 fade-in flex-row">
         <button
-          className="btn btn-google"
+          className="flex items-center gap-2 px-8 py-3 text-lg font-semibold rounded-2xl text-white cursor-pointer
+            bg-gradient-to-br from-purple-700 to-blue-600
+            shadow-lg shadow-blue-500/30
+            transition-transform duration-300 ease-in-out
+            hover:scale-105 hover:shadow-blue-600/50
+            select-none
+            sm:w-full sm:justify-center"
           onClick={() => window.open(sheetUrl, "_blank")}
           aria-label="Open Google Sheets Daily CP Summary"
         >
@@ -77,12 +35,22 @@ const GoogleSheetSummary = () => {
         </button>
 
         <button
-          className="btn btn-notion"
+          className="flex items-center gap-2 px-8 py-3 text-lg font-semibold rounded-2xl text-white cursor-pointer
+            bg-gradient-to-br from-black to-gray-700
+            shadow-lg shadow-gray-700/40
+            transition-transform duration-300 ease-in-out
+            hover:scale-105 hover:shadow-gray-900/60
+            select-none
+            sm:w-full sm:justify-center"
           onClick={() => window.open(notionUrl, "_blank")}
           aria-label="Open Notion Page"
         >
-          {/* Notion Icon SVG */}
-          <svg viewBox="0 0 256 256" aria-hidden="true" focusable="false">
+          <svg
+            className="w-5 h-5 fill-current"
+            viewBox="0 0 256 256"
+            aria-hidden="true"
+            focusable="false"
+          >
             <path d="M24 24h208v208H24z" fill="none" />
             <path d="M120 40v176h32V40zM96 80v112h24V80zM56 120v56h24v-56z" />
           </svg>

@@ -10,9 +10,8 @@ const connectDB = require("./db/connectDB.js");
 const progressRoutes = require("./routes/progress.js");
 const userRoutes = require("./routes/userRoutes.js");
 const questionRoutes= require("./routes/questionRoutes.js")
+
 const app = express();
-
-
 connectDB();
 
 app.use(cors());
@@ -26,6 +25,7 @@ app.get("/", (req, res) => {
 app.use("/api/users", userRoutes);
 app.use("/api/progress", progressRoutes);
 app.use("/api/questions", questionRoutes);
+
 
 //for global leaderboard
 app.get("/api/global-leaderboard", async (req, res) => {

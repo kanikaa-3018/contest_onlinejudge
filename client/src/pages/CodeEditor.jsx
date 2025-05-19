@@ -41,6 +41,7 @@ const languageMap = {
 const CodeEditor = () => {
   const { id } = useParams();
   const [question, setQuestion] = useState(null);
+  const [hint, setHint] = useState([]);
   const [language, setLanguage] = useState("C++");
   const [code, setCode] = useState(boilerplates["cpp"]);
   const [input, setInput] = useState("");
@@ -66,6 +67,22 @@ const CodeEditor = () => {
   const handleLanguageChange = (value) => {
     setLanguage(value);
     setCode(boilerplates[languageMap[value]]);
+  };
+
+  // Example API call to your backend when user clicks "Generate Hint"
+  const generateHint = async (questionID) => {
+    try {
+      console.log(questionID)
+      const response = await fetch(
+        `http://localhost:8080/api/questions/hint/${questionID}`,
+        { method: "GET" }
+      );
+      
+      const data = await response.json();
+      setHint(data.hint || "No hint available.");
+    } catch (err) {
+      setHint("Error fetching hint.");
+    }
   };
 
   const handleRun = async () => {
@@ -186,6 +203,24 @@ const CodeEditor = () => {
                 )}
               </div>
             ))}
+            <div className="mt-6">
+              <Button variant="outline" onClick={() => generateHint(id)}>
+                💡 Generate Hint
+              </Button>
+
+              {hint.length > 0 && (
+                <div className="mt-4 p-4 border border-blue-500 rounded-lg bg-[#10131c]">
+                  <h3 className="text-lg font-semibold text-blue-300 mb-2">
+                    Hints:
+                  </h3>
+                  <ul className="list-disc list-inside space-y-2 text-gray-300">
+                    {hint.split("\n").map((line, idx) => (
+                      <p key={idx}>{line}</p>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Right Panel */}

@@ -1,9 +1,15 @@
 const express = require("express");
 const router = express.Router();
 const { isAdmin } = require("../middlewares/authMiddleware");
-const Question = require("../models/questionModel.js")
-const axios=require("axios")
+const Question = require("../models/questionModel.js");
+const axios = require("axios");
+const dotenv = require("dotenv");
+dotenv.config();
+const OpenAI = require("openai");
 
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
 // GET all questions
 router.get("/", async (req, res) => {
   const questions = await Question.find();
@@ -11,20 +17,22 @@ router.get("/", async (req, res) => {
 });
 
 // POST new question
-router.post("/",isAdmin, async (req, res) => {
+router.post("/", isAdmin, async (req, res) => {
   const question = new Question(req.body);
   await question.save();
   res.status(201).json(question);
 });
 
 // PUT update question
-router.put("/:id",isAdmin, async (req, res) => {
-  const updated = await Question.findByIdAndUpdate(req.params.id, req.body, { new: true });
+router.put("/:id", isAdmin, async (req, res) => {
+  const updated = await Question.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+  });
   res.json(updated);
 });
 
 // DELETE a question
-router.delete("/:id",isAdmin, async (req, res) => {
+router.delete("/:id", isAdmin, async (req, res) => {
   await Question.findByIdAndDelete(req.params.id);
   res.json({ message: "Deleted" });
 });
@@ -32,7 +40,7 @@ router.delete("/:id",isAdmin, async (req, res) => {
 router.get("/:id", async (req, res) => {
   try {
     const question = await Question.findById(req.params.id);
-    console.log(question)
+    console.log(question);
     if (!question) {
       return res.status(404).json({ message: "Question not found" });
     }
@@ -82,47 +90,86 @@ router.post("/:id/submit", async (req, res) => {
   }
 });
 
-// POST hints for a question
-router.post("/:id/hints", isAdmin, async (req, res) => {
-  const { hints } = req.body;  // expects an array of strings
-
-  if (!Array.isArray(hints)) {
-    return res.status(400).json({ message: "Hints should be an array" });
-  }
-
+router.get("/hint/:id", async (req, res) => {
   try {
     const question = await Question.findById(req.params.id);
-    if (!question) return res.status(404).json({ message: "Question not found" });
+    if (!question) return res.status(404).json({ error: "Question not found" });
 
-    question.hints = hints;
-    await question.save();
-
-    res.json({ message: "Hints saved successfully" });
+    // Return problem title and description
+    res.json({ 
+      id: question._id,
+      title: question.title, 
+      description: question.description 
+    });
+    
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error("Error generating hint:", error.response?.data || error.message);
+    res.status(500).json({ error: "Failed to generate hint" });
   }
 });
 
-// POST test cases for a question
-router.post("/:id/testcases", isAdmin, async (req, res) => {
-  const { testCases } = req.body;  // expects array of {input, output}
 
-  if (!Array.isArray(testCases)) {
-    return res.status(400).json({ message: "Test cases should be an array" });
-  }
-
+router.put('/hint/:id', async (req, res) => {
   try {
-    const question = await Question.findById(req.params.id);
-    if (!question) return res.status(404).json({ message: "Question not found" });
+    const questionId = req.params.id;
+    const { hints } = req.body; 
+    
+    console.log('Received hints:', hints);
+    if (!Array.isArray(hints)) {
+      return res.status(400).json({ message: "Hints must be an array" });
+    }
 
-    question.testCases = testCases;
-    await question.save();
+    const question = await Question.findByIdAndUpdate(
+      questionId,
+      { hints },
+      { new: true }
+    );
 
-    res.json({ message: "Test cases saved successfully" });
+    if (!question) {
+      return res.status(404).json({ message: "Question not found" });
+    }
+
+    res.json(question);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
   }
 });
 
+
+
+// router.get('/hint/:id', async (req, res) => {
+//   try {
+//     const question = await Question.findById(req.params.id);
+//     if (!question) return res.status(404).json({ error: 'Question not found' });
+
+//     const prompt = `
+//       You are a helpful coding assistant. Provide a single useful hint to solve the following coding problem without giving the full answer.
+
+//       Problem Title: ${question.title}
+//       Problem Description: ${question.description}
+
+//       Hint:
+//     `;
+
+//     const response = await openai.chat.completions.create({
+//       model: "gpt-3.5-turbo",
+//       messages: [
+//         {
+//           role: "user",
+//           content: prompt,
+//         },
+//       ],
+//       temperature: 0.5,
+//       max_tokens: 100,
+//     });
+
+//     const hint = response.choices[0].message.content.trim();
+//     res.json({ hint });
+//   } catch (err) {
+//     console.error("Error generating hint:", err.message);
+//     res.status(500).json({ error: 'Failed to generate hint' });
+//   }
+// });
 
 module.exports = router;

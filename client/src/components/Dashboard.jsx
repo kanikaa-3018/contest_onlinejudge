@@ -131,7 +131,7 @@ export const Dashboard = () => {
         <h1 className="text-3xl font-bold tracking-tight text-[#00FFC6] text-center">
           Welcome back, User
         </h1>
-        <p className="text-sm text-gray-400 -mb-12">
+        <p className="text-sm text-gray-400 text-center ">
           Track your progress, join contests, and improve your coding skills
         </p>
         
