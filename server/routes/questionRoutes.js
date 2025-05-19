@@ -82,4 +82,47 @@ router.post("/:id/submit", async (req, res) => {
   }
 });
 
+// POST hints for a question
+router.post("/:id/hints", isAdmin, async (req, res) => {
+  const { hints } = req.body;  // expects an array of strings
+
+  if (!Array.isArray(hints)) {
+    return res.status(400).json({ message: "Hints should be an array" });
+  }
+
+  try {
+    const question = await Question.findById(req.params.id);
+    if (!question) return res.status(404).json({ message: "Question not found" });
+
+    question.hints = hints;
+    await question.save();
+
+    res.json({ message: "Hints saved successfully" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// POST test cases for a question
+router.post("/:id/testcases", isAdmin, async (req, res) => {
+  const { testCases } = req.body;  // expects array of {input, output}
+
+  if (!Array.isArray(testCases)) {
+    return res.status(400).json({ message: "Test cases should be an array" });
+  }
+
+  try {
+    const question = await Question.findById(req.params.id);
+    if (!question) return res.status(404).json({ message: "Question not found" });
+
+    question.testCases = testCases;
+    await question.save();
+
+    res.json({ message: "Test cases saved successfully" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+
 module.exports = router;

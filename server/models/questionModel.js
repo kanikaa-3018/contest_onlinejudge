@@ -10,6 +10,7 @@ const questionSchema = new mongoose.Schema({
   description: String,
   constraints: String,
   testCases: [testCaseSchema],
+  hints: [String], 
 });
 
 module.exports = mongoose.model("Question", questionSchema);
