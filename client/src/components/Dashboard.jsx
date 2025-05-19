@@ -17,6 +17,7 @@ import RecentSubmissions from "./RecentSubmissions";
 import ContestHistoryLeaderboard from "./ContestHistoryLeaderboard";
 import StatsDashboard from "./StatsDashboard";
 import VSCodeTypewriter from "./VSCodeTypewriter";
+import GoogleSheetSummary from "./GoogleSheetSummary";
 
 export const Dashboard = () => {
   const userData = localStorage.getItem("user");
@@ -116,7 +117,9 @@ export const Dashboard = () => {
           ))}
         </div>
       </motion.div>
+      
       <VSCodeTypewriter />
+      
 
       {/* Greeting Section */}
       <motion.div
@@ -125,14 +128,15 @@ export const Dashboard = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4, duration: 0.6 }}
       >
-        <h1 className="text-3xl font-bold tracking-tight text-[#00FFC6]">
+        <h1 className="text-3xl font-bold tracking-tight text-[#00FFC6] text-center">
           Welcome back, User
         </h1>
-        <p className="text-sm text-gray-400">
+        <p className="text-sm text-gray-400 -mb-12">
           Track your progress, join contests, and improve your coding skills
         </p>
+        
       </motion.div>
-
+      <GoogleSheetSummary/>
       {/* Main Dashboard Grid */}
       <motion.div
         className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 items-stretch"
@@ -190,6 +194,8 @@ export const Dashboard = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.7 }}
       >
+
+      
         <ContestHistoryLeaderboard />
       </motion.div>
     </motion.div>
