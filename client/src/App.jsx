@@ -17,6 +17,9 @@ import Learn from "./pages/Learn.jsx";
 import AIChatAgent from "./components/AIChatAgent.jsx"
 import MyCalendar from "./components/MyCalendar.jsx";
 import Lead from "./pages/Lead.jsx";
+import Internship from "./pages/Internship.jsx"
+
+
 const queryClient = new QueryClient();
 function App() {
   return (
@@ -34,6 +37,7 @@ function App() {
             <Route path="editor/:id" element={<CodeEditor />} />
             <Route path="leaderboard" element={<Lead />} />
             <Route path="learn" element={<Learn/>} />
+            <Route path="intern" element={<Internship/>}/>
             
             <Route path="ai" element={<AIChatAgent/>}/>
           </Route>

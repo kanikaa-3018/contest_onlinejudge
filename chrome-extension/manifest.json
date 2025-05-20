@@ -1,0 +1,10 @@
+{
+  "manifest_version": 3,
+  "name": "Internship Tracker",
+  "version": "1.0",
+  "permissions": ["scripting", "activeTab"],
+  "host_permissions": ["<all_urls>"],
+  "action": {
+    "default_popup": "popup.html"
+  }
+}
