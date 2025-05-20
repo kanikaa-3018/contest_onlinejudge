@@ -10,6 +10,16 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { User } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 const Profile = () => {
   const [userData, setUserData] = useState({
@@ -19,9 +29,18 @@ const Profile = () => {
     badge: "",
     rating: null,
     ranking: "",
+    leetcodeUsername: "", // NEW
+    leetcodeRating: "", // NEW
+    leetcodeRanking: "", // NEW
+    leetcodeTopPercentage: "", // NEW
     recentSubmissions: [],
     contestHistory: [],
     leetcodeContests: [],
+  });
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [formData, setFormData] = useState({
+    cfUsername: userData.username || "",
+    lcUsername: "",
   });
   const [loading, setLoading] = useState(true);
   const [visibleSubmissions, setVisibleSubmissions] = useState(3);
@@ -117,21 +136,23 @@ const Profile = () => {
           // console.log("con",leetcodeContests)
 
           if (lcSubRes.data && lcSubRes.data.submission) {
-            leetcodeSubmissions=lcSubRes.data?.submission?.map((sub, idx) => ({
-              id: `lc${idx}`,
-              problem: sub.title,
-              language: sub.lang,
-              status: sub.statusDisplay,
-              date: new Date(
-                parseInt(sub.timestamp) * 1000
-              ).toLocaleDateString(),
-              timestamp: parseInt(sub.timestamp) * 1000,
-              problemLink: `https://leetcode.com/problems/${sub.titleSlug}/`,
-              submissionLink: `https://leetcode.com/submissions/detail/${
-                sub.id || idx
-              }/`,
-              platform: "LeetCode",
-            }))
+            leetcodeSubmissions = lcSubRes.data?.submission?.map(
+              (sub, idx) => ({
+                id: `lc${idx}`,
+                problem: sub.title,
+                language: sub.lang,
+                status: sub.statusDisplay,
+                date: new Date(
+                  parseInt(sub.timestamp) * 1000
+                ).toLocaleDateString(),
+                timestamp: parseInt(sub.timestamp) * 1000,
+                problemLink: `https://leetcode.com/problems/${sub.titleSlug}/`,
+                submissionLink: `https://leetcode.com/submissions/detail/${
+                  sub.id || idx
+                }/`,
+                platform: "LeetCode",
+              })
+            );
           }
 
           // console.log("sub", leetcodeSubmissions)
@@ -170,6 +191,23 @@ const Profile = () => {
     fetchUserData();
   }, [handle, leetcodeHandle]);
 
+  const handleUpdateUsername = async (e) => {
+    e.preventDefault();
+    try {
+      await axios.post("/api/user/update-handles", {
+        codeforces: formData.cfUsername,
+        leetcode: formData.lcUsername,
+      });
+
+      setUserData((prev) => ({
+        ...prev,
+        username: formData.cfUsername,
+      }));
+      setEditModalOpen(false);
+    } catch (err) {
+      console.error("Error updating usernames:", err);
+    }
+  };
   const handleViewMoreSubmissions = () =>
     setVisibleSubmissions((prev) => prev + 3);
   const handleViewMoreContests = () => setVisibleContests((prev) => prev + 3);
@@ -181,38 +219,65 @@ const Profile = () => {
     <div className="container py-6" style={{ backgroundColor: "#161A30" }}>
       <div className="grid gap-6 md:grid-cols-3">
         <div className="md:col-span-1 px-4">
-          <Card className="bg-[#161A30] text-[#B6BBC4]">
-            <CardHeader className="pb-2 px-4">
-              <div className="flex justify-center mb-4">
-                <div className="rounded-full bg-[#31304D] p-6 w-24 h-24 flex items-center justify-center">
+          <Card className="bg-[#161A30] text-[#B6BBC4] shadow-lg rounded-2xl overflow-hidden">
+            <div className="bg-gradient-to-r from-indigo-500 to-purple-600 h-28 relative">
+              <div className="absolute -bottom-12 left-1/2 transform -translate-x-1/2">
+                <div className="rounded-full bg-[#31304D] p-4 w-24 h-24 flex items-center justify-center border-4 border-[#161A30]">
                   <User className="h-12 w-12 text-[#F0ECE5]" />
                 </div>
               </div>
-              <CardTitle className="text-center text-[#F0ECE5]">
-                {userData.username}
+            </div>
+
+            <CardHeader className="pt-16 pb-2 px-4 text-center">
+              <CardTitle className="text-[#F0ECE5] text-xl">
+                {userData.username || "Your Handle"}
               </CardTitle>
-              <CardDescription className="text-center text-[#B6BBC4]">
+              <CardDescription className="text-[#B6BBC4]">
                 {userData.name} • {userData.country}
               </CardDescription>
+              <button
+                onClick={() => setEditModalOpen(true)}
+                className="text-xs text-blue-400 underline mt-1 hover:text-white"
+              >
+                Edit Username
+              </button>
             </CardHeader>
+
             <CardContent>
-              <div className="flex justify-center mb-2">
-                <Badge className="text-sm bg-[#31304D] text-[#F0ECE5]">
-                  {userData.badge}
-                </Badge>
+              <div className="flex justify-center mb-3 gap-2">
+                {userData.badge && (
+                  <Badge className="text-sm bg-[#31304D] text-[#F0ECE5]">
+                    {userData.badge}
+                  </Badge>
+                )}
               </div>
-              <div className="grid grid-cols-2 gap-4 mt-6">
-                <div className="flex flex-col items-center">
-                  <span className="text-sm text-[#B6BBC4]">Ranking</span>
-                  <span className="text-xl font-bold text-[#F0ECE5]">
-                    {userData.ranking}
-                  </span>
+
+              <div className="grid grid-cols-2 gap-4 mt-6 text-center">
+                <div>
+                  <div className="text-sm text-[#B6BBC4]">CF Rating</div>
+                  <div className="text-xl font-bold text-[#F0ECE5]">
+                    {userData.rating ?? "N/A"}
+                  </div>
                 </div>
-                <div className="flex flex-col items-center">
-                  <span className="text-sm text-[#B6BBC4]">Rating</span>
-                  <span className="text-xl font-bold text-[#F0ECE5]">
-                    {userData.rating}
-                  </span>
+                <div>
+                  <div className="text-sm text-[#B6BBC4]">Ranking</div>
+                  <div className="text-xl font-bold text-[#F0ECE5]">
+                    {userData.ranking || "N/A"}
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-6 text-sm text-center">
+                <div className="mb-2">Recent Submissions</div>
+                <div className="flex flex-wrap justify-center gap-2">
+                  {userData.recentSubmissions.slice(0, 4).map((sub, idx) => (
+                    <Badge
+                      key={idx}
+                      className="bg-[#31304D] text-[#F0ECE5] text-xs"
+                    >
+                      {sub.platform}: {sub.problem}
+                    </Badge>
+                  ))}
                 </div>
               </div>
             </CardContent>
@@ -391,6 +456,39 @@ const Profile = () => {
           </Tabs>
         </div>
       </div>
+
+      {setEditModalOpen && (
+        <Dialog open={editModalOpen} onOpenChange={setEditModalOpen}>
+          <DialogContent className="bg-[#1A1B2E] text-white">
+            <DialogHeader>
+              <DialogTitle>Update Platform Handles</DialogTitle>
+            </DialogHeader>
+            <form onSubmit={handleUpdateUsername} className="space-y-4 mt-2">
+              <Label htmlFor="cf">Codeforces Handle</Label>
+              <Input
+                id="cf"
+                value={formData.cfUsername}
+                onChange={(e) =>
+                  setFormData({ ...formData, cfUsername: e.target.value })
+                }
+              />
+
+              <Label htmlFor="lc">LeetCode Username</Label>
+              <Input
+                id="lc"
+                value={formData.lcUsername}
+                onChange={(e) =>
+                  setFormData({ ...formData, lcUsername: e.target.value })
+                }
+              />
+
+              <Button type="submit" className="mt-2 w-full">
+                Save & Update
+              </Button>
+            </form>
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   );
 };
