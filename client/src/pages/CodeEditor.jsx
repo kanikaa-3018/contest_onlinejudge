@@ -41,7 +41,7 @@ const languageMap = {
 const CodeEditor = () => {
   const { id } = useParams();
   const [question, setQuestion] = useState(null);
-  const [hint, setHint] = useState([]);
+  const [hints, setHints] = useState([]);
   const [language, setLanguage] = useState("C++");
   const [code, setCode] = useState(boilerplates["cpp"]);
   const [input, setInput] = useState("");
@@ -69,19 +69,35 @@ const CodeEditor = () => {
     setCode(boilerplates[languageMap[value]]);
   };
 
-  // Example API call to your backend when user clicks "Generate Hint"
   const generateHint = async (questionID) => {
     try {
-      console.log(questionID)
       const response = await fetch(
-        `http://localhost:8080/api/questions/hint/${questionID}`,
-        { method: "GET" }
+        `http://localhost:8080/api/questions/generate-hints/${questionID}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
       );
-      
+
       const data = await response.json();
-      setHint(data.hint || "No hint available.");
+
+      // Normalize and extract hints from the response
+      if (typeof data.hints === "string") {
+        const hintArray = data.hints
+          .split(/\d+\.\s+/)
+          .map((hint) => hint.trim())
+          .filter((hint) => hint.length > 0);
+        setHints(hintArray);
+      } else if (Array.isArray(data.hints)) {
+        setHints(data.hints.map((h) => h.trim()));
+      }
+
+      console.log("hints", data.hints);
     } catch (err) {
-      setHint("Error fetching hint.");
+      console.error("Error fetching hints:", err);
+      setHints(["Error fetching hint."]);
     }
   };
 
@@ -208,14 +224,12 @@ const CodeEditor = () => {
                 💡 Generate Hint
               </Button>
 
-              {hint.length > 0 && (
-                <div className="mt-4 p-4 border border-blue-500 rounded-lg bg-[#10131c]">
-                  <h3 className="text-lg font-semibold text-blue-300 mb-2">
-                    Hints:
-                  </h3>
-                  <ul className="list-disc list-inside space-y-2 text-gray-300">
-                    {hint.split("\n").map((line, idx) => (
-                      <p key={idx}>{line}</p>
+              {hints.length > 0 && (
+                <div>
+                  <h3 className="text-lg font-semibold mb-2">Hints:</h3>
+                  <ul className="list-disc pl-5 space-y-1">
+                    {hints.map((hint, index) => (
+                      <li key={index}>{hint}</li>
                     ))}
                   </ul>
                 </div>

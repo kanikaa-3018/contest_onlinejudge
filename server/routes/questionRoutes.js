@@ -4,6 +4,7 @@ const { isAdmin } = require("../middlewares/authMiddleware");
 const Question = require("../models/questionModel.js");
 const axios = require("axios");
 const dotenv = require("dotenv");
+const fetch=require("node-fetch")
 dotenv.config();
 const OpenAI = require("openai");
 
@@ -90,51 +91,67 @@ router.post("/:id/submit", async (req, res) => {
   }
 });
 
-router.get("/hint/:id", async (req, res) => {
-  try {
-    const question = await Question.findById(req.params.id);
-    if (!question) return res.status(404).json({ error: "Question not found" });
-
-    // Return problem title and description
-    res.json({ 
-      id: question._id,
-      title: question.title, 
-      description: question.description 
-    });
-    
-  } catch (error) {
-    console.error("Error generating hint:", error.response?.data || error.message);
-    res.status(500).json({ error: "Failed to generate hint" });
-  }
-});
-
-
-router.put('/hint/:id', async (req, res) => {
+router.post('/generate-hints/:id', async (req, res) => {
   try {
     const questionId = req.params.id;
-    const { hints } = req.body; 
-    
-    console.log('Received hints:', hints);
-    if (!Array.isArray(hints)) {
-      return res.status(400).json({ message: "Hints must be an array" });
-    }
-
-    const question = await Question.findByIdAndUpdate(
-      questionId,
-      { hints },
-      { new: true }
-    );
+    const question = await Question.findById(questionId);
 
     if (!question) {
-      return res.status(404).json({ message: "Question not found" });
+      return res.status(404).json({ error: 'Question not found' });
     }
 
-    res.json(question);
+    // Call n8n webhook
+    const response = await fetch('https://imtkanika.app.n8n.cloud/webhook-test/webhook/hint-agent', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        id: questionId,
+        title: question.title,
+        description: question.description
+      })
+    });
+
+    if (!response.ok) {
+      return res.status(500).json({ error: 'n8n failed to generate hints' });
+    }
+
+    const result = await response.json();
+    // console.log('Raw n8n result:', result);
+
+    // Extract and split the output string
+    const rawOutput = result[0]?.output;
+    if (!rawOutput) {
+      return res.status(500).json({ error: 'Invalid format received from n8n' });
+    }
+
+    // Split output string into lines and clean each one
+    const hintsArray = rawOutput
+      .split('\n')
+      .map(line => line.trim())
+      .filter(line => line.length > 0)
+      .map(line => line.replace(/^\d+\.\s*/, '')); 
+
+    if (hintsArray.length === 0) {
+      return res.status(500).json({ error: 'No hints extracted from n8n output' });
+    }
+
+    question.hints = hintsArray;
+    await question.save();
+
+    res.json({
+      message: 'Hints generated successfully',
+      questionId,
+      hints: hintsArray
+    });
+
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Server error" });
+    console.error('Error generating hints:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 });
+
+
+
 
 
 

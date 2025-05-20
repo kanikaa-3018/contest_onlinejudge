@@ -3,7 +3,7 @@ import React from "react";
 const GoogleSheetSummary = () => {
   const sheetUrl =
     "https://docs.google.com/spreadsheets/d/1oGj0_KE1aE1BP1WsLd-Q9qShKPxaQY0yusIeiO8wz40/edit?gid=723096008";
-  const notionUrl = "https://www.notion.so/your-notion-page-link";
+  const notionUrl = "https://www.notion.so/MY-CP-SUBMISSION-REPORT-1f8efa8d35398025b666fb14ae2a3b43";
 
   return (
     <>
