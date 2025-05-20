@@ -10,6 +10,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { Textarea } from "@/components/ui/textarea";
 
 const boilerplates = {
@@ -224,15 +230,22 @@ const CodeEditor = () => {
                 💡 Generate Hint
               </Button>
 
-              {hints.length > 0 && (
-                <div>
-                  <h3 className="text-lg font-semibold mb-2">Hints:</h3>
-                  <ul className="list-disc pl-5 space-y-1">
+              {hints && hints.length > 0 ? (
+                <div className="my-4">
+                  
+                  <Accordion type="multiple" className="w-full">
                     {hints.map((hint, index) => (
-                      <li key={index}>{hint}</li>
+                      <AccordionItem key={index} value={`hint-${index}`}>
+                        <AccordionTrigger>Hint {index + 1}</AccordionTrigger>
+                        <AccordionContent>{hint}</AccordionContent>
+                      </AccordionItem>
                     ))}
-                  </ul>
+                  </Accordion>
                 </div>
+              ) : (
+                <p className="text-sm text-gray-500 italic mt-4">
+                  No hints available.
+                </p>
               )}
             </div>
           </div>
