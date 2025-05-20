@@ -6,11 +6,8 @@ const axios = require("axios");
 const dotenv = require("dotenv");
 const fetch=require("node-fetch")
 dotenv.config();
-const OpenAI = require("openai");
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+
 // GET all questions
 router.get("/", async (req, res) => {
   const questions = await Question.find();
@@ -116,9 +113,6 @@ router.post('/generate-hints/:id', async (req, res) => {
     }
 
     const result = await response.json();
-    // console.log('Raw n8n result:', result);
-
-    // Extract and split the output string
     const rawOutput = result[0]?.output;
     if (!rawOutput) {
       return res.status(500).json({ error: 'Invalid format received from n8n' });
@@ -152,41 +146,5 @@ router.post('/generate-hints/:id', async (req, res) => {
 
 
 
-
-
-
-// router.get('/hint/:id', async (req, res) => {
-//   try {
-//     const question = await Question.findById(req.params.id);
-//     if (!question) return res.status(404).json({ error: 'Question not found' });
-
-//     const prompt = `
-//       You are a helpful coding assistant. Provide a single useful hint to solve the following coding problem without giving the full answer.
-
-//       Problem Title: ${question.title}
-//       Problem Description: ${question.description}
-
-//       Hint:
-//     `;
-
-//     const response = await openai.chat.completions.create({
-//       model: "gpt-3.5-turbo",
-//       messages: [
-//         {
-//           role: "user",
-//           content: prompt,
-//         },
-//       ],
-//       temperature: 0.5,
-//       max_tokens: 100,
-//     });
-
-//     const hint = response.choices[0].message.content.trim();
-//     res.json({ hint });
-//   } catch (err) {
-//     console.error("Error generating hint:", err.message);
-//     res.status(500).json({ error: 'Failed to generate hint' });
-//   }
-// });
 
 module.exports = router;
