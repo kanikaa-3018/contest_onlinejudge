@@ -38,7 +38,7 @@ router.delete("/:id", isAdmin, async (req, res) => {
 router.get("/:id", async (req, res) => {
   try {
     const question = await Question.findById(req.params.id);
-    console.log(question);
+    
     if (!question) {
       return res.status(404).json({ message: "Question not found" });
     }
@@ -49,44 +49,6 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-router.post("/:id/submit", async (req, res) => {
-  const { id } = req.params;
-  const { language, code } = req.body;
-
-  try {
-    const question = await Question.findById(id);
-    if (!question) return res.status(404).json({ error: "Question not found" });
-
-    const testCases = question.testCases;
-
-    for (let i = 0; i < testCases.length; i++) {
-      const { input, output: expectedOutput } = testCases[i];
-
-      const response = await axios.post("http://localhost:8080/execute", {
-        language,
-        code,
-        input,
-      });
-
-      const resultOutput = response.data.output?.trim();
-      const expected = expectedOutput?.trim();
-
-      if (resultOutput !== expected) {
-        return res.json({
-          success: false,
-          failedCaseIndex: i,
-          expected,
-          actual: resultOutput,
-        });
-      }
-    }
-
-    return res.json({ success: true });
-  } catch (error) {
-    console.error("Submission error:", error.message);
-    return res.status(500).json({ error: "Internal Server Error" });
-  }
-});
 
 router.post('/generate-hints/:id', async (req, res) => {
   try {

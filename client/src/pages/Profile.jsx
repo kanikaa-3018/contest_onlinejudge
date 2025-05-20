@@ -12,13 +12,22 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { User } from "lucide-react";
 
 const Profile = () => {
-  const [userData, setUserData] = useState(null);
+  const [userData, setUserData] = useState({
+    username: "",
+    name: "",
+    country: "",
+    badge: "",
+    rating: null,
+    ranking: "",
+    recentSubmissions: [],
+    contestHistory: [],
+    leetcodeContests: [],
+  });
   const [loading, setLoading] = useState(true);
   const [visibleSubmissions, setVisibleSubmissions] = useState(3);
   const [visibleContests, setVisibleContests] = useState(3);
   const handle = localStorage.getItem("cfHandle") || "tourist";
   const leetcodeHandle = localStorage.getItem("lcHandle") || null;
-  console.log(leetcodeHandle);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -53,34 +62,43 @@ const Profile = () => {
           difficulty: sub.problem.rating || "N/A",
           status: sub.verdict === "OK" ? "Accepted" : sub.verdict,
           date: new Date(sub.creationTimeSeconds * 1000).toLocaleDateString(),
+          timestamp: sub.creationTimeSeconds * 1000,
           runtime: `${sub.timeConsumedMillis} ms`,
           contestId: sub.contestId,
           submissionId: sub.id,
           problemLink: `https://codeforces.com/contest/${sub.contestId}/problem/${sub.problem.index}`,
           submissionLink: `https://codeforces.com/contest/${sub.contestId}/submission/${sub.id}`,
-          platform: "Codeforces"
+          platform: "Codeforces",
         }));
 
         let leetcodeContests = [];
         let leetcodeSubmissions = [];
-        let leetcodeData=null;
+        let leetcodeData = [];
 
         try {
           const [lcContRes, lcSubRes, lcProfileRes] = await Promise.all([
-            axios.get(`https://alfa-leetcode-api.onrender.com/kanika_sin_08/contest/history`),
-            axios.get(`https://alfa-leetcode-api.onrender.com/kanika_sin_08/submission`),
-            axios.get(`https://alfa-leetcode-api.onrender.com/kanika_sin_08`),
+            axios.get(
+              "https://alfa-leetcode-api.onrender.com/kanika_sin_08/contest/history"
+            ),
+            axios.get(
+              "https://alfa-leetcode-api.onrender.com/kanika_sin_08/submission"
+            ),
+            axios.get("https://alfa-leetcode-api.onrender.com/kanika_sin_08"),
           ]);
+          // console.log(lcContRes);
+          // console.log(lcSubRes);
+          // console.log(lcProfileRes)
 
           leetcodeData = {
-            username: lcProfileRes.data.username,
-            rating: lcProfileRes.data.userContestRanking?.rating || "N/A",
+            username: lcProfileRes.data.username, //fine
+            rating: lcProfileRes.data.ranking || "N/A",
             globalRanking: lcProfileRes.data.ranking || "N/A",
-            attendedContests: lcProfileRes.data.userContestRanking?.attendedContestsCount || 0,
-            topPercentage: lcProfileRes.data.userContestRanking?.topPercentage || "N/A",
+            attendedContests: lcContRes?.data?.contestHistory.filter || 0,
+            topPercentage:
+              lcProfileRes.data.userContestRanking?.topPercentage || "N/A",
             profileLink: `https://leetcode.com/${leetcodeHandle}`,
           };
-
+          // console.log("lc", leetcodeData);
           if (lcContRes.data && lcContRes.data.contestHistory) {
             leetcodeContests = lcContRes.data.contestHistory
               .filter((contest) => contest.attended)
@@ -90,40 +108,58 @@ const Profile = () => {
                 rank: contest.ranking || "N/A",
                 solved: contest.problemsSolved || 0,
                 totalProblems: contest.totalProblems || 0,
-                date: new Date((contest.contest?.startTime || Date.now()) * 1000).toLocaleDateString(),
-                platform: "LeetCode"
+                date: new Date(
+                  (contest.contest?.startTime || Date.now()) * 1000
+                ).toLocaleDateString(),
+                platform: "LeetCode",
               }));
           }
+          // console.log("con",leetcodeContests)
 
           if (lcSubRes.data && lcSubRes.data.submission) {
-            leetcodeSubmissions = lcSubRes.data.submission.map((sub, idx) => ({
-              id: idx,
+            leetcodeSubmissions=lcSubRes.data?.submission?.map((sub, idx) => ({
+              id: `lc${idx}`,
               problem: sub.title,
               language: sub.lang,
               status: sub.statusDisplay,
-              date: new Date(parseInt(sub.timestamp) * 1000).toLocaleDateString(),
-              link: `https://leetcode.com/problems/${sub.titleSlug}/`,
-              platform: "LeetCode"
-            }));
+              date: new Date(
+                parseInt(sub.timestamp) * 1000
+              ).toLocaleDateString(),
+              timestamp: parseInt(sub.timestamp) * 1000,
+              problemLink: `https://leetcode.com/problems/${sub.titleSlug}/`,
+              submissionLink: `https://leetcode.com/submissions/detail/${
+                sub.id || idx
+              }/`,
+              platform: "LeetCode",
+            }))
           }
-        } catch (error) {
-          console.warn("LeetCode API fetch failed, skipping LeetCode data", error);
-        }
-          
-        
 
-        setUserData({
+          // console.log("sub", leetcodeSubmissions)
+        } catch (error) {
+          console.warn(
+            "LeetCode API fetch failed, skipping LeetCode data",
+            error
+          );
+        }
+
+        const newUserData = {
           username: handle,
           name: `${userInfo.firstName || ""} ${userInfo.lastName || ""}`.trim(),
           country: userInfo.country || "Unknown",
           badge: userInfo.rank,
           rating: userInfo.rating,
           ranking: userInfo.maxRank,
-          recentSubmissions: [...submissions, ...leetcodeSubmissions],
+          recentSubmissions: [...submissions, ...leetcodeSubmissions].sort(
+            (a, b) => b.timestamp - a.timestamp
+          ),
           contestHistory: contests,
           leetcodeContests: leetcodeContests,
-        });
-        console.log(userData.leetcodeContests);
+        };
+        // console.log(newUserData.recentSubmissions)
+
+        // console.log("Setting userData to:", newUserData);
+        setUserData(newUserData);
+        // console.log("profile",userData);
         setLoading(false);
       } catch (err) {
         console.error("Failed to fetch Codeforces profile:", err);
@@ -216,15 +252,17 @@ const Profile = () => {
                   >
                     <CardHeader>
                       <div className="flex justify-between items-center">
-                      <a
-                        href={sub.problemLink}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-[#F0ECE5] text-lg hover:underline"
-                      >
-                        {sub.problem}
-                      </a>
-                      <Badge className="text-black bg-[rgb(254,254,254,0.3)] rounded-sm hover:text-white hover:bg-[rgb(255,255,255,0.1)]">{sub.platform}</Badge>
+                        <a
+                          href={sub.problemLink}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-[#F0ECE5] text-lg hover:underline"
+                        >
+                          {sub.problem}
+                        </a>
+                        <Badge className="text-black bg-[rgb(254,254,254,0.3)] rounded-sm hover:text-white hover:bg-[rgb(255,255,255,0.1)]">
+                          {sub.platform}
+                        </Badge>
                       </div>
                       <CardDescription className="-mb-2">
                         <span className="font-bold">Date:</span> {sub.date}
@@ -240,9 +278,19 @@ const Profile = () => {
                       >
                         {sub.status}
                       </Badge>
-                      <div>
-                        Difficulty: {sub.difficulty} • Runtime: {sub.runtime}
-                      </div>
+
+                      {/* Codeforces Specific Details */}
+                      {sub.platform === "Codeforces" && (
+                        <div>
+                          Difficulty: {sub.difficulty} • Runtime: {sub.runtime}
+                        </div>
+                      )}
+
+                      {/* LeetCode Specific Details */}
+                      {sub.platform === "LeetCode" && (
+                        <div>Language: {sub.language}</div>
+                      )}
+
                       <div className="mt-1 text-xs underline text-blue-400">
                         <a
                           href={sub.submissionLink}
@@ -256,6 +304,7 @@ const Profile = () => {
                     </CardContent>
                   </Card>
                 ))}
+
               {visibleSubmissions < userData.recentSubmissions.length && (
                 <button
                   onClick={handleViewMoreSubmissions}
@@ -320,14 +369,16 @@ const Profile = () => {
                     className="mb-4 bg-[#31304D] text-[#B6BBC4]"
                   >
                     <CardHeader>
-                      <CardTitle className="text-[#F0ECE5] text-lg hover:underline">{contest?.name}</CardTitle>
+                      <CardTitle className="text-[#F0ECE5] text-lg hover:underline">
+                        {contest?.name}
+                      </CardTitle>
                       <CardDescription>{contest?.date}</CardDescription>
                     </CardHeader>
                     <CardContent>
-                      <p>Rank: {contest?.rank} • Solved: {contest?.solved} / {contest?.totalProblems}</p>
-                      
-        
-                      
+                      <p>
+                        Rank: {contest?.rank} • Solved: {contest?.solved} /{" "}
+                        {contest?.totalProblems}
+                      </p>
                     </CardContent>
                   </Card>
                 ))
