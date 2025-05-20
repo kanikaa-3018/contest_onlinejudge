@@ -29,10 +29,10 @@ const Profile = () => {
     badge: "",
     rating: null,
     ranking: "",
-    leetcodeUsername: "", // NEW
-    leetcodeRating: "", // NEW
-    leetcodeRanking: "", // NEW
-    leetcodeTopPercentage: "", // NEW
+    leetcodeUsername: "", 
+    leetcodeRating: "", 
+    leetcodeRanking: "", 
+    leetcodeTopPercentage: "", 
     recentSubmissions: [],
     contestHistory: [],
     leetcodeContests: [],
@@ -109,6 +109,7 @@ const Profile = () => {
           // console.log(lcProfileRes)
 
           leetcodeData = {
+            name:lcProfileRes.data.name,
             username: lcProfileRes.data.username, //fine
             rating: lcProfileRes.data.ranking || "N/A",
             globalRanking: lcProfileRes.data.ranking || "N/A",
@@ -165,8 +166,10 @@ const Profile = () => {
 
         const newUserData = {
           username: handle,
-          name: `${userInfo.firstName || ""} ${userInfo.lastName || ""}`.trim(),
-          country: userInfo.country || "Unknown",
+          name: leetcodeData.name,
+          country: userInfo.country || "India",
+          leetcodeUsername: leetcodeData.username,
+          leetcodeRanking: leetcodeData.globalRanking,
           badge: userInfo.rank,
           rating: userInfo.rating,
           ranking: userInfo.maxRank,
@@ -230,10 +233,10 @@ const Profile = () => {
 
             <CardHeader className="pt-16 pb-2 px-4 text-center">
               <CardTitle className="text-[#F0ECE5] text-xl">
-                {userData.username || "Your Handle"}
+                {userData.name || "Your Handle"}
               </CardTitle>
               <CardDescription className="text-[#B6BBC4]">
-                {userData.name} • {userData.country}
+                {userData.username} • {userData.leetcodeUsername}
               </CardDescription>
               <button
                 onClick={() => setEditModalOpen(true)}
@@ -245,14 +248,14 @@ const Profile = () => {
 
             <CardContent>
               <div className="flex justify-center mb-3 gap-2">
-                {userData.badge && (
+                {userData.country && (
                   <Badge className="text-sm bg-[#31304D] text-[#F0ECE5]">
-                    {userData.badge}
+                    {userData.country}
                   </Badge>
                 )}
               </div>
 
-              <div className="grid grid-cols-2 gap-4 mt-6 text-center">
+              <div className="grid grid-cols-3 gap-4 mt-6 text-center">
                 <div>
                   <div className="text-sm text-[#B6BBC4]">CF Rating</div>
                   <div className="text-xl font-bold text-[#F0ECE5]">
@@ -263,6 +266,12 @@ const Profile = () => {
                   <div className="text-sm text-[#B6BBC4]">Ranking</div>
                   <div className="text-xl font-bold text-[#F0ECE5]">
                     {userData.ranking || "N/A"}
+                  </div>
+                </div>
+                <div>
+                  <div className="text-sm text-[#B6BBC4]">LC Rating</div>
+                  <div className="text-xl font-bold text-[#F0ECE5]">
+                    {userData.leetcodeRanking ?? "N/A"}
                   </div>
                 </div>
               </div>
