@@ -20,6 +20,7 @@ import StatsDashboard from "./StatsDashboard";
 import VSCodeTypewriter from "./VSCodeTypewriter";
 import GoogleSheetSummary from "./GoogleSheetSummary";
 import MainHero from "./MainHero";
+import AIIntegrationShowcase from "./AIIntegrationShowcase";
 
 const Dashboard = () => {
   const userData = localStorage.getItem("user");
@@ -108,9 +109,9 @@ const Dashboard = () => {
 
 
 
-      
+<AIIntegrationShowcase/>
 
-      <VSCodeTypewriter />
+      {/* <VSCodeTypewriter /> */}
       <motion.div
         className="p-6 rounded-lg mt-8"
         initial={{ opacity: 0, y: 20 }}

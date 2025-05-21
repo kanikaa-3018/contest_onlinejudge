@@ -1,20 +1,19 @@
 import { useEffect, useState } from "react";
 
 const colors = [
-  "#ebedf0", // empty
-  "#9be9a8",
-  "#40c463",
-  "#30a14e",
-  "#216e39",
+  "#ebedf0", // empty (light gray)
+  "#c6f6d5", // light green
+  "#9ae6b4",
+  "#68d391",
+  "#38a169", // dark green
 ];
 
-// Generate a 7x20 grid to mimic GitHub contribution graph
+// Grid config
 const rows = 7;
 const cols = 20;
 
 const getRandomColor = () => {
-  // Randomly pick a color weighted towards green shades (not empty)
-  const weights = [0.2, 0.2, 0.25, 0.25, 0.1]; // example weights
+  const weights = [0.15, 0.25, 0.3, 0.2, 0.1];
   const sum = weights.reduce((a,b) => a+b, 0);
   const rand = Math.random() * sum;
   let acc = 0;
@@ -37,51 +36,59 @@ const VSCodeTypewriter = () => {
     "AI Assistant: 'Let’s get started with the next coding challenge!'",
   ].join("\n");
 
-  // Typewriter effect for quotes (same as before, but shorter quotes)
+  // Typing effect
   useEffect(() => {
     let i = 0;
     const interval = setInterval(() => {
       setOutput((prev) => prev + fullText[i]);
       i++;
       if (i >= fullText.length) clearInterval(interval);
-    }, 20);
+    }, 25);
     return () => clearInterval(interval);
   }, []);
 
-  // Update grid colors randomly every 1 second
+  // Update grid colors smoothly
   useEffect(() => {
     const interval = setInterval(() => {
       setGridColors((prev) =>
         prev.map(() => getRandomColor())
       );
-    }, 1000);
+    }, 1500);
     return () => clearInterval(interval);
   }, []);
 
-  // No syntax highlighting here, just show output text with quotes styling
-  // But I will keep a simple styling for quotes (orange-ish)
   return (
-    <div className="max-w-4xl mx-auto p-6 bg-[#0d1117] rounded-lg shadow-lg text-white font-sans select-none">
+    <div className="max-w-3xl mx-auto p-8 bg-[#161b22] rounded-xl shadow-xl text-gray-200 font-sans select-none">
       {/* Headline */}
-      <h2 className="text-3xl font-bold mb-6 text-center text-gradient bg-gradient-to-r from-green-400 to-blue-500 bg-clip-text text-transparent">
-        Your GitHub Style AI Assistant
+      <h2 className="text-4xl font-semibold mb-8 text-center tracking-wide text-gradient bg-gradient-to-r from-green-400 to-blue-500 bg-clip-text text-transparent">
+        GitHub Contribution Style AI Assistant
       </h2>
 
-      {/* Contribution graph grid */}
-      <div className="grid grid-cols-20 grid-rows-7 gap-1 mb-8 justify-center">
+      {/* Contribution Graph */}
+      <div
+        className="grid grid-cols-20 grid-rows-7 gap-2 mb-10 justify-center"
+        aria-label="GitHub contribution graph style"
+      >
         {gridColors.map((color, i) => (
           <div
             key={i}
-            style={{ backgroundColor: color }}
-            className="w-4 h-4 rounded-sm"
+            style={{ backgroundColor: color, transition: "background-color 1s ease" }}
+            className="w-5 h-5 rounded-sm shadow-sm"
+            aria-hidden="true"
           />
         ))}
       </div>
 
-      {/* Typed quotes area */}
-      <pre className="whitespace-pre-wrap font-mono text-sm leading-relaxed text-[#f0ab69] min-h-[100px]">
+      <hr className="border-gray-700 mb-8" />
+
+      {/* Quotes Area */}
+      <pre
+        className="whitespace-pre-wrap font-mono text-lg leading-relaxed text-[#f0ab69] min-h-[120px] px-4 py-3 bg-[#0d1117] rounded-md shadow-inner"
+        aria-live="polite"
+        aria-atomic="true"
+      >
         {output}
-        <span className="animate-pulse">|</span>
+        <span className="inline-block w-1 h-6 bg-[#f0ab69] animate-pulse ml-1 align-bottom"></span>
       </pre>
     </div>
   );
