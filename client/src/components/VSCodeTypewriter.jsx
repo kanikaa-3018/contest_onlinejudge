@@ -1,69 +1,88 @@
 import { useEffect, useState } from "react";
 
+const colors = [
+  "#ebedf0", // empty
+  "#9be9a8",
+  "#40c463",
+  "#30a14e",
+  "#216e39",
+];
+
+// Generate a 7x20 grid to mimic GitHub contribution graph
+const rows = 7;
+const cols = 20;
+
+const getRandomColor = () => {
+  // Randomly pick a color weighted towards green shades (not empty)
+  const weights = [0.2, 0.2, 0.25, 0.25, 0.1]; // example weights
+  const sum = weights.reduce((a,b) => a+b, 0);
+  const rand = Math.random() * sum;
+  let acc = 0;
+  for (let i=0; i<weights.length; i++) {
+    acc += weights[i];
+    if (rand < acc) return colors[i];
+  }
+  return colors[0];
+};
+
 const VSCodeTypewriter = () => {
   const [output, setOutput] = useState("");
-  const textLines = [
-    "const aiAssistant = {",
-    "  task: 'Assisting with coding challenges...'",
-    "  currentTask: 'Analyzing your recent submissions...'",
-    "  recommendations: ['Focus on dynamic programming', 'Try solving graph-based problems']",
-    "  stats: {",
-    "    problemsSolved: '150+ problems solved this month',",
-    "    contestParticipation: '5 contests participated this week',",
-    "    timeSpent: '20 hours coding this week',",
-    "  },",
-    "};",
-    "",
+  const [gridColors, setGridColors] = useState(
+    Array(rows * cols).fill(colors[0])
+  );
+
+  const fullText = [
     "AI Assistant: 'Ready to help you level up your coding skills!'",
     "AI Assistant: 'I can suggest problems based on your weaknesses and track your progress.'",
     "AI Assistant: 'Let’s get started with the next coding challenge!'",
-  ];
+  ].join("\n");
 
+  // Typewriter effect for quotes (same as before, but shorter quotes)
   useEffect(() => {
-    let lineIndex = 0;
-    let charIndex = 0;
-    let currentOutput = "";
-
-    const typeInterval = setInterval(() => {
-      if (charIndex < textLines[lineIndex].length) {
-        currentOutput += textLines[lineIndex].charAt(charIndex);
-        setOutput(currentOutput); 
-        charIndex++;
-      } else {
-        lineIndex++;
-        charIndex = 0;
-        if (lineIndex >= textLines.length) {
-          clearInterval(typeInterval);
-        } else {
-          currentOutput += "\n"; 
-        }
-      }
-    }, 80); 
-
-    return () => clearInterval(typeInterval);
+    let i = 0;
+    const interval = setInterval(() => {
+      setOutput((prev) => prev + fullText[i]);
+      i++;
+      if (i >= fullText.length) clearInterval(interval);
+    }, 20);
+    return () => clearInterval(interval);
   }, []);
 
+  // Update grid colors randomly every 1 second
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setGridColors((prev) =>
+        prev.map(() => getRandomColor())
+      );
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // No syntax highlighting here, just show output text with quotes styling
+  // But I will keep a simple styling for quotes (orange-ish)
   return (
-    <div className="w-full max-w-4xl mx-auto p-6 bg-[#1e1e1e] text-white rounded-lg shadow-lg">
-      {/* Simulated VS Code Structure */}
-      <div className="flex flex-col">
-        <div className="flex justify-between items-center bg-[#252526] p-2 rounded-t-lg">
-          <div className="flex gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-[#ff5f56]"></span>
-            <span className="w-2.5 h-2.5 rounded-full bg-[#ffbd2e]"></span>
-            <span className="w-2.5 h-2.5 rounded-full bg-[#27c93f]"></span>
-          </div>
-          <div className="text-xs text-[#d4d4d4]">AI Assistant</div>
-        </div>
+    <div className="max-w-4xl mx-auto p-6 bg-[#0d1117] rounded-lg shadow-lg text-white font-sans select-none">
+      {/* Headline */}
+      <h2 className="text-3xl font-bold mb-6 text-center text-gradient bg-gradient-to-r from-green-400 to-blue-500 bg-clip-text text-transparent">
+        Your GitHub Style AI Assistant
+      </h2>
 
-        {/* Typewriter Effect */}
-        <div className="p-6 text-sm font-mono leading-tight space-y-2 whitespace-pre-wrap">
-          <p className="text-[#9CDCFE]">{output}</p>
-        </div>
-
-        {/* Blinking Cursor */}
-        <div className="mt-4 text-[#D4D4D4] animate-cursor">_</div>
+      {/* Contribution graph grid */}
+      <div className="grid grid-cols-20 grid-rows-7 gap-1 mb-8 justify-center">
+        {gridColors.map((color, i) => (
+          <div
+            key={i}
+            style={{ backgroundColor: color }}
+            className="w-4 h-4 rounded-sm"
+          />
+        ))}
       </div>
+
+      {/* Typed quotes area */}
+      <pre className="whitespace-pre-wrap font-mono text-sm leading-relaxed text-[#f0ab69] min-h-[100px]">
+        {output}
+        <span className="animate-pulse">|</span>
+      </pre>
     </div>
   );
 };

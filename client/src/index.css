@@ -168,3 +168,95 @@
   display: inline-block;
   animation: blink 0.8s step-end infinite;
 }
+.text-vscode-purple {
+  color: #c586c0;
+}
+.text-vscode-accent {
+  color: #9cdcfe;
+}
+.text-vscode-orange {
+  color: #ce9178;
+}
+.text-vscode-yellow {
+  color: #dcdcaa;
+}
+.text-vscode-comment {
+  color: #6a9955;
+}
+
+.text-vscode-lineNumber {
+  color: #858585;
+}
+.bg-vscode-bg {
+  background-color: #1e1e1e;
+}
+.border-border {
+  border-color: #333333;
+}
+.vscode-purple{
+  color:#C586C0
+}
+.vscode-accent{
+  color:#1829ea
+}
+.vscode-orange{
+  color:#CE9178
+}
+.vscode-yellow{
+  color:#DCDCAa
+}
+.bg-vscode-comment{
+  color:#6A9955
+}
+.bg-vscode-lineNumber{
+  color:#858585
+}
+.bg-clip-text{
+  background-clip: text;
+}
+.vscode-green{
+  color:#6A9955
+}
+.vscode-blue{
+  color:#9CDCFE
+}
+.vscode-red{
+  color:#D86666
+}
+
+.tree-item span {
+  color: #cccccc;
+}
+
+.tree-item:hover span {
+  color: #ffffff;
+}
+
+
+@layer utilities {
+  @keyframes float-slow {
+    0%, 100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+
+  @keyframes pulse-slow {
+    0%, 100% {
+      opacity: 0.1;
+    }
+    50% {
+      opacity: 0.3;
+    }
+  }
+
+  .animate-float-slow {
+    animation: float-slow 6s ease-in-out infinite;
+  }
+
+  .animate-pulse-slow {
+    animation: pulse-slow 4s ease-in-out infinite;
+  }
+}

@@ -8,6 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Timer, Brain, Code2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Calendar, Trophy, Code, Sparkles } from "lucide-react";
@@ -18,8 +19,9 @@ import ContestHistoryLeaderboard from "./ContestHistoryLeaderboard";
 import StatsDashboard from "./StatsDashboard";
 import VSCodeTypewriter from "./VSCodeTypewriter";
 import GoogleSheetSummary from "./GoogleSheetSummary";
+import MainHero from "./MainHero";
 
-export const Dashboard = () => {
+const Dashboard = () => {
   const userData = localStorage.getItem("user");
 
   const [output, setOutput] = useState("");
@@ -58,99 +60,24 @@ export const Dashboard = () => {
       animate={{ opacity: 1 }}
       transition={{ duration: 0.6 }}
     >
-      {/* Hero Section */}
-      <motion.div
-        className="bg-gradient-to-r from-[#1E1E2F] via-[#2E2E48] to-[#1E1E2F] rounded-2xl p-10 text-center shadow-2xl relative overflow-hidden"
-        initial={{ y: -30, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 1, ease: "easeOut" }}
-      >
-        <div className="absolute inset-0 bg-gradient-to-br from-purple-600 via-pink-500 to-blue-600 opacity-30 blur-3xl" />
-        <motion.h1
-          className="text-5xl font-extrabold tracking-tight text-white drop-shadow-xl"
-          whileHover={{ scale: 1.1, color: "#FFD700" }}
-          transition={{ type: "spring", stiffness: 300 }}
-        >
-          Welcome to CodeArena
-        </motion.h1>
-        <p className="mt-4 text-lg text-gray-300 max-w-2xl mx-auto">
-          Your ultimate companion to improve your problem-solving and coding
-          skills through contests, analytics, and leaderboards.
-        </p>
-        <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
-          {[
-            {
-              icon: (
-                <Sparkles className="text-[#00D1FF] mb-2 w-6 h-6 animate-pulse" />
-              ),
-              title: "Live Contest Tracker",
-              desc: "Stay informed about upcoming and ongoing contests across platforms.",
-            },
-            {
-              icon: (
-                <Sparkles className="text-[#FFC300] mb-2 w-6 h-6 animate-pulse" />
-              ),
-              title: "Global Leaderboard",
-              desc: "Compare your performance with coders worldwide in real-time.",
-            },
-            {
-              icon: (
-                <Sparkles className="text-[#00FFA3] mb-2 w-6 h-6 animate-pulse" />
-              ),
-              title: "Comprehensive Stats",
-              desc: "Track submissions, problems solved, and progress over time.",
-            },
-          ].map((feature, idx) => (
+      <MainHero />
+            {/* Greeting Section */}
             <motion.div
-              key={idx}
-              className="bg-[#14142B] p-6 rounded-xl border border-[#2A2A3B] shadow-md backdrop-blur-sm hover:shadow-lg transition-all duration-300"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.98 }}
-              transition={{ type: "spring", stiffness: 300 }}
-            >
-              {feature.icon}
-              <h3 className="text-lg font-semibold text-white">
-                {feature.title}
-              </h3>
-              <p className="text-sm text-gray-400">{feature.desc}</p>
-            </motion.div>
-          ))}
-        </div>
-      </motion.div>
-      
-      <VSCodeTypewriter />
-      
-
-      {/* Greeting Section */}
-      <motion.div
         className="flex flex-col gap-2"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4, duration: 0.6 }}
       >
-        <h1 className="text-3xl font-bold tracking-tight text-[#00FFC6] text-center">
-          Welcome back, User
+        <h1 className="text-3xl font-bold tracking-tight text-[#00FFC6] mt-8 ">
+          Welcome back, Kanika
         </h1>
-        <p className="text-sm text-gray-400 text-center ">
+        <p className="text-sm text-gray-400">
           Track your progress, join contests, and improve your coding skills
         </p>
-        
       </motion.div>
-      <GoogleSheetSummary/>
-      {/* Main Dashboard Grid */}
-      <motion.div
-        className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 items-stretch"
-        initial="hidden"
-        animate="visible"
-        variants={{
-          hidden: {},
-          visible: {
-            transition: {
-              staggerChildren: 0.2,
-            },
-          },
-        }}
-      >
+      <GoogleSheetSummary />
+
+      <div className="grid grid-cols-3 md:grid-cols-3 gap-4 h-full">
         <motion.div
           className="h-full flex flex-col"
           initial={{ opacity: 0, y: 30 }}
@@ -177,8 +104,13 @@ export const Dashboard = () => {
         >
           <RecentSubmissions className="h-full flex flex-col" />
         </motion.div>
-      </motion.div>
+      </div>
 
+
+
+      
+
+      <VSCodeTypewriter />
       <motion.div
         className="p-6 rounded-lg mt-8"
         initial={{ opacity: 0, y: 20 }}
@@ -194,8 +126,6 @@ export const Dashboard = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.7 }}
       >
-
-      
         <ContestHistoryLeaderboard />
       </motion.div>
     </motion.div>

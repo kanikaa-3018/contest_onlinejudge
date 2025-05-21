@@ -53,9 +53,12 @@ const ContestHistoryLeaderboard = () => {
   if (error) return <p className="text-red-500">{error}</p>;
 
   return (
+    <>
+    <h1 className="text-4xl font-bold mt-3 mb-5 ml-2">What else we offer?</h1>
     <Card className="bg-[#14142B] text-white border border-[#2A2A3B]">
       <CardHeader className="flex flex-row items-center justify-between">
         <div>
+          
           <CardTitle>Contest History</CardTitle>
           <CardDescription className="text-gray-400">
             Your performance in past Codeforces contests
@@ -104,7 +107,9 @@ const ContestHistoryLeaderboard = () => {
         </Button>
       </CardFooter>
     </Card>
+    </>
   );
+  
 };
 
 export default ContestHistoryLeaderboard;

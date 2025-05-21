@@ -63,7 +63,7 @@ const RecentSubmissions = () => {
         </div>
         <Code className="h-5 w-5 text-[#00FFC6]" />
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-4  min-h-[400px]">
         {recentSubmissions.map((sub) => (
           <div
             key={sub.id}
