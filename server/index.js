@@ -11,6 +11,7 @@ const progressRoutes = require("./routes/progress.js");
 const userRoutes = require("./routes/userRoutes.js");
 const questionRoutes = require("./routes/questionRoutes.js");
 const internshipRoutes = require("./routes/internshipRoutes.js");
+const submissionRoutes = require("./routes/submissionRoutes");
 
 const app = express();
 connectDB();
@@ -26,6 +27,7 @@ app.get("/", (req, res) => {
 app.use("/api/users", userRoutes);
 app.use("/api/progress", progressRoutes);
 app.use("/api/questions", questionRoutes);
+app.use("/api/submissions", submissionRoutes);
 app.use("/api/internships", internshipRoutes);
 
 //for test-case generation using python scripts

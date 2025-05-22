@@ -10,8 +10,10 @@ const statusColors = {
 
 const QuestionsList = () => {
   const [questions, setQuestions] = useState([]);
-  const [submissions, setSubmissions] = useState({}); // Example: { 'questionId': 'Success' }
+  const [submissions, setSubmissions] = useState({}); 
   const navigate = useNavigate();
+  const user = JSON.parse(localStorage.getItem("user"));
+  const userId= user._id;
 
   useEffect(() => {
     axios
@@ -19,13 +21,21 @@ const QuestionsList = () => {
       .then((res) => setQuestions(res.data))
       .catch((err) => console.error(err));
 
-    // Simulate fetching submission statuses for current user
     const fetchSubmissionStatuses = async () => {
-      setSubmissions({
-        "64fcd9e7b2f3a71234567890": "Success",
-        "64fcd9e7b2f3a71234567891": "Failed",
-        "64fcd9e7b2f3a71234567892": "Not Attempted",
-      });
+      try {
+        const res = await axios.get(
+         `http://localhost:8080/api/submissions/user/${userId}`
+        );
+        // console.log(res)
+        const statusMap = {};
+        res.data.forEach((submission) => {
+          statusMap[submission.questionId] = submission.status;
+        });
+  
+        setSubmissions(statusMap);
+      } catch (err) {
+        console.error("Error fetching submissions", err);
+      }
     };
 
     fetchSubmissionStatuses();

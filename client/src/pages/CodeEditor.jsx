@@ -56,6 +56,9 @@ const CodeEditor = () => {
   const [failedCaseIndex, setFailedCaseIndex] = useState(-1);
   const [totalTestCases, setTotalTestCases] = useState(0);
   const [testCaseResults, setTestCaseResults] = useState([]);
+  const user = JSON.parse(localStorage.getItem("user"));
+
+
 
   useEffect(() => {
     const fetchQuestion = async () => {
@@ -173,6 +176,20 @@ const CodeEditor = () => {
         setVerdict("Success");
         setFailedCaseIndex(-1);
         setTestCaseResults(Array(totalTestCases).fill({ passed: true }));
+
+        const response2= await fetch("http://localhost:8080/api/submissions", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            userId: user._id, 
+            questionId: id,
+            code,
+            language,
+            status: "Success",
+          }),
+        });
+        const data= await response2.json();
+        console.log(response2)
       } else {
         setVerdict("Failed");
         setFailedCaseIndex(result.failedCaseIndex);
@@ -187,7 +204,7 @@ const CodeEditor = () => {
               actual: result.actual,
             });
           } else {
-            resultsArray.push({ passed: null }); // not run/unknown
+            resultsArray.push({ passed: null }); 
           }
         }
         setTestCaseResults(resultsArray);
@@ -197,6 +214,18 @@ const CodeEditor = () => {
             result.expected
           }\nGot: ${result.actual}`
         );
+
+        await fetch("http://localhost:8080/api/submissions", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            userId: user._id,
+            questionId: id,
+            code,
+            language,
+            status: "Failed",
+          }),
+        });
       }
     } catch (err) {
       setOutput("Submission error");

@@ -12,7 +12,22 @@ router.get("/user/:userId", async (req, res) => {
   }
 });
 
-// Get submission status for a specific question and user
+// GET /api/submission/user/:userId
+router.get("/user/:userId", async (req, res) => {
+  try {
+    const submissions = await Submission.find({ userId: req.params.userId });
+    console.log(submissions)
+    const mapped = submissions.map((s) => ({
+      questionId: s.questionId,
+      status: s.status,
+    }));
+    res.json(mapped);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+
 router.get("/:questionId/user/:userId", async (req, res) => {
   try {
     const submission = await Submission.findOne({
@@ -30,9 +45,10 @@ router.get("/:questionId/user/:userId", async (req, res) => {
   }
 });
 
-// Submit a solution (create or update)
+
 router.post("/", async (req, res) => {
   const { userId, questionId, code, language, status } = req.body;
+  // console.log("Received submission:", req.body);
 
   try {
     const existing = await Submission.findOne({ userId, questionId });
