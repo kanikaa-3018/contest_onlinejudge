@@ -5,16 +5,14 @@ import { Card } from "../components/ui/card.jsx";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import InternshipTable from "../pages/InternshipTable.jsx";
 import InternshipCards from "../components/InternshipCards.jsx";
-// import AddInternshipDialog from "@/components/AddInternshipDialog";
 
 const Internship = () => {
-  const [view, setView] = useState("table"); 
+  const [view, setView] = useState("table");
   const [searchQuery, setSearchQuery] = useState("");
   const [internships, setInternships] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  
   useEffect(() => {
     setLoading(true);
     fetch("http://localhost:8080/api/internships")
@@ -25,11 +23,9 @@ const Internship = () => {
         return res.json();
       })
       .then((data) => {
-        console.log(data)
         setInternships(data);
         setLoading(false);
       })
-      
       .catch((err) => {
         setError(err.message);
         setLoading(false);
@@ -42,17 +38,11 @@ const Internship = () => {
       internship.role.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-//   // Function to add new internship (e.g. from dialog)
-//   const addInternship = (newInternship) => {
-//     setInternships([...internships, { id: Date.now(), ...newInternship }]);
-//   };
-
-//   // Toggle status fields like applied, followedUp, interview
-const toggleStatus = (id, field) => {
+  const toggleStatus = (id, field) => {
     setInternships((prevInternships) =>
       prevInternships.map((internship) => {
         if (internship.id !== id) return internship;
-  
+
         return {
           ...internship,
           [field]: !internship[field],
@@ -62,59 +52,98 @@ const toggleStatus = (id, field) => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 p-6">
-      <div className="max-w-7xl mx-auto">
+    <div
+      className="min-h-screen p-6"
+      style={{ backgroundColor: "#161A30", color: "#B6BBC4" }}
+    >
+      <div
+        className="max-w-7xl mx-auto"
+        style={{ backgroundColor: "#161a30", borderRadius: "8px", padding: "24px" }}
+      >
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-slate-800 mb-2">Internship Tracker</h1>
-          <p className="text-slate-500">Track and manage your internship applications in one place</p>
+        <div className="mb-8" >
+          <h1 className="text-3xl font-bold mb-2" style={{ color: "#fff" }}>
+            Internship Tracker
+          </h1>
+          <p style={{ color: "#5A7184" }}>
+            Track and manage your internship applications in one place
+          </p>
         </div>
 
         {/* Controls */}
         <div className="flex flex-col sm:flex-row justify-between gap-4 mb-6">
           <div className="relative w-full sm:max-w-xs">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 h-4 w-4" />
+            <Search
+              className="absolute left-3 top-1/2 -translate-y-1/2"
+              style={{ color: "#1976D2", height: 16, width: 16 }}
+            />
             <Input
               className="pl-10"
               placeholder="Search companies or roles..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
+              style={{ borderColor: "#1976D2" }}
             />
           </div>
           <div className="flex gap-2">
-            <Tabs value={view} onValueChange={(v) => setView(v)} className="sm:w-auto">
-              <TabsList>
-                <TabsTrigger value="table">Table</TabsTrigger>
-                <TabsTrigger value="cards">Cards</TabsTrigger>
+            <Tabs
+              value={view}
+              onValueChange={(v) => setView(v)}
+              className="sm:w-auto"
+            >
+              <TabsList style={{ borderColor: "#1976D2" }}>
+                <TabsTrigger value="table" style={{ color: view === "table" ? "#1976D2" : "#5A7184" }}>
+                  Table
+                </TabsTrigger>
+                <TabsTrigger value="cards" style={{ color: view === "cards" ? "#1976D2" : "#5A7184" }}>
+                  Cards
+                </TabsTrigger>
               </TabsList>
             </Tabs>
-            {/* <AddInternshipDialog addInternship={addInternship} /> */}
           </div>
         </div>
 
-        {/* Loading and error states */}
-        {loading && <p>Loading internships...</p>}
-        {error && <p className="text-red-500">{error}</p>}
+       
+        {loading && <p style={{ color: "#1976D2" }}>Loading internships...</p>}
+        {error && <p style={{ color: "#D32F2F" }}>{error}</p>}
 
         {!loading && !error && (
           <>
             {/* Summary Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-              <Card className="p-4 flex flex-col">
-                <p className="text-sm text-slate-500">Total Applications</p>
+              <Card
+                className="p-4 flex flex-col"
+                style={{ backgroundColor: "#31304D", color: "#fff" }}
+              >
+                <p className="text-sm">Total Applications</p>
                 <p className="text-2xl font-bold">{internships.length}</p>
               </Card>
-              <Card className="p-4 flex flex-col">
-                <p className="text-sm text-slate-500">Applied</p>
-                <p className="text-2xl font-bold">{internships.filter((i) => i.applied).length}</p>
+              <Card
+                className="p-4 flex flex-col"
+                style={{ backgroundColor: "#31304D", color: "#fff" }}
+              >
+                <p className="text-sm">Applied</p>
+                <p className="text-2xl font-bold">
+                  {internships.filter((i) => i.applied).length}
+                </p>
               </Card>
-              <Card className="p-4 flex flex-col">
-                <p className="text-sm text-slate-500">Follow-ups Made</p>
-                <p className="text-2xl font-bold">{internships.filter((i) => i.followedUp).length}</p>
+              <Card
+                className="p-4 flex flex-col"
+                style={{ backgroundColor: "#31304D", color: "#fff" }}
+              >
+                <p className="text-sm">Follow-ups Made</p>
+                <p className="text-2xl font-bold">
+                  {internships.filter((i) => i.followedUp).length}
+                </p>
               </Card>
-              <Card className="p-4 flex flex-col">
-                <p className="text-sm text-slate-500">Interviews</p>
-                <p className="text-2xl font-bold">{internships.filter((i) => i.interview).length}</p>
+              <Card
+                className="p-4 flex flex-col"
+                style={{ backgroundColor: "#31304D", color: "#fff" }}
+              >
+                <p className="text-sm">Interviews</p>
+                <p className="text-2xl font-bold">
+                  {internships.filter((i) => i.interview).length}
+                </p>
               </Card>
             </div>
 
@@ -122,10 +151,16 @@ const toggleStatus = (id, field) => {
             <div className="mb-8">
               <Tabs value={view} className="w-full">
                 <TabsContent value="table" className="mt-0">
-                  <InternshipTable internships={filteredInternships} toggleStatus={toggleStatus} />
+                  <InternshipTable
+                    internships={filteredInternships}
+                    toggleStatus={toggleStatus}
+                  />
                 </TabsContent>
                 <TabsContent value="cards" className="mt-0">
-                  <InternshipCards internships={filteredInternships} toggleStatus={toggleStatus} />
+                  <InternshipCards
+                    internships={filteredInternships}
+                    toggleStatus={toggleStatus}
+                  />
                 </TabsContent>
               </Tabs>
             </div>

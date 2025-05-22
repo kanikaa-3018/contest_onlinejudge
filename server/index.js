@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
-const { exec } = require("child_process");
+const { exec , spawn} = require("child_process");
 const fs = require("fs");
 const axios=require("axios");
 const path = require("path");
@@ -29,7 +29,42 @@ app.use("/api/questions", questionRoutes);
 app.use("/api/internships", internshipRoutes);
 
 
-//for global leaderboard
+
+//for test-case generation using python scripts
+app.post("/api/generate-tests", (req, res) => {
+  const code = req.body.code;
+
+  const python = spawn("python", [
+    path.join(__dirname, "scripts", "generate_tests.py"),
+  ]);
+
+  let result = "";
+
+  python.stdout.on("data", (data) => {
+    result += data.toString();
+  });
+
+  python.stderr.on("data", (data) => {
+    console.error(`Python error: ${data}`);
+  });
+
+  python.on("close", (codeExit) => {
+    try {
+      if (!result) throw new Error("No output from Python script");
+      const output = JSON.parse(result);
+      console.log(output)
+      res.json({ success: true, tests: output.tests });
+    } catch (err) {
+      console.error("Failed to parse or get output:", err);
+      res.status(500).json({ success: false, error: "Failed to parse response" });
+    }
+  });
+
+  python.stdin.write(code);
+  python.stdin.end();
+});
+
+
 app.get("/api/global-leaderboard", async (req, res) => {
   try {
     const response = await axios.get(

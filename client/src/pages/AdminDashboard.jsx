@@ -14,6 +14,7 @@ const AdminDashboard = () => {
     title: "",
     description: "",
     constraints: "",
+    code: "",
     testCases: [{ input: "", output: "" }],
   });
   const [editId, setEditId] = useState(null);
@@ -97,9 +98,37 @@ const AdminDashboard = () => {
     }
   };
 
+  const generateExtraTestCases = async () => {
+    try {
+      const res = await axios.post(
+        "http://localhost:8080/api/generate-tests",
+        {
+          code: form.code,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (res.data.success) {
+        const generated = res.data.tests;
+        setForm({
+          ...form,
+          testCases: [...form.testCases, ...generated],
+        });
+      } else {
+        alert("Test case generation failed.");
+      }
+    } catch (err) {
+      console.error("Error generating test cases:", err);
+      alert("Error generating test cases.");
+    }
+  };
+
   return (
     <div className="p-6 bg-[#161A30] min-h-screen text-white relative overflow-hidden">
-      
       <motion.button
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
@@ -137,7 +166,6 @@ const AdminDashboard = () => {
               whileHover={{ scale: 1.05 }}
               transition={{ duration: 0.4 }}
             >
-              
               <div className="absolute inset-0 bg-gradient-to-br from-purple-500 via-blue-500 to-indigo-500 opacity-20 animate-gradientBlur z-0" />
               <div className="relative z-10 text-center font-semibold text-lg">
                 {text}
@@ -161,6 +189,7 @@ const AdminDashboard = () => {
               <th className="px-6 py-4">Title</th>
               <th className="px-6 py-4">Constraints</th>
               <th className="px-6 py-4">Code</th>
+              <th className="px-6 py-4">Test Cases</th>
               <th className="px-6 py-4 text-center">Actions</th>
             </tr>
           </thead>
@@ -172,12 +201,24 @@ const AdminDashboard = () => {
               >
                 <td className="px-6 py-4">{index + 1}</td>
                 <td className="px-6 py-4">{q.title}</td>
+
                 <td className="px-6 py-4">
                   {q.constraints?.length > 50
                     ? `${q.constraints.substring(0, 50)}...`
                     : q.constraints}
                 </td>
-                <td><ReferenceCodeModal questionId={q._id}/></td>
+                <td>
+                  <ReferenceCodeModal questionId={q._id} />
+                </td>
+                <td>
+                  <button
+                    type="button"
+                    onClick={generateExtraTestCases}
+                    className="text-green-500 hover:underline ml-4"
+                  >
+                    + Generate Test Cases
+                  </button>
+                </td>
                 <td className="px-6 py-4 flex justify-center gap-4">
                   <button
                     onClick={() => handleEdit(q)}

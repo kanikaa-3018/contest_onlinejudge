@@ -1,7 +1,6 @@
 document.getElementById("saveBtn").addEventListener("click", () => {
   const statusElem = document.getElementById("status");
 
-  // Get the active tab
   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
     if (!tabs || tabs.length === 0) {
       statusElem.textContent = "⚠️ No active tab found.";
@@ -10,7 +9,6 @@ document.getElementById("saveBtn").addEventListener("click", () => {
 
     const tabId = tabs[0].id;
 
-    // Inject and execute script in the active tab to get HTML
     chrome.scripting.executeScript(
       {
         target: { tabId },
