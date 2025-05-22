@@ -53,6 +53,9 @@ const CodeEditor = () => {
   const [input, setInput] = useState("");
   const [output, setOutput] = useState("");
   const [verdict, setVerdict] = useState("");
+  const [failedCaseIndex, setFailedCaseIndex] = useState(-1);
+  const [totalTestCases, setTotalTestCases] = useState(0);
+  const [testCaseResults, setTestCaseResults] = useState([]);
 
   useEffect(() => {
     const fetchQuestion = async () => {
@@ -61,6 +64,7 @@ const CodeEditor = () => {
         if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
         const data = await res.json();
         setQuestion(data);
+        setTotalTestCases(data.testCases.length || 0);
       } catch (err) {
         console.error("Failed to fetch question", err);
         setQuestion(null);
@@ -137,6 +141,7 @@ const CodeEditor = () => {
   const handleSubmit = async () => {
     setVerdict("Running all test cases...");
     setOutput("");
+    setTestCaseResults([]);
 
     try {
       const response = await fetch(
@@ -156,13 +161,32 @@ const CodeEditor = () => {
       if (result.success) {
         setOutput("All test cases passed!");
         setVerdict("Success");
+        setFailedCaseIndex(-1);
+        setTestCaseResults(Array(totalTestCases).fill({ passed: true }));
       } else {
+        setVerdict("Failed");
+        setFailedCaseIndex(result.failedCaseIndex);
+        const resultsArray = [];
+        for (let i = 0; i < totalTestCases; i++) {
+          if (i < result.failedCaseIndex) {
+            resultsArray.push({ passed: true });
+          } else if (i === result.failedCaseIndex) {
+            resultsArray.push({
+              passed: false,
+              expected: result.expected,
+              actual: result.actual,
+            });
+          } else {
+            resultsArray.push({ passed: null }); // not run/unknown
+          }
+        }
+        setTestCaseResults(resultsArray);
+
         setOutput(
           `Failed on test case #${result.failedCaseIndex + 1}.\nExpected: ${
             result.expected
           }\nGot: ${result.actual}`
         );
-        setVerdict("Failed");
       }
     } catch (err) {
       setOutput("Submission error");
@@ -232,7 +256,6 @@ const CodeEditor = () => {
 
               {hints && hints.length > 0 ? (
                 <div className="my-4">
-                  
                   <Accordion type="multiple" className="w-full">
                     {hints.map((hint, index) => (
                       <AccordionItem key={index} value={`hint-${index}`}>
@@ -304,19 +327,45 @@ const CodeEditor = () => {
               </div>
             </div>
 
-            <div className="mt-2 p-4 border rounded">
-              <h3 className="text-white">Verdict:</h3>
+            <div className="mt-2 p-4 border rounded bg-[#1e1e2f]">
+              <h3 className="text-white text-lg font-semibold mb-2">
+                Verdict:
+              </h3>
               <p
-                className={`text-lg ${
+                className={`text-lg mb-4 ${
                   verdict === "Success"
                     ? "text-green-500"
-                    : verdict === "Running..."
+                    : verdict === "Running all test cases..."
                     ? "text-yellow-400"
+                    : verdict === "" || verdict === "Idle" // treat empty or Idle as not submitted yet
+                    ? "text-white"
                     : "text-red-500"
                 }`}
               >
-                {verdict}: {output}
+                {verdict ? `${verdict}: ${output}` : ""}
               </p>
+
+              {/* Show test cases only if verdict is not empty, not running, and totalTestCases > 0 */}
+              {verdict &&
+                verdict !== "Running all test cases..." &&
+                totalTestCases > 0 && (
+                  <div className="flex space-x-2 flex-wrap">
+                    {[...Array(totalTestCases).keys()].map((idx) => {
+                      const isPassed =
+                        verdict === "Success" || idx !== failedCaseIndex;
+                      return (
+                        <span
+                          key={idx}
+                          className={`px-3 py-1 rounded text-white text-sm font-medium ${
+                            isPassed ? "bg-green-600" : "bg-red-600"
+                          }`}
+                        >
+                          Testcase {idx + 1}
+                        </span>
+                      );
+                    })}
+                  </div>
+                )}
             </div>
           </div>
         </Split>

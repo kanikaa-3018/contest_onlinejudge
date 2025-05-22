@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+
 import { useNavigate } from "react-router-dom";
 import { FaPlus, FaEdit, FaTrash } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
+import ReferenceCodeModal from "../components/ReferenceCodeModal";
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -97,7 +99,7 @@ const AdminDashboard = () => {
 
   return (
     <div className="p-6 bg-[#161A30] min-h-screen text-white relative overflow-hidden">
-      {/* Floating Add Button */}
+      
       <motion.button
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
@@ -135,7 +137,7 @@ const AdminDashboard = () => {
               whileHover={{ scale: 1.05 }}
               transition={{ duration: 0.4 }}
             >
-              {/* Transient animated gradient glow */}
+              
               <div className="absolute inset-0 bg-gradient-to-br from-purple-500 via-blue-500 to-indigo-500 opacity-20 animate-gradientBlur z-0" />
               <div className="relative z-10 text-center font-semibold text-lg">
                 {text}
@@ -158,6 +160,7 @@ const AdminDashboard = () => {
               <th className="px-6 py-4">S.No</th>
               <th className="px-6 py-4">Title</th>
               <th className="px-6 py-4">Constraints</th>
+              <th className="px-6 py-4">Code</th>
               <th className="px-6 py-4 text-center">Actions</th>
             </tr>
           </thead>
@@ -174,6 +177,7 @@ const AdminDashboard = () => {
                     ? `${q.constraints.substring(0, 50)}...`
                     : q.constraints}
                 </td>
+                <td><ReferenceCodeModal questionId={q._id}/></td>
                 <td className="px-6 py-4 flex justify-center gap-4">
                   <button
                     onClick={() => handleEdit(q)}

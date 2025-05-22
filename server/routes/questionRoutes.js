@@ -35,6 +35,7 @@ router.delete("/:id", isAdmin, async (req, res) => {
   res.json({ message: "Deleted" });
 });
 
+//GET question by ID
 router.get("/:id", async (req, res) => {
   try {
     const question = await Question.findById(req.params.id);
@@ -42,14 +43,14 @@ router.get("/:id", async (req, res) => {
     if (!question) {
       return res.status(404).json({ message: "Question not found" });
     }
-    res.json(question);
+    res.json(question,);
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Error fetching question" });
   }
 });
 
-
+//GENERATE AI hints
 router.post('/generate-hints/:id', async (req, res) => {
   try {
     const questionId = req.params.id;
@@ -80,7 +81,7 @@ router.post('/generate-hints/:id', async (req, res) => {
       return res.status(500).json({ error: 'Invalid format received from n8n' });
     }
 
-    // Split output string into lines and clean each one
+    
     const hintsArray = rawOutput
       .split('\n')
       .map(line => line.trim())
@@ -106,6 +107,91 @@ router.post('/generate-hints/:id', async (req, res) => {
   }
 });
 
+router.put("/:id/reference-code", async (req, res) => {
+  const { id } = req.params
+  const { cpp, python, java, javascript } = req.body
+
+  try {
+    const question = await Question.findById(id)
+    if (!question) {
+      return res.status(404).json({ error: "Question not found" })
+    }
+
+    
+    let updatedSolutions = question.referenceSolutions.filter(
+      (sol) => !["cpp", "python", "java", "javascript"].includes(sol.language)
+    )
+
+    const newSolutions = []
+
+    if (cpp) newSolutions.push({ language: "cpp", code: cpp })
+    if (python) newSolutions.push({ language: "python", code: python })
+    if (java) newSolutions.push({ language: "java", code: java })
+    if (javascript) newSolutions.push({ language: "javascript", code: javascript })
+
+    // Replace existing languages with new values
+    newSolutions.forEach((newSol) => {
+      const existingIndex = question.referenceSolutions.findIndex(
+        (sol) => sol.language === newSol.language
+      )
+      if (existingIndex !== -1) {
+        question.referenceSolutions[existingIndex].code = newSol.code
+      } else {
+        question.referenceSolutions.push(newSol)
+      }
+    })
+
+    await question.save()
+
+    res.status(200).json({
+      message: "Reference solutions updated successfully",
+      referenceSolutions: question.referenceSolutions,
+    })
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ error: "Server error" })
+  }
+})
+
+
+router.post("/:id/submit", async (req, res) => {
+  const { id } = req.params;
+  const { language, code } = req.body;
+
+  try {
+    const question = await Question.findById(id);
+    if (!question) return res.status(404).json({ error: "Question not found" });
+
+    const testCases = question.testCases;
+
+    for (let i = 0; i < testCases.length; i++) {
+      const { input, output: expectedOutput } = testCases[i];
+
+      const response = await axios.post("http://localhost:8080/execute", {
+        language,
+        code,
+        input,
+      });
+
+      const resultOutput = response.data.output?.trim();
+      const expected = expectedOutput?.trim();
+
+      if (resultOutput !== expected) {
+        return res.json({
+          success: false,
+          failedCaseIndex: i,
+          expected,
+          actual: resultOutput,
+        });
+      }
+    }
+
+    return res.json({ success: true });
+  } catch (error) {
+    console.error("Submission error:", error.message);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+});
 
 
 
