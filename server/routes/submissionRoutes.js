@@ -16,7 +16,7 @@ router.get("/user/:userId", async (req, res) => {
 router.get("/user/:userId", async (req, res) => {
   try {
     const submissions = await Submission.find({ userId: req.params.userId });
-    console.log(submissions)
+    // console.log(submissions)
     const mapped = submissions.map((s) => ({
       questionId: s.questionId,
       status: s.status,

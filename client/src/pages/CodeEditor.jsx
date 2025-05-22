@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import Editor from "@monaco-editor/react";
 import Split from "react-split";
 import { Button } from "@/components/ui/button";
+import { FaRobot } from "react-icons/fa";
 import {
   Select,
   SelectContent,
@@ -58,7 +59,8 @@ const CodeEditor = () => {
   const [testCaseResults, setTestCaseResults] = useState([]);
   const user = JSON.parse(localStorage.getItem("user"));
 
-
+  const [loading, setLoading] = useState(false);
+  const [feedback, setFeedback] = useState(""); //for ai generated feedback using gemini api
 
   useEffect(() => {
     const fetchQuestion = async () => {
@@ -177,11 +179,11 @@ const CodeEditor = () => {
         setFailedCaseIndex(-1);
         setTestCaseResults(Array(totalTestCases).fill({ passed: true }));
 
-        const response2= await fetch("http://localhost:8080/api/submissions", {
+        const response2 = await fetch("http://localhost:8080/api/submissions", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            userId: user._id, 
+            userId: user._id,
             questionId: id,
             code,
             language,
@@ -204,7 +206,7 @@ const CodeEditor = () => {
               actual: result.actual,
             });
           } else {
-            resultsArray.push({ passed: null }); 
+            resultsArray.push({ passed: null });
           }
         }
         setTestCaseResults(resultsArray);
@@ -230,6 +232,35 @@ const CodeEditor = () => {
     } catch (err) {
       setOutput("Submission error");
       setVerdict("Failed");
+    }
+  };
+
+  const handleAnalyze = async () => {
+    if (!code.trim()) {
+      alert("Please enter some code.");
+      return;
+    }
+
+    setLoading(true);
+    setFeedback("");
+
+    try {
+      const response = await fetch("http://localhost:8080/analyze", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code, language }),
+      });
+      console.log(code);
+      console.log(language);
+      console.log(response);
+      const data = await response.json();
+      console.log(data);
+      setFeedback(data.feedback);
+    } catch (error) {
+      console.error("Error analyzing code:", error);
+      setFeedback("Something went wrong while analyzing your code.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -331,6 +362,12 @@ const CodeEditor = () => {
                   Run
                 </Button>
                 <Button onClick={handleSubmit}>Submit</Button>
+                <Button
+                  onClick={handleAnalyze}
+                  className="bg-blue-600 hover:bg-blue-700 text-white  font-semibold"
+                >
+                  {loading ? "Analyzing..." : <FaRobot />}
+                </Button>
               </div>
             </div>
 
@@ -412,6 +449,40 @@ const CodeEditor = () => {
       ) : (
         <p className="text-white">Loading question...</p>
       )}
+
+{feedback && (
+  <div className="fixed inset-0 bg-black/70 backdrop-blur-md flex items-center justify-center z-50 transition-all duration-300">
+    <div className="relative bg-gradient-to-br from-[#1c1f33]/80 to-[#2c2f4a]/90 rounded-2xl shadow-2xl w-full max-w-3xl mx-4 max-h-[80vh] overflow-hidden border border-white/10 backdrop-blur-lg">
+      
+      {/* Close Button */}
+      <button
+        onClick={() => setFeedback(false)}
+        className="absolute top-3 right-4 text-white hover:text-red-500 text-2xl font-bold z-10"
+        aria-label="Close"
+      >
+        &times;
+      </button>
+
+      {/* Header */}
+      <div className="p-5 border-b border-white/10 flex items-center justify-between">
+        <h2 className="text-xl font-bold text-white flex items-center gap-2">
+          🧠 Gemini Code Review
+        </h2>
+      </div>
+
+      {/* Feedback Content (Scrollable + Colored Text) */}
+      <div className="p-5 overflow-y-auto max-h-[65vh] text-sm leading-relaxed custom-scrollbar text-gray-300 whitespace-pre-wrap">
+        <span
+          dangerouslySetInnerHTML={{
+            __html: feedback
+              .replace(/\*\*(.*?)\*\*/g, `<span class='text-white font-medium'>$1</span>`),
+          }}
+        />
+      </div>
+    </div>
+  </div>
+)}
+
     </div>
   );
 };

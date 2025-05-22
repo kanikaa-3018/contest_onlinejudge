@@ -13,6 +13,7 @@ const questionRoutes = require("./routes/questionRoutes.js");
 const internshipRoutes = require("./routes/internshipRoutes.js");
 const submissionRoutes = require("./routes/submissionRoutes");
 
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 const app = express();
 connectDB();
 
@@ -145,6 +146,49 @@ app.post("/execute", (req, res) => {
     res.json({ output: result });
   });
 });
+
+app.post('/analyze', async (req, res) => {
+  const { code, language } = req.body;
+
+  try {
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [
+          {
+            role: "user",
+            parts: [
+              {
+                text: `Analyze the following ${language} code. Give feedback on:
+- Code quality
+- Readability
+- Optimization
+- Maintainability
+- Any bugs or issues
+Just include useful and important feedback and keep it easy to understand.
+Code:\n\n${code}`
+              }
+            ]
+          }
+        ]
+      })
+    });
+
+    const data = await response.json();
+
+    if (data.candidates && data.candidates.length > 0) {
+      res.json({ feedback: data.candidates[0].content.parts[0].text });
+    } else {
+      console.error("No candidates in response:", JSON.stringify(data));
+      res.status(500).json({ message: "Gemini did not return valid feedback." });
+    }
+  } catch (error) {
+    console.error("Gemini API Error:", error.message);
+    res.status(500).json({ message: "Failed to analyze code with Gemini." });
+  }
+});
+
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
