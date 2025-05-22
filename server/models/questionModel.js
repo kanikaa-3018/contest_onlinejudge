@@ -23,7 +23,7 @@ const questionSchema = new mongoose.Schema({
   constraints: String,
   testCases: [testCaseSchema],
   hints: [String], 
-  referenceSolutions: [referenceCodeSchema]
+  referenceCode: [referenceCodeSchema]
 });
 
 module.exports = mongoose.model("Question", questionSchema);

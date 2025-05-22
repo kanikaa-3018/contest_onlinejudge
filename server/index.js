@@ -1,16 +1,16 @@
 const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
-const { exec , spawn} = require("child_process");
+const { exec, spawn } = require("child_process");
 const fs = require("fs");
-const axios=require("axios");
+const axios = require("axios");
 const path = require("path");
 dotenv.config();
 const connectDB = require("./db/connectDB.js");
 const progressRoutes = require("./routes/progress.js");
 const userRoutes = require("./routes/userRoutes.js");
-const questionRoutes= require("./routes/questionRoutes.js")
-const internshipRoutes= require("./routes/internshipRoutes.js")
+const questionRoutes = require("./routes/questionRoutes.js");
+const internshipRoutes = require("./routes/internshipRoutes.js");
 
 const app = express();
 connectDB();
@@ -28,42 +28,34 @@ app.use("/api/progress", progressRoutes);
 app.use("/api/questions", questionRoutes);
 app.use("/api/internships", internshipRoutes);
 
-
-
 //for test-case generation using python scripts
-app.post("/api/generate-tests", (req, res) => {
-  const code = req.body.code;
+// app.post("/api/generate-tests", async (req, res) => {
+//   const { code } = req.body;
+//   console.log(code);
+//   if (!code) {
+//     return res.status(400).json({ error: "Code is required" });
+//   }
 
-  const python = spawn("python", [
-    path.join(__dirname, "scripts", "generate_tests.py"),
-  ]);
+//   try {
+//     // Forward request to your Python Flask API running on port 5001
+//     const response = await axios.post("http://localhost:5001/generate-tests", {
+//       code,
+//     });
 
-  let result = "";
-
-  python.stdout.on("data", (data) => {
-    result += data.toString();
-  });
-
-  python.stderr.on("data", (data) => {
-    console.error(`Python error: ${data}`);
-  });
-
-  python.on("close", (codeExit) => {
-    try {
-      if (!result) throw new Error("No output from Python script");
-      const output = JSON.parse(result);
-      console.log(output)
-      res.json({ success: true, tests: output.tests });
-    } catch (err) {
-      console.error("Failed to parse or get output:", err);
-      res.status(500).json({ success: false, error: "Failed to parse response" });
-    }
-  });
-
-  python.stdin.write(code);
-  python.stdin.end();
-});
-
+//     if (response.data.tests) {
+//       return res.json({ success: true, tests: response.data.tests });
+//     } else {
+//       return res
+//         .status(500)
+//         .json({ success: false, error: "No test cases generated" });
+//     }
+//   } catch (error) {
+//     console.error("Error generating tests:", error.message);
+//     res
+//       .status(500)
+//       .json({ success: false, error: "Failed to generate test cases" });
+//   }
+// });
 
 app.get("/api/global-leaderboard", async (req, res) => {
   try {
@@ -77,14 +69,13 @@ app.get("/api/global-leaderboard", async (req, res) => {
   }
 });
 
-
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({ message: "Something went wrong!" });
 });
 
 const executeCode = (language, code, input, callback) => {
-  console.log("Received language:", language);
+  // console.log("Received language:", language);
 
   const codeFile = `code.${language}`;
   const inputFile = "input.txt";
@@ -97,7 +88,10 @@ const executeCode = (language, code, input, callback) => {
   fs.writeFileSync(codeFile, code);
   fs.writeFileSync(inputFile, input);
 
-  const volumeMount = path.resolve(__dirname).replace(/\\/g, '/').replace(/^([a-zA-Z]):/, '/$1');
+  const volumeMount = path
+    .resolve(__dirname)
+    .replace(/\\/g, "/")
+    .replace(/^([a-zA-Z]):/, "/$1");
 
   let dockerCommand = "";
   if (language === "cpp") {
@@ -110,13 +104,16 @@ const executeCode = (language, code, input, callback) => {
     dockerCommand = `docker run --rm -v ${volumeMount}:/app node:20 bash -c "node /app/${codeFile} < /app/${inputFile} > /app/${outputFile}"`;
   }
 
-  console.log("Volume Mount:", volumeMount);
-  console.log("Docker Command:", dockerCommand);
+  // console.log("Volume Mount:", volumeMount);
+  // console.log("Docker Command:", dockerCommand);
 
   exec(dockerCommand, (error, stdout, stderr) => {
     if (error) {
       console.error("Error executing Docker command:", error);
       callback(stderr || error.message);
+    } else if (stderr) {
+      console.error("Error in code execution:", stderr);
+      callback(stderr);
     } else {
       try {
         const output = fs.readFileSync(outputFile, "utf8");
@@ -138,8 +135,6 @@ const executeCode = (language, code, input, callback) => {
     }
   });
 };
-
-
 
 app.post("/execute", (req, res) => {
   const { language, code, input } = req.body;

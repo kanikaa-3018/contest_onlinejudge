@@ -109,6 +109,7 @@ router.post('/generate-hints/:id', async (req, res) => {
 
 router.put("/:id/reference-code", async (req, res) => {
   const { id } = req.params
+  console.log(id);
   const { cpp, python, java, javascript } = req.body
 
   try {
@@ -118,7 +119,7 @@ router.put("/:id/reference-code", async (req, res) => {
     }
 
     
-    let updatedSolutions = question.referenceSolutions.filter(
+    let updatedSolutions = question.referenceCode.filter(
       (sol) => !["cpp", "python", "java", "javascript"].includes(sol.language)
     )
 
@@ -131,13 +132,13 @@ router.put("/:id/reference-code", async (req, res) => {
 
     // Replace existing languages with new values
     newSolutions.forEach((newSol) => {
-      const existingIndex = question.referenceSolutions.findIndex(
+      const existingIndex = question.referenceCode.findIndex(
         (sol) => sol.language === newSol.language
       )
       if (existingIndex !== -1) {
-        question.referenceSolutions[existingIndex].code = newSol.code
+        question.referenceCode[existingIndex].code = newSol.code
       } else {
-        question.referenceSolutions.push(newSol)
+        question.referenceCode.push(newSol)
       }
     })
 
@@ -145,13 +146,26 @@ router.put("/:id/reference-code", async (req, res) => {
 
     res.status(200).json({
       message: "Reference solutions updated successfully",
-      referenceSolutions: question.referenceSolutions,
+      referenceCode: question.referenceCode,
     })
   } catch (err) {
     console.error(err)
     res.status(500).json({ error: "Server error" })
   }
 })
+
+router.get("/:id/reference-code", async (req, res) => {
+  const questionId = req.params.id;
+  try {
+    const question = await Question.findById(questionId); 
+    if (!question || !question.referenceCode) {
+      return res.status(404).json({ error: "Reference code not found." });
+    }
+    res.json({ referenceCode: question.referenceCode });
+  } catch (err) {
+    res.status(500).json({ error: "Server error" });
+  }
+});
 
 
 router.post("/:id/submit", async (req, res) => {

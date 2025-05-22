@@ -121,20 +121,30 @@ const CodeEditor = () => {
         body: JSON.stringify({
           language: languageMap[language],
           code,
-          input, // manually entered input
+          input,
         }),
       });
       const result = await response.json();
+
       if (result.output) {
         setOutput(result.output);
-        setVerdict("Success");
+
+        if (
+          result.output.includes("Traceback") ||
+          result.output.toLowerCase().includes("error") ||
+          result.output.toLowerCase().includes("exception")
+        ) {
+          setVerdict("Failed");
+        } else {
+          setVerdict("Success");
+        }
       } else {
         setOutput(result.error || "Unknown error");
-        setVerdict("Error");
+        setVerdict("Failed");
       }
     } catch (err) {
       setOutput("Error executing code");
-      setVerdict("Error");
+      setVerdict("Failed");
     }
   };
 
@@ -190,7 +200,7 @@ const CodeEditor = () => {
       }
     } catch (err) {
       setOutput("Submission error");
-      setVerdict("Error");
+      setVerdict("Failed");
     }
   };
 
@@ -335,11 +345,12 @@ const CodeEditor = () => {
                 className={`text-lg mb-4 ${
                   verdict === "Success"
                     ? "text-green-500"
-                    : verdict === "Running all test cases..."
+                    : verdict === "Running all test cases..." ||
+                      verdict === "Running..."
                     ? "text-yellow-400"
-                    : verdict === "" || verdict === "Idle" // treat empty or Idle as not submitted yet
-                    ? "text-white"
-                    : "text-red-500"
+                    : verdict === "Failed"
+                    ? "text-red-500"
+                    : "text-white"
                 }`}
               >
                 {verdict ? `${verdict}: ${output}` : ""}

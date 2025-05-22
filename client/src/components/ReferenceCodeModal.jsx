@@ -13,7 +13,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
 
-export default function ReferenceCodeModal({ questionId }) {
+function ReferenceCodeModal({ questionId }) {
   const [language, setLanguage] = useState("cpp")
   const [code, setCode] = useState({
     cpp: "",
@@ -39,7 +39,7 @@ export default function ReferenceCodeModal({ questionId }) {
 
     const result = await response.json();
     if (response.ok) {
-    //   console.log("Saved:", result);
+      console.log("Saved:", result);
       setOpen(false) 
     } else {
       console.error("Error:", result.error);
@@ -133,3 +133,5 @@ export default function ReferenceCodeModal({ questionId }) {
     </Dialog>
   )
 }
+
+export default ReferenceCodeModal;

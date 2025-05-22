@@ -98,20 +98,39 @@ const AdminDashboard = () => {
     }
   };
 
-  const generateExtraTestCases = async () => {
+  const fetchReferenceCode = async (questionId) => {
     try {
+      const res = await axios.get(`http://localhost:8080/api/questions/${questionId}/reference-code`);
+      console.log(res.data.referenceCode[0].code)
+      if (res.data && res.data.referenceCode) {
+        // const selectedLanguage = "python"; 
+        return res.data.referenceCode[0].code;
+      }
+    } catch (err) {
+      console.error("Failed to fetch reference code:", err);
+    }
+    return null;
+  };
+
+  const generateExtraTestCases = async (questionId) => {
+    try {
+      const code = await fetchReferenceCode(questionId); 
+      console.log(code)
+      if (!code) {
+        alert("No reference code found for selected language.");
+        return;
+      }
+  
       const res = await axios.post(
         "http://localhost:8080/api/generate-tests",
-        {
-          code: form.code,
-        },
+        { code },
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         }
       );
-
+  
       if (res.data.success) {
         const generated = res.data.tests;
         setForm({
@@ -126,6 +145,8 @@ const AdminDashboard = () => {
       alert("Error generating test cases.");
     }
   };
+  
+  
 
   return (
     <div className="p-6 bg-[#161A30] min-h-screen text-white relative overflow-hidden">
@@ -213,7 +234,7 @@ const AdminDashboard = () => {
                 <td>
                   <button
                     type="button"
-                    onClick={generateExtraTestCases}
+                    onClick={() => generateExtraTestCases(q._id)}
                     className="text-green-500 hover:underline ml-4"
                   >
                     + Generate Test Cases
