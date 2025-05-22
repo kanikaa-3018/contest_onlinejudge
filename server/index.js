@@ -97,14 +97,15 @@ const executeCode = (language, code, input, callback) => {
 
   let dockerCommand = "";
   if (language === "cpp") {
-    dockerCommand = `docker run --rm -v ${volumeMount}:/app cpp-code-executor bash -c "g++ /app/${codeFile} -o /app/a.out && /app/a.out < /app/${inputFile} > /app/${outputFile}"`;
+    dockerCommand = `docker run --rm -v ${volumeMount}:/app cpp-code-executor bash -c "mkdir -p /app && g++ /app/${codeFile} -o /app/a.out && /app/a.out < /app/${inputFile} | tee /app/${outputFile}"`;
   } else if (language === "python") {
-    dockerCommand = `docker run --rm -v ${volumeMount}:/app python:3.10 bash -c "python3 /app/${codeFile} < /app/${inputFile} > /app/${outputFile}"`;
+    dockerCommand = `docker run --rm -v ${volumeMount}:/app python:3.10 bash -c "mkdir -p /app && python3 /app/${codeFile} < /app/${inputFile} | tee /app/${outputFile}"`;
   } else if (language === "java") {
-    dockerCommand = `docker run --rm -v ${volumeMount}:/app openjdk:17 bash -c "javac /app/${codeFile} && java -cp /app Main < /app/${inputFile} > /app/${outputFile}"`;
+    dockerCommand = `docker run --rm -v ${volumeMount}:/app openjdk:17 bash -c "mkdir -p /app && javac /app/${codeFile} && java -cp /app Main < /app/${inputFile} | tee /app/${outputFile}"`;
   } else if (language === "javascript") {
-    dockerCommand = `docker run --rm -v ${volumeMount}:/app node:20 bash -c "node /app/${codeFile} < /app/${inputFile} > /app/${outputFile}"`;
+    dockerCommand = `docker run --rm -v ${volumeMount}:/app node:20 bash -c "mkdir -p /app && node /app/${codeFile} < /app/${inputFile} | tee /app/${outputFile}"`;
   }
+  
 
   // console.log("Volume Mount:", volumeMount);
   // console.log("Docker Command:", dockerCommand);

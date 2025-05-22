@@ -188,8 +188,8 @@ const CodeEditor = () => {
             status: "Success",
           }),
         });
-        const data= await response2.json();
-        console.log(response2)
+        // const data= await response2.json();
+        // console.log(response2)
       } else {
         setVerdict("Failed");
         setFailedCaseIndex(result.failedCaseIndex);
