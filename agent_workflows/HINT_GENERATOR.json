@@ -1,0 +1,123 @@
+{
+  "name": "HINT GENERATOR",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "/webhook/hint-agent",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "4485f3df-9580-4e28-9493-7fa71eaf800a",
+      "name": "Webhook",
+      "webhookId": "512559ae-dea4-4a66-a3e4-1f5594bd53d4"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a helpful assistant that generates 3 concise, one-liner hints for a given programming problem. Each hint should guide the user step-by-step toward solving the problem without revealing the full solution.\n\nGenerate 3 short, one-line hints for the following problem:\n\nID: {{ $json.body.id }}\nTitle: {{ $json.body.title }}\nDescription: {{ $json.body.description }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        220,
+        0
+      ],
+      "id": "b8f6bf65-1eab-4393-b07f-6ff94c4dabe1",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        260,
+        220
+      ],
+      "id": "63c79dce-263d-4113-824d-7f69ba8b4c69",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "z9pZl6g9jWkNGj0d",
+          "name": "n8n free OpenAI API credits"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.2,
+      "position": [
+        580,
+        0
+      ],
+      "id": "fe6045cb-1a41-456f-9c92-ca14524cfcf2",
+      "name": "Respond to Webhook"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "251f44e1-3bfe-4099-bcef-eda86bff6c97",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "da1e05e6c6b9b376238ec11810233cf2619079806224aed772093fcb372d46e7"
+  },
+  "id": "mIpp6SidwAoyn6nf",
+  "tags": []
+}

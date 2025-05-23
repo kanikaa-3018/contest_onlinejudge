@@ -1,0 +1,271 @@
+{
+  "name": "DAILY REPORT ANALYZER",
+  "nodes": [
+    {
+      "parameters": {
+        "url": "https://codeforces.com/api/user.status?handle=kanikasinghal0308&from=1&count=10",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        940,
+        100
+      ],
+      "id": "498d636d-4a00-4549-86b9-3a7489b25c20",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a Competitive Programming (CP) assistant AI agent.\n\nYour task is to generate a concise daily report for a Codeforces user based on their submissions made *today*. The input contains:\n\n- Total number of **unique problems solved today**\n- A list of **frequently occurring tags** (user's focus areas)\n- A **markdown-formatted list** of the problems they solved, including tags and ratings\n\nUse this to craft a report with the following:\n\n---\n\n### 🔹 Input\n-`date` : {{ $json.now }}\n- `totalCount`: {{$json.totalCount}}\n- `majorAreas`:  \n{{$json.majorAreas}}\n- `suggestedProblems`:  \n{{ $json.suggestedProblems }}\n\n---\n\n### 🔸 Your Output Format:\n\nReturn the following markdown-formatted sections:\n\n---\n\n**✅ Problems Solved Today:**  \n{{totalCount}}\n\n---\n\n**📚 Major Areas of Focus:**  \n{{majorAreas}}\n\n---\n\n**🌟 Keep Going!**  \nWrite a short motivational message tailored to the user's effort (e.g., \"Great job grinding through those DP problems today!\" or \"One problem a day keeps the fear away — you're doing great!\")\n\n---\n\n**🧩 Problems You Solved:**  \n{{suggestedProblems}}\n\n---\n\n**💡 What’s Next?**  \nRecommend one or two related concepts to explore based on the most frequent tags. Mention topics like: \"If you focused on `greedy`, try exploring `binary search on answer` next.\"\n\n---\n\n**🎯 Suggested Practice Problems:**  \nFetch 3–5 new Codeforces problems related to the **top tags** from the majorAreas list. Present them as markdown links like:\n\n- [Problem Title](https://codeforces.com/problemset/problem/ID/Index) — tag: tag-name, rating: XXXX\n\nEnsure these problems are:\n\n- Unsolved by the user (if known)\n- Well-rated and not duplicates of already solved ones\n- Varied in difficulty (e.g., 800 to 1600)\n\n---\n\n### ✅ Output Format (Use This Markdown Format for google sheets)\n-Date: {{ $json.now }}\n-count of Problems solved today\n-Major areas of focus\n-problems solved\n-suggested problems(with links)\n-daily motivation\n\nKeep your tone friendly, helpful, and coach-like. Output must be formatted clearly for markdown display.\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        1320,
+        0
+      ],
+      "id": "1c585da5-250a-4f1d-bc9a-8870cd1c3f62",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1360,
+        220
+      ],
+      "id": "9ffecfb3-e23b-4405-b098-e18a0994571d",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "jaRXpOB1bBoeNKD8",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Assume submissions are in input JSON: input[0].json.result (array of submissions)\nconst result = $input.first().json.result;\n\nconst now = new Date();\nconst startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime() / 1000;\nconst endOfToday = startOfToday + 86400;\n\nconst uniqueProblems = new Map();\nconst tagFrequency = {};\n\nfor (const sub of result) {\n  const created = sub.creationTimeSeconds;\n\n  if (created >= startOfToday && created < endOfToday) {\n    const prob = sub.problem;\n    const key = `${prob.contestId}-${prob.index}`;\n\n    if (!uniqueProblems.has(key)) {\n      uniqueProblems.set(key, prob);\n\n      (prob.tags ?? []).forEach(tag => {\n        tagFrequency[tag] = (tagFrequency[tag] ?? 0) + 1;\n      });\n    }\n  }\n}\n\nconst totalCount = uniqueProblems.size;\n\nconst majorAreas = Object.entries(tagFrequency)\n  .sort((a, b) => b[1] - a[1])\n  .map(([tag, count]) => `- ${tag}: ${count}`)\n  .join(\"\\n\");\n\nconst suggestedProblems = Array.from(uniqueProblems.values())\n  .map(p => {\n    const tags = (p.tags && p.tags.length) ? p.tags.join(\", \") : \"None\";\n    const rating = p.rating || \"N/A\";\n    return `- [${p.name}](https://codeforces.com/problemset/problem/${p.contestId}/${p.index}) — tags: ${tags}, rating: ${rating}`;\n  })\n  .join(\"\\n\");\n\nreturn [\n  {\n    json: {\n      now,\n      totalCount,\n      majorAreas,\n      suggestedProblems,\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1160,
+        100
+      ],
+      "id": "793a1549-14b7-44d9-a7ad-9d26ba9e26e5",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "receive output from AI agent and display to the user in proper format",
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1oGj0_KE1aE1BP1WsLd-Q9qShKPxaQY0yusIeiO8wz40",
+          "mode": "list",
+          "cachedResultName": "contest tracker sheet",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1oGj0_KE1aE1BP1WsLd-Q9qShKPxaQY0yusIeiO8wz40/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 723096008,
+          "mode": "list",
+          "cachedResultName": "Sheet2",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1oGj0_KE1aE1BP1WsLd-Q9qShKPxaQY0yusIeiO8wz40/edit#gid=723096008"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "DATE": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('DATE', ``, 'string') }}",
+            "PROBLEMS SOLVED": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('PROBLEMS_SOLVED', ``, 'string') }}",
+            "MAJOR AREAS OF FOCUS": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('MAJOR_AREAS_OF_FOCUS', ``, 'string') }}",
+            "SOLVED TODAY": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('SOLVED_TODAY', ``, 'string') }}",
+            "SUGGESTED PROBLEMS(with links)": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('SUGGESTED_PROBLEMS_with_links_', ``, 'string') }}",
+            "DAILY MOTIVATION": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('DAILY_MOTIVATION', ``, 'string') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "DATE",
+              "displayName": "DATE",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "PROBLEMS SOLVED",
+              "displayName": "PROBLEMS SOLVED",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "MAJOR AREAS OF FOCUS",
+              "displayName": "MAJOR AREAS OF FOCUS",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "SOLVED TODAY",
+              "displayName": "SOLVED TODAY",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "SUGGESTED PROBLEMS(with links)",
+              "displayName": "SUGGESTED PROBLEMS(with links)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "DAILY MOTIVATION",
+              "displayName": "DAILY MOTIVATION",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.5,
+      "position": [
+        1680,
+        220
+      ],
+      "id": "df7b405a-a535-4485-8e3f-36382064dc06",
+      "name": "Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Z2EEkK3zRRMSg78F",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {}
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        760,
+        0
+      ],
+      "id": "3f729a79-5379-48f8-af43-b7dcf752efd8",
+      "name": "Schedule Trigger",
+      "notesInFlow": true,
+      "notes": "This triggers everyday at midnight and fetches the user's code submissions of that particular day"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "4ff96702-9451-47ee-82c8-f9c8b42c0c33",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "d39c9af160185bcfb143465bceacc1ef2bedf6eba7e3e33ffab754cc0f390f03"
+  },
+  "id": "a8vlc5rk7snLJROL",
+  "tags": []
+}

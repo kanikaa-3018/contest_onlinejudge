@@ -1,0 +1,146 @@
+{
+  "name": "INTERNSHIP TRACKER",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "/scrape-internship",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "39d8d06a-dce2-40e4-8944-dea23f2daeae",
+      "name": "Webhook",
+      "webhookId": "78df58bf-ba9a-45f9-9d4c-42b786ab6279"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are an intelligent HTML parser for internship/job listing pages.\n\nYou will be given a full HTML document from a career/internship website. Your task is to extract and return the following fields **in JSON format** based on the schema described below:\nINPUT FORMAT: \nOUTPUT FORMAT:{{ $json.body.html }}\n{\n  \"title\": \"\",\n  \"role\": \"\",\n  \"company\": \"\",\n  \"location\": \"\",\n  \"duration\": \"\",\n  \"stipend\": \"\",\n  \"skills_required\": [],\n  \"mode\": \"\",\n  \"link\": \"\",\n\n}\n",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        220,
+        0
+      ],
+      "id": "5f90d684-b92d-4ba8-8d7a-917eae184464",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        220,
+        220
+      ],
+      "id": "fb2b0dd5-9cf9-47f2-971b-9ad02401b54a",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "z9pZl6g9jWkNGj0d",
+          "name": "n8n free OpenAI API credits"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"title\": \"Software Engineering Internship\",\n  \"company\": \"Tech Solutions Inc.\",\n  \"role\": \"Frontend Developer Intern\",\n  \"location\": \"California\",\n  \"duration\": \"3 months\",\n  \"stipend\": \"$1500/month\",\n  \"skills_required\": [\"JavaScript\", \"React\", \"CSS\"],\n  \n  \"mode\": \"Remote\",\n  \"link\": \"https://techsolutions.com/internship/frontend-intern\"\n\n}\n"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        400,
+        220
+      ],
+      "id": "a7f19e4e-e055-49b0-8416-d35058c0650b",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.2,
+      "position": [
+        580,
+        0
+      ],
+      "id": "04bcc88a-73cd-4fa9-b1c9-a2aaf2ed0697",
+      "name": "Respond to Webhook"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "3b92580b-abfa-44ff-aaa3-bbf69b0217fe",
+  "meta": {
+    "instanceId": "da1e05e6c6b9b376238ec11810233cf2619079806224aed772093fcb372d46e7"
+  },
+  "id": "JSCOF1AXnUCZuQkQ",
+  "tags": []
+}
