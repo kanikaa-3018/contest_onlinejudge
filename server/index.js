@@ -35,7 +35,7 @@ app.use("/api/progress", progressRoutes);
 app.use("/api/questions", questionRoutes);
 app.use("/api/submissions", submissionRoutes);
 app.use("/api/internships", internshipRoutes);
-app.use("/api/room", roomRoutes);
+app.use("/api/rooms", roomRoutes);
 //for test-case generation using python scripts
 // app.post("/api/generate-tests", async (req, res) => {
 //   const { code } = req.body;

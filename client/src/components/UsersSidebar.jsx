@@ -6,6 +6,7 @@ import UserAvatar from "./UserAvatar.jsx";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import socket from "../socket.js";
 import { useParams } from "react-router-dom";
+import { FaUser } from "react-icons/fa";
 
 const UsersSidebar = ({ className }) => {
   const [collapsed, setCollapsed] = useState(false);
@@ -44,7 +45,7 @@ const UsersSidebar = ({ className }) => {
   return (
     <div
       className={`relative flex h-full flex-col border-l p-2 transition-all duration-300 ${
-        collapsed ? "w-14" : "w-64"
+        collapsed ? "w-22" : "w-64"
       } ${className}`}
       style={{
         borderColor: "#27272a",
@@ -54,19 +55,22 @@ const UsersSidebar = ({ className }) => {
       <Button
         variant="outline"
         size="icon"
-        className="absolute -left-3 top-4 h-6 w-6 rounded-full"
-        style={{ backgroundColor: "#27272a" }}
+        className="absolute top-4 left-8 z-10 h-6 w-6 rounded-full transition-transform duration-300"
+        style={{
+          transform: collapsed ? "translateX(-50%)" : "translateX(-100%)",
+          backgroundColor: "#27272a",
+        }}
         onClick={() => setCollapsed(!collapsed)}
       >
         {collapsed ? (
-          <ArrowRight className="h-3 w-3" />
+          <ArrowRight className="h-3 w-6" />
         ) : (
-          <ArrowLeft className="h-3 w-3" />
+          <ArrowLeft className="h-3 w-6" />
         )}
       </Button>
 
       <div className="flex items-center py-2">
-        {!collapsed && <h3 className="text-sm font-medium">Connected Users</h3>}
+        {!collapsed ? <h3 className="text-sm font-medium ml-8">Connected Users</h3> : <FaUser className="ml-10 mt-1"/>}
       </div>
       <Separator className="my-2" />
 

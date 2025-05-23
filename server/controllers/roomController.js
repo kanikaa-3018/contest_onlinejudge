@@ -1,25 +1,26 @@
-const Room =require("../models/roomModel.js");
+const Room = require("../models/roomModel.js");
 
-// POST /api/rooms/create
- const createRoom = async (req, res) => {
+// Create a new room
+const createRoom = async (req, res) => {
   try {
-    const { name, isPrivate } = req.body;
+    const { name,  description, language } = req.body;
 
     const room = await Room.create({
       name,
-      isPrivate,
+      description: description || "",
+      language: language || "JavaScript",
       createdBy: req.user._id,
       users: [req.user._id],
     });
 
     res.status(201).json(room);
   } catch (error) {
-    res.status(500).json({ message: 'Failed to create room' });
+    res.status(500).json({ message: 'Failed to create room', error: error.message });
   }
 };
 
-// GET /api/rooms
- const getAllRooms = async (req, res) => {
+// Get all public rooms
+const getAllRooms = async (req, res) => {
   try {
     const rooms = await Room.find({ isPrivate: false }).populate('users', 'name email');
     res.status(200).json(rooms);
@@ -28,8 +29,8 @@ const Room =require("../models/roomModel.js");
   }
 };
 
-// GET /api/rooms/:id
- const getRoomById = async (req, res) => {
+// Get a single room by ID
+const getRoomById = async (req, res) => {
   try {
     const room = await Room.findById(req.params.id).populate('users', 'name email');
 
@@ -41,8 +42,8 @@ const Room =require("../models/roomModel.js");
   }
 };
 
-// POST /api/rooms/:id/join
- const joinRoom = async (req, res) => {
+// Join a room
+const joinRoom = async (req, res) => {
   try {
     const room = await Room.findById(req.params.id);
 
@@ -59,8 +60,8 @@ const Room =require("../models/roomModel.js");
   }
 };
 
-// POST /api/rooms/:id/leave
- const leaveRoom = async (req, res) => {
+// Leave a room
+const leaveRoom = async (req, res) => {
   try {
     const room = await Room.findById(req.params.id);
 
@@ -78,4 +79,39 @@ const Room =require("../models/roomModel.js");
   }
 };
 
-module.exports={createRoom,getAllRooms,getRoomById,joinRoom,leaveRoom}
+// Get rooms created by the user
+const getMyRooms = async (req, res) => {
+  try {
+    const rooms = await Room.find({ createdBy: req.user._id });
+    res.status(200).json(rooms);
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to fetch your rooms' });
+  }
+};
+
+// Search rooms by name or description
+const searchRooms = async (req, res) => {
+  try {
+    const { query } = req.query;
+    const regex = new RegExp(query, "i");
+
+    const rooms = await Room.find({
+      isPrivate: false,
+      $or: [{ name: regex }, { description: regex }],
+    });
+
+    res.status(200).json(rooms);
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to search rooms' });
+  }
+};
+
+module.exports = {
+  createRoom,
+  getAllRooms,
+  getRoomById,
+  joinRoom,
+  leaveRoom,
+  getMyRooms,
+  searchRooms,
+};

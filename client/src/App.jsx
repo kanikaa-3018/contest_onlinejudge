@@ -43,6 +43,7 @@ function App() {
             <Route path="room" element={<RoomDashboard/>}/>
             <Route path="room/:id" element={<RoomPage/>}/>
             <Route path="ai" element={<AIChatAgent/>}/>
+            
           </Route>
           <Route path="/admin" element={<AdminDashboard />} />
         </Routes>

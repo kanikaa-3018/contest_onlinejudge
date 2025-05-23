@@ -17,6 +17,7 @@ const RoomCard = ({ id, name, description, language, userCount, lastActive }) =>
       <CardHeader className="pb-2">
         <div className="flex items-start justify-between">
           <CardTitle className="text-lg font-bold">{name}</CardTitle>
+          
           <Badge 
             variant="outline" 
             className="text-xs font-medium"

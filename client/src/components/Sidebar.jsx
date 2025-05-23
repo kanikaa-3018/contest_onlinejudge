@@ -13,6 +13,7 @@ import {
   Brain,
   ChevronLeft,
   ChevronRight,
+  Users
 } from "lucide-react";
 
 const NavItem = ({ icon, label, href, isCollapsed, isActive }) => {
@@ -26,9 +27,7 @@ const NavItem = ({ icon, label, href, isCollapsed, isActive }) => {
           : "hover:bg-[#B6BBC4]/20 text-[#B6BBC4] hover:text-[#F0ECE5]"
       )}
     >
-      <div className="flex h-5 w-5 items-center justify-center">
-        {icon}
-      </div>
+      <div className="flex h-5 w-5 items-center justify-center">{icon}</div>
       {!isCollapsed && <span className="text-sm font-medium">{label}</span>}
     </Link>
   );
@@ -45,7 +44,10 @@ export const Sidebar = () => {
         "bg-[#161A30] border-[#31304D]"
       )}
     >
-      <a href="/" className="flex h-14 items-center px-4 border-b border-[#31304D]">
+      <a
+        href="/"
+        className="flex h-14 items-center px-4 border-b border-[#31304D]"
+      >
         <h2 className="font-bold text-xl text-[#F0ECE5]">
           {isCollapsed ? "CA" : "CodeArena"}
         </h2>
@@ -92,6 +94,12 @@ export const Sidebar = () => {
           icon={<Brain className="h-4 w-4 text-[#B6BBC4]" />}
           label="Learn"
           href="/learn"
+          isCollapsed={isCollapsed}
+        />
+        <NavItem
+          icon={<Users className="h-4 w-4 text-[#B6BBC4]" />}
+          label="Peer Rooms"
+          href="/room"
           isCollapsed={isCollapsed}
         />
       </div>

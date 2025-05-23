@@ -65,7 +65,7 @@ const initSocket = (httpServer) => {
       io.to(roomId).emit("room-users", allUsers);
 
       socket.to(roomId).emit("user-left", user);
-      console.log(`👤 ${user.name} (id: ${user.id}) left room ${roomId}`);
+      // console.log(`👤 ${user.name} (id: ${user.id}) left room ${roomId}`);
     });
 
     socket.on("disconnect", () => {
@@ -96,7 +96,7 @@ const initSocket = (httpServer) => {
     socket.on("send-message", (message) => {
       // Broadcast the message to everyone in the room except sender
       const { roomId } = message;
-      console.log(`Message from ${message.sender.name} in room ${roomId}: ${message.text}`);
+      // console.log(`Message from ${message.sender.name} in room ${roomId}: ${message.text}`);
       socket.to(roomId).emit("receive-message", message);
     });
 
