@@ -1,4 +1,4 @@
-# 🧠 CodeArena🚀
+[DAILY_REPORT_ANALYZER.json](https://github.com/user-attachments/files/20407538/DAILY_REPORT_ANALYZER.json)# 🧠 CodeArena🚀
 
 **An AI-Driven Coding, Career & Contest Companion**
 
@@ -196,15 +196,21 @@ docker-compose up --build
 You can self-host or use n8n Cloud to power AI automation workflows for:
 
 🧠 Hint generation
+
+![Screenshot 2025-05-23 142759](https://github.com/user-attachments/assets/791d09f5-a128-4b77-9939-2ad8d2c87350)
+
 🧳 Internship follow-ups
-📊 Code quality review
-📅 Contest reminders
 
-🖼 Screenshot and workflow link will be added here:
+![Screenshot 2025-05-23 142400](https://github.com/user-attachments/assets/f10f3722-e669-4644-8ffc-2ac9c2ace376)
 
-📥 View n8n Workflow JSON (coming soon)
+📊 Daily Progress summary generator
 
-(coming soon)
+![Screenshot 2025-05-23 142614](https://github.com/user-attachments/assets/5d7fd372-458f-4cb7-ad61-716a87258f4e)
+
+📅 RealTime chatbot for queries using Relevance AI
+
+📥 View n8n Workflow JSON
+
 
 
 ---
