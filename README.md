@@ -243,5 +243,5 @@ Feel free to fork, enhance, and contribute to the project!
 **Kanika Singhal**
 🚀 Full Stack Developer | AI Explorer
 🌐 GitHub: [kanikasinghal](https://github.com/kanikaa-3018)
-📧 Email: [kanikasinghal.dev@example.com](mailto:kanikasin216@gmail.com)
+📧 Email: [kanikasin216@gmail.com](mailto:kanikasin216@gmail.com)
 
