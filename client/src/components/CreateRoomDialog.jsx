@@ -23,6 +23,8 @@ import { toast } from "sonner";
 
 const CreateRoomDialog = () => {
   const [open, setOpen] = useState(false);
+  const token = localStorage.getItem('token');
+  
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -38,13 +40,40 @@ const CreateRoomDialog = () => {
     setFormData((prev) => ({ ...prev, language: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Creating room:", formData);
-    toast.success("Room created successfully!");
-    setOpen(false);
-    setFormData({ name: "", description: "", language: "javascript" });
+  
+    try {
+      const response = await fetch('http://localhost:8080/api/rooms/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(formData),
+      });
+  
+      if (!response.ok) {
+        
+        const errorData = await response.json().catch(() => null);
+        const message = errorData?.message || 'Failed to create room';
+        throw new Error(message);
+      }
+  
+      
+      const createdRoom = await response.json();
+  
+      // toast.success('Room created successfully!');
+      setOpen(false);
+      setFormData({ name: '', description: '', language: 'javascript' });
+  
+  
+    } catch (error) {
+      toast.error(`Error: ${error.message}`);
+      console.error('Create room error:', error);
+    }
   };
+  
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>

@@ -1,19 +1,20 @@
-const mongoose =require('mongoose') ;
+const mongoose = require("mongoose");
 
 const roomSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
   },
+  description: { type: String, required: true },
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
+    ref: "User",
     required: true,
   },
   users: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
+      ref: "User",
     },
   ],
   isPrivate: {
@@ -26,13 +27,12 @@ const roomSchema = new mongoose.Schema({
   },
   codeSnapshot: {
     type: String,
-    default: '', // Optional: You can store latest code state here
+    default: "", // Optional: You can store latest code state here
   },
   documentSnapshot: {
     type: String,
-    default: '', // Optional: For shared documentation
+    default: "", // Optional: For shared documentation
   },
 });
 
-  
-  module.exports=mongoose.model('Room', roomSchema);
+module.exports = mongoose.model("Room", roomSchema);

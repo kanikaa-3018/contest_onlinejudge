@@ -1,28 +1,35 @@
-const express =require("express");
+const express = require("express");
+const router = express.Router();
 const {
   createRoom,
   getAllRooms,
   getRoomById,
   joinRoom,
   leaveRoom,
-} =require('../controllers/roomController.js') ;
+  getMyRooms,
+  searchRooms,
+} = require("../controllers/roomController");
+const { protect } = require("../middlewares/authMiddlewareRoom.js");
 
-const { protect } =require('../middlewares/authMiddlewareRoom.js') ;
-
-const router = express.Router();
 // Create a room
-router.post('/create', protect, createRoom);
+router.post("/create",protect, createRoom);
 
 // Get all public rooms
-router.get('/', protect, getAllRooms);
+router.get("/", getAllRooms);
 
-// Get single room by ID
-router.get('/:id', protect, getRoomById);
+// Get rooms created by the logged-in user
+router.get("/my", getMyRooms);
 
-// Join a room
-router.post('/:id/join', protect, joinRoom);
+// Search rooms
+router.get("/search", searchRooms);
 
-// Leave a room
-router.post('/:id/leave', protect, leaveRoom);
+// Get room by ID
+router.get("/:id", getRoomById);
+
+// Join room
+router.post("/:id/join", protect, joinRoom);
+
+// Leave room
+router.post("/:id/leave", protect, leaveRoom);
 
 module.exports = router;

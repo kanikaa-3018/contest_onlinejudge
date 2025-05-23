@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import RoomCard from "../components/RoomCard";
 import CreateRoomDialog from "../components/CreateRoomDialog";
 import { Input } from "../components/ui/input";
@@ -6,70 +6,44 @@ import { Button } from "../components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
 import { Search, Code } from "lucide-react";
 
-// Mock rooms data
-const mockRooms = [
-  {
-    id: "1",
-    name: "Frontend Team",
-    description: "Working on the new UI components for the dashboard.",
-    language: "TypeScript",
-    userCount: 4,
-    lastActive: "2 mins ago",
-  },
-  {
-    id: "2",
-    name: "API Integration",
-    description: "Connecting our app to the payment gateway API.",
-    language: "JavaScript",
-    userCount: 2,
-    lastActive: "5 mins ago",
-  },
-  {
-    id: "3",
-    name: "Database Structure",
-    description: "Planning the MongoDB collections and relationships.",
-    language: "MongoDB",
-    userCount: 3,
-    lastActive: "10 mins ago",
-  },
-  {
-    id: "4",
-    name: "Authentication System",
-    description: "Implementing JWT authentication and authorization.",
-    language: "Node.js",
-    userCount: 2,
-    lastActive: "15 mins ago",
-  },
-  {
-    id: "5",
-    name: "Mobile App Features",
-    description: "Developing new features for the React Native app.",
-    language: "React Native",
-    userCount: 3,
-    lastActive: "20 mins ago",
-  },
-  {
-    id: "6",
-    name: "Backend Optimization",
-    description: "Performance tuning for API endpoints.",
-    language: "Express",
-    userCount: 2,
-    lastActive: "30 mins ago",
-  },
-];
-
 const RoomDashboard = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [filter, setFilter] = useState("all");
+  const [rooms, setRooms] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const user=JSON.parse(localStorage.getItem("user"))
+
+  // Fetch rooms from backend
+  useEffect(() => {
+    const fetchRooms = async () => {
+      try {
+        const response = await fetch("http://localhost:8080/api/rooms");
+        if (!response.ok) {
+          throw new Error("Failed to fetch rooms");
+        }
+        const data = await response.json();
+        setRooms(data);
+        console.log(data)
+      } catch (error) {
+        console.error("Error fetching rooms:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchRooms();
+  }, []);
 
   // Filter rooms based on search query and tab filter
-  const filteredRooms = mockRooms.filter((room) => {
-    const matchesSearch = room.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                         room.description.toLowerCase().includes(searchQuery.toLowerCase());
-    
+  const filteredRooms = rooms.filter((room) => {
+    const matchesSearch =
+      room.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (room.description && room.description.toLowerCase().includes(searchQuery.toLowerCase()));
+
     if (filter === "all") return matchesSearch;
-    if (filter === "active") return matchesSearch && room.userCount > 0;
-    
+    if (filter === "active") return matchesSearch && room.users.length > 0;
+    if (filter === "my") return matchesSearch && room.createdBy === user._id; 
+
     return matchesSearch;
   });
 
@@ -113,12 +87,20 @@ const RoomDashboard = () => {
           <TabsTrigger value="active">Active</TabsTrigger>
           <TabsTrigger value="my">My Rooms</TabsTrigger>
         </TabsList>
-        
+
         <TabsContent value="all" className="mt-0">
-          {filteredRooms.length > 0 ? (
+          {loading ? (
+            <p>Loading rooms...</p>
+          ) : filteredRooms.length > 0 ? (
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
               {filteredRooms.map((room) => (
-                <RoomCard key={room.id} {...room} />
+                <RoomCard key={room._id}        
+                id={room._id}         
+                name={room.name}
+                description={room.description}
+                language={room.language}
+                userCount={room.users.length}
+                lastActive={room.lastActive} />
               ))}
             </div>
           ) : (
@@ -134,26 +116,62 @@ const RoomDashboard = () => {
             </div>
           )}
         </TabsContent>
-        
+
         <TabsContent value="active" className="mt-0">
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {filteredRooms.map((room) => (
-              <RoomCard key={room.id} {...room} />
-            ))}
-          </div>
-        </TabsContent>
-        
-        <TabsContent value="my" className="mt-0">
-          <div className="flex min-h-[400px] flex-col items-center justify-center rounded-md border border-dashed p-8 text-center">
-            <div className="flex h-20 w-20 items-center justify-center rounded-full" style={{ backgroundColor: '#27272a' }}>
-              <Code className="h-10 w-10" style={{ color: '#a1a1aa' }} />
+          {loading ? (
+            <p>Loading rooms...</p>
+          ) : filteredRooms.length > 0 ? (
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {filteredRooms.map((room) => (
+                <RoomCard key={room._id}        
+                id={room._id}         
+                name={room.name}
+                description={room.description}
+                language={room.language}
+                userCount={room.users.length}
+                lastActive={room.lastActive} />
+              ))}
             </div>
-            <h3 className="mt-4 text-lg font-medium">No rooms created yet</h3>
-            <p className="mb-4 mt-2 text-sm" style={{ color: '#a1a1aa' }}>
-              Create your first room to start collaborating with others.
-            </p>
-            <CreateRoomDialog />
-          </div>
+          ) : (
+            <div className="flex min-h-[400px] flex-col items-center justify-center rounded-md border border-dashed p-8 text-center">
+              <div className="flex h-20 w-20 items-center justify-center rounded-full" style={{ backgroundColor: '#27272a' }}>
+                <Code className="h-10 w-10" style={{ color: '#a1a1aa' }} />
+              </div>
+              <h3 className="mt-4 text-lg font-medium">No active rooms</h3>
+              <p className="mb-4 mt-2 text-sm" style={{ color: '#a1a1aa' }}>
+                There are currently no active rooms.
+              </p>
+            </div>
+          )}
+        </TabsContent>
+
+        <TabsContent value="my" className="mt-0">
+          {loading ? (
+            <p>Loading rooms...</p>
+          ) : filteredRooms.length > 0 ? (
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {filteredRooms.map((room) => (
+                <RoomCard key={room._id}        
+                id={room._id}         
+                name={room.name}
+                description={room.description}
+                language={room.language}
+                userCount={room.users.length}
+                lastActive={room.lastActive} />
+              ))}
+            </div>
+          ) : (
+            <div className="flex min-h-[400px] flex-col items-center justify-center rounded-md border border-dashed p-8 text-center">
+              <div className="flex h-20 w-20 items-center justify-center rounded-full" style={{ backgroundColor: '#27272a' }}>
+                <Code className="h-10 w-10" style={{ color: '#a1a1aa' }} />
+              </div>
+              <h3 className="mt-4 text-lg font-medium">No rooms created yet</h3>
+              <p className="mb-4 mt-2 text-sm" style={{ color: '#a1a1aa' }}>
+                Create your first room to start collaborating with others.
+              </p>
+              <CreateRoomDialog />
+            </div>
+          )}
         </TabsContent>
       </Tabs>
     </div>

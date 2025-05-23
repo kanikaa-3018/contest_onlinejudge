@@ -40,15 +40,15 @@ const ChatBox = ({ className }) => {
       setMessages((prev) => [...prev, systemMessage]);
     });
 
-    socket.on("user-left", (leftUser) => {
-      const systemMessage = {
-        id: Date.now().toString() + "-leave",
-        text: `${leftUser.name} left the chat`,
-        sender: { id: "system", name: "System" },
-        timestamp: new Date(),
-      };
-      setMessages((prev) => [...prev, systemMessage]);
-    });
+    // socket.on("user-left", (leftUser) => {
+    //   const systemMessage = {
+    //     id: Date.now().toString() + "-leave",
+    //     text: `${leftUser.name} left the chat`,
+    //     sender: { id: "system", name: "System" },
+    //     timestamp: new Date(),
+    //   };
+    //   setMessages((prev) => [...prev, systemMessage]);
+    // });
 
     return () => {
       socket.emit("leave-room", { roomId, user });
@@ -115,7 +115,7 @@ const ChatBox = ({ className }) => {
                 style={{
                   backgroundColor:
                     message.sender.id === user.id
-                      ? "#a855f7"
+                      ? "#6A9955"
                       : message.sender.id === "system"
                       ? "#1f2937"
                       : "#27272a",
