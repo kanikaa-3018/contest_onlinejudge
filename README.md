@@ -1,4 +1,4 @@
-[DAILY_REPORT_ANALYZER.json](https://github.com/user-attachments/files/20407538/DAILY_REPORT_ANALYZER.json)# 🧠 CodeArena🚀
+# 🧠 CodeArena🚀
 
 **An AI-Driven Coding, Career & Contest Companion**
 
@@ -209,9 +209,25 @@ You can self-host or use n8n Cloud to power AI automation workflows for:
 
 📅 RealTime chatbot for queries using Relevance AI
 
-📥 View n8n Workflow JSON
 
+### 🔁 📥 View and Download n8n Workflow JSON
 
+You can directly download and import the following n8n workflows into your own workspace.
+
+> ⚠️ **Note:** Make sure to **update the Webhook Trigger node** in each workflow with the correct URL from your own [n8n instance](https://n8n.io). Webhook URLs are unique per workspace.
+
+* [ Download n8n Hint Generator JSON](./agent_workflows/HINT_GENERATOR.json)
+  *(Generates AI hints and feedback on user code submissions)*
+
+* [ Download n8n Internship Tracker JSON](./agent_workflows/INTERNSHIP_TRACKER.json)
+  *(Tracks internships and sends follow-up reminders via AI agent)*
+
+* [ Download n8n Report Analyzer JSON](./agent_workflows/DAILY_REPORT_ANALYZER.json)
+  *(Summarizes contest performance, weaknesses, and submits AI reports)*
+
+---
+
+Let me know if you'd like a `.gif` or screenshot tutorial to help users import these workflows into their own n8n instance!
 
 ---
 
@@ -227,5 +243,5 @@ Feel free to fork, enhance, and contribute to the project!
 **Kanika Singhal**
 🚀 Full Stack Developer | AI Explorer
 🌐 GitHub: [kanikasinghal](https://github.com/kanikaa-3018)
-📧 Email: [kanikasinghal.dev@example.com](mailto:kanikasin216@gmail.com)
+📧 Email: [kanikasin216@gmail.com](mailto:kanikasin216@gmail.com)
 
