@@ -1,4 +1,4 @@
-[DAILY_REPORT_ANALYZER.json](https://github.com/user-attachments/files/20407538/DAILY_REPORT_ANALYZER.json)# 🧠 CodeArena🚀
+# 🧠 CodeArena🚀
 
 **An AI-Driven Coding, Career & Contest Companion**
 
