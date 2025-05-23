@@ -22,6 +22,7 @@
     "mongoose": "^8.14.2",
     "node-fetch": "^2.7.0",
     "openai": "^4.100.0",
-    "playwright": "^1.52.0"
+    "playwright": "^1.52.0",
+    "socket.io": "^4.8.1"
   }
 }

@@ -18,6 +18,8 @@ import AIChatAgent from "./components/AIChatAgent.jsx"
 import MyCalendar from "./components/MyCalendar.jsx";
 import Lead from "./pages/Lead.jsx";
 import Internship from "./pages/Internship.jsx"
+import RoomDashboard from "./components/RoomDashboard.jsx";
+import RoomPage from "./components/RoomPage.jsx";
 
 
 const queryClient = new QueryClient();
@@ -38,7 +40,8 @@ function App() {
             <Route path="leaderboard" element={<Lead />} />
             <Route path="learn" element={<Learn/>} />
             <Route path="intern" element={<Internship/>}/>
-            
+            <Route path="room" element={<RoomDashboard/>}/>
+            <Route path="room/:id" element={<RoomPage/>}/>
             <Route path="ai" element={<AIChatAgent/>}/>
           </Route>
           <Route path="/admin" element={<AdminDashboard />} />

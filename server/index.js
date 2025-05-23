@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const http = require("http");
 const dotenv = require("dotenv");
 const { exec, spawn } = require("child_process");
 const fs = require("fs");
@@ -12,7 +13,8 @@ const userRoutes = require("./routes/userRoutes.js");
 const questionRoutes = require("./routes/questionRoutes.js");
 const internshipRoutes = require("./routes/internshipRoutes.js");
 const submissionRoutes = require("./routes/submissionRoutes");
-
+const roomRoutes = require("./routes/roomRoutes.js");
+const {initSocket}= require("./socket.js")
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 const app = express();
 connectDB();
@@ -20,6 +22,9 @@ connectDB();
 app.use(cors());
 app.use(express.json({ limit: "30mb" }));
 app.use(express.urlencoded({ extended: true }));
+
+const server = http.createServer(app);
+initSocket(server);
 
 app.get("/", (req, res) => {
   res.json({ message: "Welcome to the Online Judge API" });
@@ -30,7 +35,7 @@ app.use("/api/progress", progressRoutes);
 app.use("/api/questions", questionRoutes);
 app.use("/api/submissions", submissionRoutes);
 app.use("/api/internships", internshipRoutes);
-
+app.use("/api/room", roomRoutes);
 //for test-case generation using python scripts
 // app.post("/api/generate-tests", async (req, res) => {
 //   const { code } = req.body;
@@ -191,6 +196,8 @@ Code:\n\n${code}`
 
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
+
+
+server.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });

@@ -78,8 +78,8 @@ export const Sidebar = () => {
         />
         <NavItem
           icon={<Bot className="h-4 w-4 text-[#B6BBC4]" />}
-          label="AI Assistant"
-          href="/ai-assistant"
+          label="Internship Tracker"
+          href="/intern"
           isCollapsed={isCollapsed}
         />
         <NavItem
