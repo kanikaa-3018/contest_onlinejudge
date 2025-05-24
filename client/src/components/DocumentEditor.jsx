@@ -79,7 +79,7 @@ const DocumentEditor = ({ initialContent = initialDoc, onContentChange, classNam
         style={{ backgroundColor: "#0f0f23", color: "#e4e4e7", fontFamily: "monospace" }}
         value={content}
         onChange={handleChange}
-        placeholder="Write your documentation here..."
+        placeholder={initialDoc}
         spellCheck={false}
       />
     </div>
