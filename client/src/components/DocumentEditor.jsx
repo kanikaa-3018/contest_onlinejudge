@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import socket from "../socket.js"; // your socket instance
 import { useParams } from "react-router-dom";
+import SimpleMDE from "react-simplemde-editor";
+import "easymde/dist/easymde.min.css";
 
 const initialDoc = `# Project Documentation
 
