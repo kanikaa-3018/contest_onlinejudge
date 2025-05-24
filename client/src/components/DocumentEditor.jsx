@@ -23,7 +23,7 @@ const DocumentEditor = ({ initialContent = initialDoc, onContentChange, classNam
   const userId = userFromStorage?._id || "unknown";
   const isLocalUpdate = useRef(false);
 
-  // Emit content changes on local edit
+  
   const handleChange = (e) => {
     const newContent = e.target.value;
     isLocalUpdate.current = true;
@@ -31,11 +31,14 @@ const DocumentEditor = ({ initialContent = initialDoc, onContentChange, classNam
     socket.emit("document-change", { roomId, content: newContent, userId });
   };
 
-  // Listen for document updates from other users
+  
   useEffect(() => {
+    socket.on("load-state", (state) => {
+      if (state.documentContent !== undefined) setContent(state.documentContent);
+    });
+
     const handleDocUpdate = ({ content: newContent, userId: senderId }) => {
       if (senderId !== userId) {
-        // Prevent cursor jumping by marking this update as NOT local
         isLocalUpdate.current = false;
         setContent(newContent);
       }
@@ -45,10 +48,11 @@ const DocumentEditor = ({ initialContent = initialDoc, onContentChange, classNam
 
     return () => {
       socket.off("document-change", handleDocUpdate);
+      socket.off("load-state")
     };
   }, [userId]);
 
-  // Call optional onContentChange callback, but only if content changed locally (to avoid loops)
+  
   useEffect(() => {
     if (onContentChange && isLocalUpdate.current) {
       onContentChange(content);

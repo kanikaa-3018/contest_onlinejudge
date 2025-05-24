@@ -22,7 +22,7 @@ const createRoom = async (req, res) => {
 // Get all public rooms
 const getAllRooms = async (req, res) => {
   try {
-    const rooms = await Room.find({ isPrivate: false }).populate('users', 'name email');
+    const rooms = await Room.find({ isPrivate: false }).populate('users', 'name email').populate("createdBy", "name email");;
     res.status(200).json(rooms);
   } catch (error) {
     res.status(500).json({ message: 'Failed to fetch rooms' });
@@ -32,7 +32,7 @@ const getAllRooms = async (req, res) => {
 // Get a single room by ID
 const getRoomById = async (req, res) => {
   try {
-    const room = await Room.findById(req.params.id).populate('users', 'name email');
+    const room = await Room.findById(req.params.id).populate('users', 'name email').populate("createdBy", "name email");;
 
     if (!room) return res.status(404).json({ message: 'Room not found' });
 
@@ -82,7 +82,7 @@ const leaveRoom = async (req, res) => {
 // Get rooms created by the user
 const getMyRooms = async (req, res) => {
   try {
-    const rooms = await Room.find({ createdBy: req.user._id });
+    const rooms = await Room.find({ createdBy: req.user._id }).populate("createdBy", "name email");;
     res.status(200).json(rooms);
   } catch (error) {
     res.status(500).json({ message: 'Failed to fetch your rooms' });

@@ -100,7 +100,8 @@ const RoomDashboard = () => {
                 description={room.description}
                 language={room.language}
                 userCount={room.users.length}
-                lastActive={room.lastActive} />
+                lastActive={room.lastActive} 
+                createdBy={room.createdBy?.name || "Unknown"}/>
               ))}
             </div>
           ) : (
@@ -129,7 +130,8 @@ const RoomDashboard = () => {
                 description={room.description}
                 language={room.language}
                 userCount={room.users.length}
-                lastActive={room.lastActive} />
+                lastActive={room.lastActive} 
+                createdBy={room.createdBy?.name || "Unknown"}/>
               ))}
             </div>
           ) : (
@@ -157,7 +159,8 @@ const RoomDashboard = () => {
                 description={room.description}
                 language={room.language}
                 userCount={room.users.length}
-                lastActive={room.lastActive} />
+                lastActive={room.lastActive}
+                createdBy={room.createdBy?.name || "Unknown"} />
               ))}
             </div>
           ) : (

@@ -28,6 +28,12 @@ const ChatBox = ({ className }) => {
       });
     };
 
+    const handleChatHistory = (history) => {
+      setMessages(history);
+    };
+  
+    socket.on("chat-history", handleChatHistory);
+
     socket.on("receive-message", handleMessage);
 
     socket.on("user-joined", (joinedUser) => {
@@ -54,6 +60,7 @@ const ChatBox = ({ className }) => {
       socket.emit("leave-room", { roomId, user });
       socket.off("receive-message", handleMessage);
       socket.off("user-joined");
+      socket.off("chat-history", handleChatHistory);
       socket.off("user-left");
     };
   }, [roomId, user.id]);

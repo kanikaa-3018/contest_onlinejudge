@@ -87,7 +87,7 @@ const RoomPage = () => {
             </Tabs>
           </div>
         ) : (
-          <ResizablePanelGroup direction="horizontal" className="flex-1">
+          <ResizablePanelGroup direction="horizontal" className="flex-1 min-h-0">
             <ResizablePanel defaultSize={50} minSize={30}>
               <CodeEditor roomId={id} userId={user.id} />
             </ResizablePanel>

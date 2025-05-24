@@ -5,6 +5,7 @@ const roomSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  language:{type: String, required: true},
   description: { type: String, required: true },
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
@@ -27,11 +28,11 @@ const roomSchema = new mongoose.Schema({
   },
   codeSnapshot: {
     type: String,
-    default: "", // Optional: You can store latest code state here
+    default: "", 
   },
   documentSnapshot: {
     type: String,
-    default: "", // Optional: For shared documentation
+    default: "", 
   },
 });
 
