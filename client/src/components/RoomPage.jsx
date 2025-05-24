@@ -1,8 +1,17 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { Button } from "../components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
-import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "../components/ui/resizable";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "../components/ui/tabs";
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "../components/ui/resizable";
 import CodeEditor from "../components/CodeEditor.jsx";
 import DocumentEditor from "../components/DocumentEditor.jsx";
 import ChatBox from "./ChatBox.jsx";
@@ -11,8 +20,12 @@ import { useIsMobile } from "../hooks/use-mobile";
 import { Link } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import socket from "../socket.js";
+import { useNavigate } from "react-router-dom";
+
+
 
 const RoomPage = () => {
+  const navigate = useNavigate();
   const { id } = useParams();
   const isMobile = useIsMobile();
   const [activeTab, setActiveTab] = useState("code");
@@ -20,13 +33,12 @@ const RoomPage = () => {
 
   const handleContentChange = (updatedContent) => {
     setDocContent(updatedContent);
-    // You can also do something else here, like auto-saving, etc.
     console.log("Document content updated:", updatedContent);
   };
 
   const roomName = "Room #" + id;
   const userFromStorage = JSON.parse(localStorage.getItem("user"));
-    const user = { ...userFromStorage, id: userFromStorage._id };
+  const user = { ...userFromStorage, id: userFromStorage._id };
 
   useEffect(() => {
     socket.emit("test", { message: "Hello from client" });
@@ -41,8 +53,14 @@ const RoomPage = () => {
   }, []);
 
   return (
-    <div className="flex h-screen flex-col overflow-hidden" style={{ backgroundColor: "#0f0f23" }}>
-      <div className="flex h-14 items-center justify-between border-b px-4" style={{ borderColor: "#27272a" }}>
+    <div
+      className="flex h-screen flex-col overflow-hidden"
+      style={{ backgroundColor: "#0f0f23" }}
+    >
+      <div
+        className="flex h-14 items-center justify-between border-b px-4"
+        style={{ borderColor: "#27272a" }}
+      >
         <div className="flex items-center gap-3">
           <Link to="/">
             <Button variant="ghost" size="icon" className="h-8 w-8">
@@ -52,15 +70,30 @@ const RoomPage = () => {
           <h1 className="text-lg font-medium">{roomName}</h1>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm">Invite</Button>
-          <Button variant="secondary" size="sm">Settings</Button>
+          <Button
+            className="bg-red-700 text-white hover:bg-red-800"
+            size="sm"
+            onClick={() => navigate("/room")}
+          >
+            Leave Room
+          </Button>
+          <Button variant="outline" size="sm">
+            Invite
+          </Button>
+          <Button variant="secondary" size="sm">
+            Settings
+          </Button>
         </div>
       </div>
 
       <div className="flex flex-1 overflow-hidden">
         {isMobile ? (
           <div className="flex w-full flex-col overflow-hidden">
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <Tabs
+              value={activeTab}
+              onValueChange={setActiveTab}
+              className="w-full"
+            >
               <div className="border-b px-4" style={{ borderColor: "#27272a" }}>
                 <TabsList>
                   <TabsTrigger value="code">Code</TabsTrigger>
@@ -71,23 +104,38 @@ const RoomPage = () => {
               </div>
 
               <div className="flex-1 overflow-hidden p-4">
-                <TabsContent value="code" className="h-full mt-0 border-none p-0">
+                <TabsContent
+                  value="code"
+                  className="h-full mt-0 border-none p-0"
+                >
                   <CodeEditor />
                 </TabsContent>
-                <TabsContent value="docs" className="h-full mt-0 border-none p-0">
+                <TabsContent
+                  value="docs"
+                  className="h-full mt-0 border-none p-0"
+                >
                   <DocumentEditor />
                 </TabsContent>
-                <TabsContent value="chat" className="h-full mt-0 border-none p-0">
+                <TabsContent
+                  value="chat"
+                  className="h-full mt-0 border-none p-0"
+                >
                   <ChatBox />
                 </TabsContent>
-                <TabsContent value="users" className="h-full mt-0 border-none p-0">
+                <TabsContent
+                  value="users"
+                  className="h-full mt-0 border-none p-0"
+                >
                   <UsersSidebar />
                 </TabsContent>
               </div>
             </Tabs>
           </div>
         ) : (
-          <ResizablePanelGroup direction="horizontal" className="flex-1 min-h-0">
+          <ResizablePanelGroup
+            direction="horizontal"
+            className="flex-1 min-h-0"
+          >
             <ResizablePanel defaultSize={50} minSize={30}>
               <CodeEditor roomId={id} userId={user.id} />
             </ResizablePanel>

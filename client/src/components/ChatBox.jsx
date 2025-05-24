@@ -11,10 +11,17 @@ const ChatBox = ({ className }) => {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const messagesEndRef = useRef(null);
+  const [isListening, setIsListening] = useState(false);
+  const [isSpeechSupported, setIsSpeechSupported] = useState(true);
   const { id: roomId } = useParams();
 
+  const recognitionRef = useRef(null);
+
   const userFromStorage = JSON.parse(localStorage.getItem("user"));
-  const user = useMemo(() => ({ ...userFromStorage, id: userFromStorage._id }), [userFromStorage]);
+  const user = useMemo(
+    () => ({ ...userFromStorage, id: userFromStorage._id }),
+    [userFromStorage]
+  );
 
   useEffect(() => {
     socket.emit("join-room", { roomId, user });
@@ -31,7 +38,7 @@ const ChatBox = ({ className }) => {
     const handleChatHistory = (history) => {
       setMessages(history);
     };
-  
+
     socket.on("chat-history", handleChatHistory);
 
     socket.on("receive-message", handleMessage);
@@ -97,15 +104,52 @@ const ChatBox = ({ className }) => {
     });
   };
 
+  useEffect(() => {
+    const SpeechRecognition =
+      window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      setIsSpeechSupported(false);
+      return;
+    }
+
+    const recognition = new SpeechRecognition();
+    recognition.continuous = false;
+    recognition.lang = "en-US";
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+
+    recognition.onstart = () => setIsListening(true);
+    recognition.onend = () => setIsListening(false);
+
+    recognition.onresult = (event) => {
+      const transcript = event.results[0][0].transcript.trim();
+      if (transcript.toLowerCase() === "send message") {
+        handleSendMessage(new Event("submit")); // simulate form submit
+      } else {
+        setNewMessage((prev) => (prev ? prev + " " : "") + transcript);
+      }
+    };
+
+    recognition.onerror = (event) => {
+      console.error("Speech recognition error:", event.error);
+      setIsListening(false);
+    };
+
+    recognitionRef.current = recognition;
+  }, []);
+
   return (
     <div
       className={`flex h-full flex-col rounded-md border ${className}`}
       style={{ borderColor: "#27272a" }}
     >
-      <div className="flex items-center border-b px-3 py-2" style={{ borderColor: "#27272a" }}>
+      <div
+        className="flex items-center border-b px-3 py-2"
+        style={{ borderColor: "#27272a" }}
+      >
         <span className="text-sm font-medium">Chat</span>
       </div>
-      <div className="flex-1 overflow-y-auto p-3">
+      <div className="flex-1 overflow-y-auto p-3 hide-scrollbar">
         <div className="space-y-4">
           {messages.map((message) => (
             <div
@@ -114,9 +158,13 @@ const ChatBox = ({ className }) => {
                 message.sender.id === user.id ? "justify-end" : ""
               }`}
             >
-              {message.sender.id !== user.id && message.sender.id !== "system" && (
-                <UserAvatar name={message.sender.name} image={message.sender.avatar} />
-              )}
+              {message.sender.id !== user.id &&
+                message.sender.id !== "system" && (
+                  <UserAvatar
+                    name={message.sender.name}
+                    image={message.sender.avatar}
+                  />
+                )}
               <div
                 className="max-w-[80%] rounded-lg px-3 py-2 text-sm"
                 style={{
@@ -134,9 +182,12 @@ const ChatBox = ({ className }) => {
                       : "#e4e4e7",
                 }}
               >
-                {message.sender.id !== user.id && message.sender.id !== "system" && (
-                  <div className="mb-1 font-medium">{message.sender.name}</div>
-                )}
+                {message.sender.id !== user.id &&
+                  message.sender.id !== "system" && (
+                    <div className="mb-1 font-medium">
+                      {message.sender.name}
+                    </div>
+                  )}
                 <div>{message.text}</div>
                 <div
                   className="mt-1 text-right text-xs"
@@ -166,6 +217,25 @@ const ChatBox = ({ className }) => {
           value={newMessage}
           onChange={(e) => setNewMessage(e.target.value)}
         />
+        <Button
+          type="button"
+          size="icon"
+          onClick={() => {
+            if (isListening) {
+              recognitionRef.current?.stop();
+            } else {
+              recognitionRef.current?.start();
+            }
+          }}
+          disabled={!isSpeechSupported}
+          title={isListening ? "Listening..." : "Start voice input"}
+          className={`transition-colors ${
+            isListening ? "bg-green-600 animate-pulse" : ""
+          }`}
+        >
+          🎤
+        </Button>
+
         <Button type="submit" size="icon" disabled={!newMessage.trim()}>
           <Send className="h-4 w-4" />
         </Button>
