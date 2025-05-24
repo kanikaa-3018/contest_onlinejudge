@@ -5,6 +5,7 @@ import { Input } from "../components/ui/input";
 import { Button } from "../components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
 import { Search, Code } from "lucide-react";
+import socket from "../socket";
 
 const RoomDashboard = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -12,6 +13,8 @@ const RoomDashboard = () => {
   const [rooms, setRooms] = useState([]);
   const [loading, setLoading] = useState(true);
   const user=JSON.parse(localStorage.getItem("user"))
+
+
 
   // Fetch rooms from backend
   useEffect(() => {
@@ -99,8 +102,7 @@ const RoomDashboard = () => {
                 name={room.name}
                 description={room.description}
                 language={room.language}
-                userCount={room.users.length}
-                lastActive={room.lastActive} 
+                socket={socket}
                 createdBy={room.createdBy?.name || "Unknown"}/>
               ))}
             </div>
@@ -129,8 +131,7 @@ const RoomDashboard = () => {
                 name={room.name}
                 description={room.description}
                 language={room.language}
-                userCount={room.users.length}
-                lastActive={room.lastActive} 
+                socket={socket}
                 createdBy={room.createdBy?.name || "Unknown"}/>
               ))}
             </div>
@@ -158,8 +159,7 @@ const RoomDashboard = () => {
                 name={room.name}
                 description={room.description}
                 language={room.language}
-                userCount={room.users.length}
-                lastActive={room.lastActive}
+                socket={socket}
                 createdBy={room.createdBy?.name || "Unknown"} />
               ))}
             </div>

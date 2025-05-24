@@ -34,6 +34,7 @@ const roomSchema = new mongoose.Schema({
     type: String,
     default: "", 
   },
+  
 });
 
 module.exports = mongoose.model("Room", roomSchema);
