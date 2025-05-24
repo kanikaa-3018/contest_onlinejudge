@@ -13,7 +13,7 @@ import { User } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-
+import loading from "../assets/loading.gif"
 import {
   Dialog,
   DialogContent,
@@ -216,7 +216,7 @@ const Profile = () => {
   const handleViewMoreContests = () => setVisibleContests((prev) => prev + 3);
 
   if (loading || !userData)
-    return <div className="text-white p-6">Loading...</div>;
+    return <div className="text-white p-6 text-center flex justify-center items-center">Loading Profile..</div>;
 
   return (
     <div className="container py-6" style={{ backgroundColor: "#161A30" }}>
@@ -457,8 +457,9 @@ const Profile = () => {
                   </Card>
                 ))
               ) : (
-                <div className="text-white">
-                  No LeetCode contest data available
+                <div className="text-white flex flex-col items-center">
+                  <img src="https://user-images.githubusercontent.com/74038190/218265814-3084a4ba-809c-4135-afc0-8685d0f634b3.gif" className="h-60"></img>
+                  <h2>Sorry:(( No LeetCode contest data available</h2>
                 </div>
               )}
             </TabsContent>

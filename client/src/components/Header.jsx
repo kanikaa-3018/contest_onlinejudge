@@ -12,6 +12,7 @@ export const Header = () => {
 
   useEffect(() => {
     const storedTheme = localStorage.getItem("theme");
+    
     if (storedTheme === "dark") {
       setDarkMode(true);
       document.documentElement.classList.add("dark");
@@ -50,7 +51,7 @@ export const Header = () => {
   };
 
   const handleLogout = () => {
-    // Clear user data from localStorage
+    
     localStorage.removeItem("user");
     setIsLoggedIn(false);
     setUsernameInitials(null);

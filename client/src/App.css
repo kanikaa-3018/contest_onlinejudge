@@ -1,3 +1,16 @@
-body, html {
-    background-color: #161A30 !important;
-  }
+/* Default dark mode */
+html, body {
+  background-color: #161A30 !important;
+  color: #F0ECE5; /* light text for dark bg */
+}
+
+/* Light mode */
+html.light, body.light {
+  background-color: #7785cd !important; 
+  color: #000000; 
+}
+
+
+html.light .subtext, body.light .subtext {
+  color: #555555; 
+}
