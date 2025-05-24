@@ -10,6 +10,40 @@ import {
 import socket from "../socket";
 import axios from "axios";
 
+const BOILERPLATES = {
+  javascript: `// JavaScript Boilerplate
+function main() {
+  console.log("Hello, JavaScript!");
+}
+main();`,
+  
+  python: `# Python Boilerplate
+def main():
+    print("Hello, Python!")
+
+if __name__ == "__main__":
+    main()`,
+  
+  java: `// Java Boilerplate
+import java.util.*;
+
+public class Main {
+    public static void main(String[] args) {
+        System.out.println("Hello, Java!");
+    }
+}`,
+  
+  cpp: `// C++ Boilerplate
+#include <iostream>
+using namespace std;
+
+int main() {
+    cout << "Hello, C++!" << endl;
+    return 0;
+}`,
+};
+
+
 const COLORS = ["#FF4C4C", "#4C9AFF", "#4CFF88", "#FFB84C", "#9D4CFF"];
 
 const CodeEditor = ({ roomId, userId }) => {
@@ -20,6 +54,7 @@ const CodeEditor = ({ roomId, userId }) => {
   const [input, setInput] = useState("");
   const [output, setOutput] = useState("");
   const [isRunning, setIsRunning] = useState(false);
+  const [codeEdited, setCodeEdited] = useState(false);
 
   function handleEditorDidMount(editor) {
     editorRef.current = editor;
@@ -32,6 +67,7 @@ const CodeEditor = ({ roomId, userId }) => {
     editor.onDidChangeModelContent(() => {
       const value = editor.getValue();
       setCode(value);
+      setCodeEdited(true); 
       socket.emit("code-change", { roomId, code: value, userId });
     });
   }
@@ -160,7 +196,19 @@ const CodeEditor = ({ roomId, userId }) => {
 
   const onLanguageChange = (lang) => {
     setLanguage(lang);
+  
+    const boilerplate = BOILERPLATES[lang];
+   
+    if (!codeEdited) {
+      setCode(boilerplate);
+      if (editorRef.current) {
+        editorRef.current.setValue(boilerplate);
+      }
+    }
+   
+  
     socket.emit("language-change", { roomId, language: lang, userId });
+    socket.emit("code-change", { roomId, code: boilerplate, userId });
   };
 
   return (
@@ -211,7 +259,7 @@ const CodeEditor = ({ roomId, userId }) => {
       </div>
 
       {/* Code Editor */}
-      <div style={{ flexGrow: 1, minHeight: 0 }}>
+      <div className="my-4" style={{ flexGrow: 1, minHeight: 0 }}>
         <Editor
           height="100%"
           language={language}
@@ -231,7 +279,7 @@ const CodeEditor = ({ roomId, userId }) => {
       </div>
 
       {/* Input and Output */}
-      <div className="p-4 bg-[#1e1e1e] border-t border-gray-700 " style={{ maxHeight: "30vh", overflowY: "auto" }}>
+      <div className="p-4 bg-[#1e1e1e] border-t border-gray-700 hide-scrollbar mb-6 " style={{ maxHeight: "30vh", overflowY: "auto" }}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           
           <div>
@@ -260,7 +308,7 @@ const CodeEditor = ({ roomId, userId }) => {
             <label className="text-sm font-semibold text-gray-300 mb-1 block">
               Output:
             </label>
-            <div className="w-full h-full p-2 border border-gray-700 rounded bg-[#252526] text-white overflow-y-auto max-h-40">
+            <div className="w-full h-full p-2 border border-gray-700 rounded bg-[#252526] text-white overflow-y-auto max-h-40 hide-scrollbar">
               <pre className="whitespace-pre-wrap text-sm">{output}</pre>
             </div>
           </div>

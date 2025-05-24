@@ -305,3 +305,13 @@
 .animate-fadeInUp {
   animation: fadeInUp 0.5s ease forwards;
 }
+
+.hide-scrollbar {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+  overflow: auto; /* Still allow scroll */
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, and Opera */
+}

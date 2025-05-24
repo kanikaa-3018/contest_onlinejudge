@@ -66,7 +66,7 @@ const DocumentEditor = ({ initialContent = initialDoc, onContentChange, classNam
       style={{ borderColor: "#27272a" }}
     >
       <div
-        className="flex items-center justify-between border-b px-3 py-2"
+        className="flex items-center justify-between border-b px-3 py-2 hide-scrollbar" 
         style={{ borderColor: "#27272a" }}
       >
         <span className="text-sm font-medium">Documentation</span>
@@ -75,7 +75,7 @@ const DocumentEditor = ({ initialContent = initialDoc, onContentChange, classNam
         </span>
       </div>
       <textarea
-        className="h-full w-full resize-none p-4 text-sm leading-relaxed focus:outline-none"
+        className="h-full w-full resize-none p-4 text-sm leading-relaxed focus:outline-none hide-scrollbar "
         style={{ backgroundColor: "#0f0f23", color: "#e4e4e7", fontFamily: "monospace" }}
         value={content}
         onChange={handleChange}
