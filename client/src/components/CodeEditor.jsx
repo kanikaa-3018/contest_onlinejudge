@@ -6,8 +6,9 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "./ui/select"; // Your custom select UI component
-import socket from "../socket"; // Your socket.io client instance
+} from "./ui/select";
+import socket from "../socket";
+import axios from "axios";
 
 const COLORS = ["#FF4C4C", "#4C9AFF", "#4CFF88", "#FFB84C", "#9D4CFF"];
 
@@ -15,23 +16,19 @@ const CodeEditor = ({ roomId, userId }) => {
   const editorRef = useRef(null);
   const [code, setCode] = useState("// Start coding collaboratively...\n");
   const [language, setLanguage] = useState("javascript");
-  const [remoteCursors, setRemoteCursors] = useState({}); // { userId: { position, color, name } }
+  const [remoteCursors, setRemoteCursors] = useState({});
+  const [input, setInput] = useState("");
+  const [output, setOutput] = useState("");
+  const [isRunning, setIsRunning] = useState(false);
 
-  // Save editor instance on mount
   function handleEditorDidMount(editor) {
     editorRef.current = editor;
 
-    // Listen to cursor position changes
     editor.onDidChangeCursorPosition((e) => {
       const position = e.position;
-      socket.emit("cursor-move", {
-        roomId,
-        userId,
-        position,
-      });
+      socket.emit("cursor-move", { roomId, userId, position });
     });
 
-    // Listen to code changes
     editor.onDidChangeModelContent(() => {
       const value = editor.getValue();
       setCode(value);
@@ -39,8 +36,13 @@ const CodeEditor = ({ roomId, userId }) => {
     });
   }
 
-  // Receive code changes and cursor updates from others
   useEffect(() => {
+    socket.on("load-state", (state) => {
+      if (state.code !== undefined) setCode(state.code);
+      if (state.language !== undefined) setLanguage(state.language);
+      if (state.input !== undefined) setInput(state.input);
+      if (state.output !== undefined) setOutput(state.output);
+    });
     socket.on("code-change", ({ code: newCode, userId: senderId }) => {
       if (senderId !== userId && editorRef.current) {
         const currentCode = editorRef.current.getValue();
@@ -49,10 +51,9 @@ const CodeEditor = ({ roomId, userId }) => {
         }
       }
     });
+
     socket.on("language-change", ({ language: newLang, userId: senderId }) => {
-      if (senderId !== userId) {
-        setLanguage(newLang);
-      }
+      if (senderId !== userId) setLanguage(newLang);
     });
 
     socket.on("cursor-move", ({ userId: senderId, position }) => {
@@ -64,23 +65,62 @@ const CodeEditor = ({ roomId, userId }) => {
             colorIndex === -1
               ? COLORS[keys.length % COLORS.length]
               : prev[senderId].color;
-          return { ...prev, [senderId]: { position, color, name: `User ${senderId}` } };
+          return {
+            ...prev,
+            [senderId]: { position, color, name: `User ${senderId}` },
+          };
         });
       }
     });
 
+    socket.on("input-change", ({ input: newInput, userId: senderId }) => {
+      if (senderId !== userId) setInput(newInput);
+    });
+
+    socket.on("output-change", ({ output: newOutput, userId: senderId }) => {
+      if (senderId !== userId) setOutput(newOutput);
+    });
+
     return () => {
+      socket.off("load-state");
       socket.off("code-change");
       socket.off("cursor-move");
       socket.off("language-change");
+      socket.off("input-change");
+      socket.off("output-change");
     };
   }, [userId]);
 
-  // Update decorations for remote cursors
+  const handleRun = async () => {
+    setIsRunning(true);
+    setOutput("Running...");
+    try {
+      const response = await axios.post("http://localhost:8080/execute", {
+        language,
+        code,
+        input,
+      });
+      setOutput(response.data.output);
+      socket.emit("output-change", {
+        roomId,
+        output: response.data.output,
+        userId,
+      });
+    } catch (err) {
+      setOutput("Error running code: " + err.message);
+      socket.emit("output-change", {
+        roomId,
+        output: "Error running code: " + err.message,
+        userId,
+      });
+    } finally {
+      setIsRunning(false);
+    }
+  };
+
   useEffect(() => {
     if (!editorRef.current) return;
 
-    // Remove old decorations and add new ones
     const decorations = Object.entries(remoteCursors).map(([id, cursor]) => {
       const { position, color, name } = cursor;
 
@@ -96,7 +136,8 @@ const CodeEditor = ({ roomId, userId }) => {
           beforeContentClassName: "remote-cursor-caret",
           afterContentClassName: "remote-cursor-label",
           stickiness:
-            window.monaco.editor.TrackedRangeStickiness.NeverGrowsWhenTypingAtEdges,
+            window.monaco.editor.TrackedRangeStickiness
+              .NeverGrowsWhenTypingAtEdges,
           before: {
             content: " ",
             inlineClassName: "remote-caret",
@@ -112,10 +153,10 @@ const CodeEditor = ({ roomId, userId }) => {
     const decorationIds = editorRef.current.deltaDecorations([], decorations);
 
     return () => {
-      if (editorRef.current) editorRef.current.deltaDecorations(decorationIds, []);
+      if (editorRef.current)
+        editorRef.current.deltaDecorations(decorationIds, []);
     };
   }, [remoteCursors]);
-
 
   const onLanguageChange = (lang) => {
     setLanguage(lang);
@@ -125,14 +166,13 @@ const CodeEditor = ({ roomId, userId }) => {
   return (
     <div
       style={{
-        height: "600px",
-        border: "1px solid #27272a",
-        borderRadius: "8px",
-        backgroundColor: "#1e1e1e",
+        height: "100%",
         display: "flex",
         flexDirection: "column",
+        backgroundColor: "#1e1e1e",
       }}
     >
+      {/* Header */}
       <div
         style={{
           padding: "10px",
@@ -150,35 +190,82 @@ const CodeEditor = ({ roomId, userId }) => {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="javascript">JavaScript</SelectItem>
-            <SelectItem value="typescript">TypeScript</SelectItem>
             <SelectItem value="python">Python</SelectItem>
             <SelectItem value="java">Java</SelectItem>
-            <SelectItem value="csharp">C#</SelectItem>
             <SelectItem value="cpp">C++</SelectItem>
-            <SelectItem value="html">HTML</SelectItem>
-            <SelectItem value="css">CSS</SelectItem>
           </SelectContent>
         </Select>
-        <div style={{ fontSize: 12, color: "#a1a1aa" }}>
-          {code.split("\n").length} lines
+
+        <div className="flex items-center justify-center gap-3">
+          <div style={{ fontSize: 12, color: "#a1a1aa" }}>
+            {code.split("\n").length} lines
+          </div>
+          <button
+            onClick={handleRun}
+            disabled={isRunning}
+            className="bg-blue-600 text-white px-4 py-1 rounded"
+          >
+            {isRunning ? "Running..." : "Run"}
+          </button>
         </div>
       </div>
 
-      <Editor
-        height="100%"
-        language={language}
-        value={code}
-        theme="vs-dark"
-        onMount={handleEditorDidMount}
-        options={{
-          minimap: { enabled: false },
-          fontSize: 14,
-          cursorBlinking: "smooth",
-          renderWhitespace: "all",
-          automaticLayout: true,
-          fontFamily: "JetBrains Mono, Fira Code, Consolas, Menlo, monospace",
-        }}
-      />
+      {/* Code Editor */}
+      <div style={{ flexGrow: 1, minHeight: 0 }}>
+        <Editor
+          height="100%"
+          language={language}
+          value={code}
+          theme="vs-dark"
+          onMount={handleEditorDidMount}
+          options={{
+            minimap: { enabled: false },
+            fontSize: 14,
+            cursorBlinking: "smooth",
+            renderWhitespace: "all",
+            automaticLayout: true,
+            fontFamily:
+              "JetBrains Mono, Fira Code, Consolas, Menlo, monospace",
+          }}
+        />
+      </div>
+
+      {/* Input and Output */}
+      <div className="p-4 bg-[#1e1e1e] border-t border-gray-700 " style={{ maxHeight: "30vh", overflowY: "auto" }}>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          
+          <div>
+            <label className="text-sm font-semibold text-gray-300 mb-1 block">
+              Custom Input:
+            </label>
+            <textarea
+              className="w-full p-2 border border-gray-700 rounded bg-[#252526] text-white resize-none"
+              rows={5}
+              placeholder="Enter input..."
+              value={input}
+              onChange={(e) => {
+                const newInput = e.target.value;
+                setInput(newInput);
+                socket.emit("input-change", {
+                  roomId,
+                  input: newInput,
+                  userId,
+                });
+              }}
+            />
+          </div>
+
+          {/* Output Box */}
+          <div>
+            <label className="text-sm font-semibold text-gray-300 mb-1 block">
+              Output:
+            </label>
+            <div className="w-full h-full p-2 border border-gray-700 rounded bg-[#252526] text-white overflow-y-auto max-h-40">
+              <pre className="whitespace-pre-wrap text-sm">{output}</pre>
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* Styles for remote cursors */}
       <style>{`
