@@ -14,6 +14,7 @@
   * [🔁 Real-Time Contest Tracking](#-real-time-contest-tracking)
   * [💻 Online Compiler & Judge (with Docker)](#-online-compiler--judge-with-docker)
   * [🤖 AI Agents (Built with n8n + Relevance AI)](#-ai-agents-built-with-n8n--relevance-ai)
+  * [🤝 Real-Time Collaborative Rooms](#-real-time-collaborative-rooms)
   * [🧳 Internship Tracker + Chrome Extension](#-internship-tracker--chrome-extension)
   * [🛠️ Admin Dashboard](#-admin-dashboard)
 * [🎨 UI Snapshots](#-ui-snapshots)
@@ -53,6 +54,16 @@ This platform uses **n8n-based AI agents** and **Relevance AI** for generating p
 * Secure multi-language code compiler for **C++, Java, Python, JavaScript**, and more.
 * Submissions run inside **isolated Docker containers** for maximum safety.
 * Verdict system supports custom inputs, standard test cases, and AI-generated edge cases.
+
+---
+
+### 🤝 Real-Time Collaborative Rooms
+
+* Interactive Peer Rooms for collaborative coding and learning
+* Shared live document editor for notes and problem statements
+* Synchronized code editor to write and debug code together
+* Integrated chatbox with voice assistance for seamless communication
+* Ideal for pair programming, study groups, and real-time contest collaboration
 
 ---
 
@@ -224,10 +235,6 @@ You can directly download and import the following n8n workflows into your own w
 
 * [ Download n8n Report Analyzer JSON](./agent_workflows/DAILY_REPORT_ANALYZER.json)
   *(Summarizes contest performance, weaknesses, and submits AI reports)*
-
----
-
-Let me know if you'd like a `.gif` or screenshot tutorial to help users import these workflows into their own n8n instance!
 
 ---
 
