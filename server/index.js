@@ -13,6 +13,7 @@ const userRoutes = require("./routes/userRoutes.js");
 const questionRoutes = require("./routes/questionRoutes.js");
 const internshipRoutes = require("./routes/internshipRoutes.js");
 const submissionRoutes = require("./routes/submissionRoutes");
+const resumeRoutes= require("./routes/resumeRoutes.js")
 const roomRoutes = require("./routes/roomRoutes.js");
 const {initSocket}= require("./socket.js")
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
@@ -36,6 +37,7 @@ app.use("/api/questions", questionRoutes);
 app.use("/api/submissions", submissionRoutes);
 app.use("/api/internships", internshipRoutes);
 app.use("/api/rooms", roomRoutes);
+app.use(resumeRoutes)
 
 //for test-case generation using python scripts
 // app.post("/api/generate-tests", async (req, res) => {

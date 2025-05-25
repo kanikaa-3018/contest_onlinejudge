@@ -1,0 +1,12 @@
+def add_numbers(num1, num2):
+  """This function takes two numbers as input and returns their sum."""
+  return num1 + num2
+
+
+num1= input()
+num2 = input()
+
+# Calculate the sum
+sum_of_numbers = add_numbers(num1, num2)
+
+print(sum_of_numbers)

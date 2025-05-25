@@ -20,6 +20,7 @@ import Lead from "./pages/Lead.jsx";
 import Internship from "./pages/Internship.jsx"
 import RoomDashboard from "./components/RoomDashboard.jsx";
 import RoomPage from "./components/RoomPage.jsx";
+import ResumeAnalyzer from "./pages/ResumeAnalyzer.jsx";
 
 
 const queryClient = new QueryClient();
@@ -43,7 +44,7 @@ function App() {
             <Route path="room" element={<RoomDashboard/>}/>
             <Route path="room/:id" element={<RoomPage/>}/>
             <Route path="ai" element={<AIChatAgent/>}/>
-            
+            <Route path="resume" element={<ResumeAnalyzer/>}/>
           </Route>
           <Route path="/admin" element={<AdminDashboard />} />
         </Routes>
