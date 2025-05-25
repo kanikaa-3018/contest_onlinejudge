@@ -2,11 +2,13 @@ import { useState, useEffect } from "react";
 import { Search } from "lucide-react";
 import { Input } from "../components/ui/input";
 import { Card } from "../components/ui/card.jsx";
+import { Button } from "../components/ui/button.jsx";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import InternshipTable from "../pages/InternshipTable.jsx";
 import InternshipCards from "../components/InternshipCards.jsx";
-
+import { useNavigate } from "react-router-dom";
 const Internship = () => {
+  const navigate = useNavigate();
   const [view, setView] = useState("table");
   const [searchQuery, setSearchQuery] = useState("");
   const [internships, setInternships] = useState([]);
@@ -58,16 +60,25 @@ const Internship = () => {
     >
       <div
         className="max-w-7xl mx-auto"
-        style={{ backgroundColor: "#161a30", borderRadius: "8px", padding: "24px" }}
+        style={{
+          backgroundColor: "#161a30",
+          borderRadius: "8px",
+          padding: "24px",
+        }}
       >
         {/* Header */}
-        <div className="mb-8" >
-          <h1 className="text-3xl font-bold mb-2" style={{ color: "#fff" }}>
-            Internship Tracker
-          </h1>
-          <p style={{ color: "#5A7184" }}>
-            Track and manage your internship applications in one place
-          </p>
+        <div className="mb-8 flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold mb-2" style={{ color: "#fff" }}>
+              Internship Tracker
+            </h1>
+            <p style={{ color: "#5A7184" }}>
+              Track and manage your internship applications in one place
+            </p>
+          </div>
+          <Button variant="outline" onClick={() => navigate("/resume")}>
+            Resume Analyzer
+          </Button>
         </div>
 
         {/* Controls */}
@@ -92,10 +103,16 @@ const Internship = () => {
               className="sm:w-auto"
             >
               <TabsList style={{ borderColor: "#1976D2" }}>
-                <TabsTrigger value="table" style={{ color: view === "table" ? "#1976D2" : "#5A7184" }}>
+                <TabsTrigger
+                  value="table"
+                  style={{ color: view === "table" ? "#1976D2" : "#5A7184" }}
+                >
                   Table
                 </TabsTrigger>
-                <TabsTrigger value="cards" style={{ color: view === "cards" ? "#1976D2" : "#5A7184" }}>
+                <TabsTrigger
+                  value="cards"
+                  style={{ color: view === "cards" ? "#1976D2" : "#5A7184" }}
+                >
                   Cards
                 </TabsTrigger>
               </TabsList>
@@ -103,7 +120,6 @@ const Internship = () => {
           </div>
         </div>
 
-       
         {loading && <p style={{ color: "#1976D2" }}>Loading internships...</p>}
         {error && <p style={{ color: "#D32F2F" }}>{error}</p>}
 
