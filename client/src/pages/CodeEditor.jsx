@@ -4,6 +4,7 @@ import Editor from "@monaco-editor/react";
 import Split from "react-split";
 import { Button } from "@/components/ui/button";
 import { FaRobot } from "react-icons/fa";
+import {toast} from "react-toastify";
 import {
   Select,
   SelectContent,
@@ -97,8 +98,7 @@ const CodeEditor = () => {
       );
 
       const data = await response.json();
-
-      // Normalize and extract hints from the response
+      
       if (typeof data.hints === "string") {
         const hintArray = data.hints
           .split(/\d+\.\s+/)
@@ -108,9 +108,11 @@ const CodeEditor = () => {
       } else if (Array.isArray(data.hints)) {
         setHints(data.hints.map((h) => h.trim()));
       }
+      toast.success("AI Hints Generated, Continue coding!");
 
       console.log("hints", data.hints);
     } catch (err) {
+      toast.success("Error generating hints!. Try again later.");
       console.error("Error fetching hints:", err);
       setHints(["Error fetching hint."]);
     }
@@ -250,9 +252,9 @@ const CodeEditor = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ code, language }),
       });
-      console.log(code);
-      console.log(language);
-      console.log(response);
+      // console.log(code);
+      // console.log(language);
+      // console.log(response);
       const data = await response.json();
       console.log(data);
       setFeedback(data.feedback);

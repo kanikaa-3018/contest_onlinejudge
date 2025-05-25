@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { toast } from 'react-toastify';
 
 const AuthPage = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -65,9 +66,10 @@ const AuthPage = () => {
       localStorage.setItem("cfHandle", cfHandle || formData.cfHandle);
       localStorage.setItem("role", role);
       localStorage.setItem("lchandle", lcHandle || formData.lcHandle);
-
+      isLogin ? toast.success("User Logged in Successfully!") : toast.success("User Registered Successfully!");
       navigate(role === "admin" ? "/admin" : "/");
     } catch (err) {
+      toast.error("Something went wrong in authentication, Please Try again!");
       setError(err.response?.data?.message || "Something went wrong");
     }
   };

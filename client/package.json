@@ -53,6 +53,7 @@
     "react-router-dom": "^7.6.0",
     "react-simplemde-editor": "^5.2.0",
     "react-split": "^2.0.14",
+    "react-toastify": "^11.0.5",
     "react-tooltip": "^5.28.1",
     "recharts": "^2.15.3",
     "simplemde": "^1.11.2",

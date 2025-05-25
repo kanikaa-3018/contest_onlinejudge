@@ -36,6 +36,7 @@ app.use("/api/questions", questionRoutes);
 app.use("/api/submissions", submissionRoutes);
 app.use("/api/internships", internshipRoutes);
 app.use("/api/rooms", roomRoutes);
+
 //for test-case generation using python scripts
 // app.post("/api/generate-tests", async (req, res) => {
 //   const { code } = req.body;
@@ -82,76 +83,91 @@ app.use((err, req, res, next) => {
   res.status(500).json({ message: "Something went wrong!" });
 });
 
-const executeCode = (language, code, input, callback) => {
-  // console.log("Received language:", language);
+// const executeCode = (language, code, input, callback) => {
+//   // console.log("Received language:", language);
 
-  const codeFile = `code.${language}`;
-  const inputFile = "input.txt";
-  const outputFile = "output.txt";
+//   const codeFile = `code.${language}`;
+//   const inputFile = "input.txt";
+//   const outputFile = "output.txt";
 
-  if (fs.existsSync(outputFile)) {
-    fs.unlinkSync(outputFile);
-  }
+//   if (fs.existsSync(outputFile)) {
+//     fs.unlinkSync(outputFile);
+//   }
 
-  fs.writeFileSync(codeFile, code);
-  fs.writeFileSync(inputFile, input);
+//   fs.writeFileSync(codeFile, code);
+//   fs.writeFileSync(inputFile, input);
 
-  const volumeMount = path
-    .resolve(__dirname)
-    .replace(/\\/g, "/")
-    .replace(/^([a-zA-Z]):/, "/$1");
+//   const volumeMount = path
+//     .resolve(__dirname)
+//     .replace(/\\/g, "/")
+//     .replace(/^([a-zA-Z]):/, "/$1");
 
-  let dockerCommand = "";
-  if (language === "cpp") {
-    dockerCommand = `docker run --rm -v ${volumeMount}:/app cpp-code-executor bash -c "mkdir -p /app && g++ /app/${codeFile} -o /app/a.out && /app/a.out < /app/${inputFile} | tee /app/${outputFile}"`;
-  } else if (language === "python") {
-    dockerCommand = `docker run --rm -v ${volumeMount}:/app python:3.10 bash -c "mkdir -p /app && python3 /app/${codeFile} < /app/${inputFile} | tee /app/${outputFile}"`;
-  } else if (language === "java") {
-    dockerCommand = `docker run --rm -v ${volumeMount}:/app openjdk:17 bash -c "mkdir -p /app && javac /app/${codeFile} && java -cp /app Main < /app/${inputFile} | tee /app/${outputFile}"`;
-  } else if (language === "javascript") {
-    dockerCommand = `docker run --rm -v ${volumeMount}:/app node:20 bash -c "mkdir -p /app && node /app/${codeFile} < /app/${inputFile} | tee /app/${outputFile}"`;
-  }
+//   let dockerCommand = "";
+//   if (language === "cpp") {
+//     dockerCommand = `docker run --rm -v ${volumeMount}:/app cpp-code-executor bash -c "mkdir -p /app && g++ /app/${codeFile} -o /app/a.out && /app/a.out < /app/${inputFile} | tee /app/${outputFile}"`;
+//   } else if (language === "python") {
+//     dockerCommand = `docker run --rm -v ${volumeMount}:/app python:3.10 bash -c "mkdir -p /app && python3 /app/${codeFile} < /app/${inputFile} | tee /app/${outputFile}"`;
+//   } else if (language === "java") {
+//     dockerCommand = `docker run --rm -v ${volumeMount}:/app openjdk:17 bash -c "mkdir -p /app && javac /app/${codeFile} && java -cp /app Main < /app/${inputFile} | tee /app/${outputFile}"`;
+//   } else if (language === "javascript") {
+//     dockerCommand = `docker run --rm -v ${volumeMount}:/app node:20 bash -c "mkdir -p /app && node /app/${codeFile} < /app/${inputFile} | tee /app/${outputFile}"`;
+//   }
   
 
-  // console.log("Volume Mount:", volumeMount);
-  // console.log("Docker Command:", dockerCommand);
+//   // console.log("Volume Mount:", volumeMount);
+//   // console.log("Docker Command:", dockerCommand);
 
-  exec(dockerCommand, (error, stdout, stderr) => {
-    if (error) {
-      console.error("Error executing Docker command:", error);
-      callback(stderr || error.message);
-    } else if (stderr) {
-      console.error("Error in code execution:", stderr);
-      callback(stderr);
-    } else {
-      try {
-        const output = fs.readFileSync(outputFile, "utf8");
-        callback(output);
-      } catch (err) {
-        callback("Error reading output file.");
-      }
+//   exec(dockerCommand, (error, stdout, stderr) => {
+//     if (error) {
+//       console.error("Error executing Docker command:", error);
+//       callback(stderr || error.message);
+//     } else if (stderr) {
+//       console.error("Error in code execution:", stderr);
+//       callback(stderr);
+//     } else {
+//       try {
+//         const output = fs.readFileSync(outputFile, "utf8");
+//         callback(output);
+//       } catch (err) {
+//         callback("Error reading output file.");
+//       }
 
-      // Clean up files
-      try {
-        fs.unlinkSync(codeFile);
-        fs.unlinkSync(inputFile);
-        if (fs.existsSync(outputFile)) {
-          fs.unlinkSync(outputFile);
-        }
-      } catch (cleanupErr) {
-        console.error("Error cleaning up files:", cleanupErr);
-      }
-    }
-  });
-};
+//       // Clean up files
+//       try {
+//         fs.unlinkSync(codeFile);
+//         fs.unlinkSync(inputFile);
+//         if (fs.existsSync(outputFile)) {
+//           fs.unlinkSync(outputFile);
+//         }
+//       } catch (cleanupErr) {
+//         console.error("Error cleaning up files:", cleanupErr);
+//       }
+//     }
+//   });
+// };
 
-app.post("/execute", (req, res) => {
+// app.post("/execute", (req, res) => {
+//   const { language, code, input } = req.body;
+//   executeCode(language, code, input, (result) => {
+//     res.json({ output: result });
+//   });
+// });
+
+app.post("/execute", async (req, res) => {
   const { language, code, input } = req.body;
-  executeCode(language, code, input, (result) => {
-    res.json({ output: result });
-  });
-});
 
+  try {
+    const response = await axios.post("http://localhost:5001/run", {
+      language,
+      code,
+      input,
+    });
+
+    res.json({ output: response.data.output });
+  } catch (err) {
+    res.status(500).json({ error: "Compiler server error." });
+  }
+});
 app.post('/analyze', async (req, res) => {
   const { code, language } = req.body;
 
