@@ -507,9 +507,10 @@ function generateOverallAssessment(atsScore, keywordScore, formatScore) {
 // }
 
 async function analyzeResumeWithAI(resumeText) {
+  console.log(resumeText)
   try {
     const prompt = `
-  Analyze the following resume text and return a JSON object strictly matching this structure:
+  Analyze and scrape the following resume text and find out the given options below and return a JSON object strictly matching this structure:
 
 {
   "fileName": "string - the name of the resume file",
@@ -615,7 +616,7 @@ Do not include any text outside the JSON object. Use true/false for booleans and
     //   console.log(clean);
       try {
         const parsed = JSON.parse(clean);
-        // console.log(parsed);
+        console.log(parsed);
         return parsed;
       } catch (err) {
         console.warn("Gemini did not return strict JSON. Returning raw text.");

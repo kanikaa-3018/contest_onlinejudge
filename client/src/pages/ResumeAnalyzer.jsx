@@ -38,7 +38,7 @@ function ResumeAnalyzer() {
           method: 'POST',
           body: formData,
         });
-
+        // console.log(response)
         clearInterval(progressInterval);
         setAnalysisProgress(100);
 
