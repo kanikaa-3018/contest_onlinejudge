@@ -148,6 +148,11 @@ User ↔ Frontend (React + Tailwind) ↔ Backend (Express + Node)
 
 ---
 
+## Demo Video
+
+https://github.com/user-attachments/assets/1783b851-0e26-4a64-a08e-f43877100efd
+
+
 ## 🚀 Installation Guide
 
 ### 1. Clone the Repository
@@ -190,7 +195,15 @@ In another terminal:
 ```bash
 cd client
 npm install
-npm start
+npm run dev
+```
+
+In another terminal:
+
+```bash
+cd compiler-server
+npm install
+npm run dev
 ```
 
 ### 4. (Recommended) Run with Docker
