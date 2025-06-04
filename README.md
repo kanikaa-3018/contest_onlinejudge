@@ -1,8 +1,13 @@
-# 🧠 CodeArena🚀
 
-**An AI-Driven Coding, Career & Contest Companion**
+# 🧠 CodeArena 🚀
 
-> A unified, intelligent platform built with the MERN stack and powered by AI agents using **n8n workflows** and **Relevance AI**, designed for coders, developers, and students to track contests, submit code, and manage internship applications — all under one roof.
+**Your AI-First Platform for Coding, Collaboration & Career Growth**
+
+> **CodeArena** is a cutting-edge, AI-powered ecosystem architected with a **microservices-based MERN stack**, combining **Dockerized online judging**, **AI-integrated collaboration tools**, and **smart career utilities**.
+> With intelligent workflows powered by **n8n** and **Relevance AI**, CodeArena is more than a platform — it's your **real-time coding and career companion**.
+
+## 🔍 Why CodeArena?
+Unlike traditional coding platforms, CodeArena isn't just a judge or tracker — it's your **interactive AI coding companion**. Whether you’re preparing for coding contests, applying to internships, or looking for intelligent feedback on your code, CodeArena leverages the power of automation and LLMs to guide, evaluate, and elevate your journey in tech.
 
 ---
 
@@ -148,6 +153,11 @@ User ↔ Frontend (React + Tailwind) ↔ Backend (Express + Node)
 
 ---
 
+## Demo Video
+
+https://github.com/user-attachments/assets/1783b851-0e26-4a64-a08e-f43877100efd
+
+
 ## 🚀 Installation Guide
 
 ### 1. Clone the Repository
@@ -190,7 +200,15 @@ In another terminal:
 ```bash
 cd client
 npm install
-npm start
+npm run dev
+```
+
+In another terminal:
+
+```bash
+cd compiler-server
+npm install
+npm run dev
 ```
 
 ### 4. (Recommended) Run with Docker
@@ -203,7 +221,26 @@ docker-compose up --build
 
 > This will spin up the entire backend, including the **secure judge engine in containers**.
 
-### 5. n8n Setup (AI Agents & Automation)
+
+
+ ### 5. Set Up Chrome Extension (Internship Tracker)
+
+The **Chrome Extension** helps you auto-save internship listings from job portals like LinkedIn, Internshala, etc.
+
+To install it locally:
+
+1. Open **Chrome** and go to `chrome://extensions/`.
+2. Enable **Developer Mode** (top right).
+3. Click **"Load unpacked"**.
+4. Navigate to and select the `/chrome-extension` folder in your cloned repo.
+5. The extension will now be available in your browser.
+6. Open any internship/job portal and use the extension to **save listings directly** into your Internship Tracker dashboard.
+
+> Make sure the backend server is running so the extension can post data properly.
+
+
+
+### 6. n8n Setup (AI Agents & Automation)
 You can self-host or use n8n Cloud to power AI automation workflows for:
 
 🧠 Hint generation
@@ -251,4 +288,11 @@ Feel free to fork, enhance, and contribute to the project!
 🚀 Full Stack Developer | AI Explorer
 🌐 GitHub: [kanikasinghal](https://github.com/kanikaa-3018)
 📧 Email: [kanikasin216@gmail.com](mailto:kanikasin216@gmail.com)
+
+
+
+
+
+
+
 
