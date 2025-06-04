@@ -21,7 +21,6 @@ import {
   TooltipContent,
 } from "@/components/ui/tooltip";
 
-
 const fetchContests = async (url) => {
   const response = await fetch(url);
   if (!response.ok) throw new Error("Failed to fetch contests");
@@ -63,7 +62,12 @@ const Contests = () => {
   });
 
   if (cfLoading || ccLoading)
-    return <div className="text-white p-4">Loading contests...</div>;
+    return (
+      <div className="text-center text-gray-400 animate-pulse items-center mt-40 min-h-screen">
+        <p className="text-lg">Loading Contests...</p>
+        <div className="mt-2 w-12 h-12 mx-auto border-4 border-dashed border-indigo-500 rounded-full animate-spin"></div>
+      </div>
+    );
   if (cfError || ccError)
     return <div className="text-red-400 p-4">Error loading contests.</div>;
 
@@ -165,7 +169,6 @@ const Contests = () => {
 
   return (
     <motion.div className="p-6 bg-[#161A30] min-h-screen font-sans">
-      
       <h2 className="text-3xl font-bold text-[#F0ECE5] mb-6">
         Contests Dashboard
       </h2>
@@ -184,7 +187,6 @@ const Contests = () => {
         <div className="flex-1 max-w-full mr-26">
           <MyCalendar />
         </div>
-    
       </div>
 
       {/* Tabs */}

@@ -8,10 +8,12 @@ const UserAvatar = ({ name, image, online = false, className }) => {
     .toUpperCase()
     .substring(0, 2);
 
+ const avatarUrl = `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(name)}`;
+
   return (
     <div className="relative">
       <Avatar className={`border ${className}`} style={{ borderColor: 'rgba(39, 39, 42, 0.5)' }}>
-        <AvatarImage src={image} alt={name} />
+        <AvatarImage src={image || avatarUrl} alt={name} />
         <AvatarFallback style={{ backgroundColor: '#3f3f46', color: '#e4e4e7' }}>
           {initials}
         </AvatarFallback>

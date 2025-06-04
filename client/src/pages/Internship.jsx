@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import InternshipTable from "../pages/InternshipTable.jsx";
 import InternshipCards from "../components/InternshipCards.jsx";
 import { useNavigate } from "react-router-dom";
+
 const Internship = () => {
   const navigate = useNavigate();
   const [view, setView] = useState("table");
@@ -40,18 +41,16 @@ const Internship = () => {
       internship.role.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const toggleStatus = (id, field) => {
-    setInternships((prevInternships) =>
-      prevInternships.map((internship) => {
-        if (internship.id !== id) return internship;
 
-        return {
-          ...internship,
-          [field]: !internship[field],
-        };
-      })
-    );
-  };
+const toggleStatus = (id, field) => {
+  setInternships((prevInternships) =>
+    prevInternships.map((internship) =>
+      internship.id === id
+        ? { ...internship, [field]: !internship[field] }
+        : internship
+    )
+  );
+};
 
   return (
     <div

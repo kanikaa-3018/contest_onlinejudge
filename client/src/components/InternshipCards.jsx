@@ -7,12 +7,19 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../com
 const InternshipCards = ({ internships, toggleStatus }) => {
   const StatusBadge = ({ status }) => {
     const styles = {
-      pending: "bg-amber-100 text-amber-800 hover:bg-amber-200",
-      rejected: "bg-red-100 text-red-800 hover:bg-red-200",
-      accepted: "bg-green-100 text-green-800 hover:bg-green-200",
+      pending: "bg-amber-100 text-amber-900 hover:bg-amber-200",
+      rejected: "bg-red-100 text-red-900 hover:bg-red-200",
+      accepted: "bg-green-100 text-green-900 hover:bg-green-200",
     };
 
-    return <Badge className={styles[status]} variant="outline">{status}</Badge>;
+    return (
+      <Badge
+        className={`${styles[status] || "bg-gray-100 text-gray-800"} font-semibold uppercase tracking-wide`}
+        variant="outline"
+      >
+        {status}
+      </Badge>
+    );
   };
 
   return (
@@ -23,12 +30,12 @@ const InternshipCards = ({ internships, toggleStatus }) => {
         </div>
       ) : (
         internships.map((internship) => (
-          <Card key={internship.id} className="overflow-hidden">
-            <CardHeader className="bg-slate-50 pb-2">
+          <Card key={internship.id} className="overflow-hidden shadow-sm border border-slate-600 hover:shadow-md transition-shadow bg-transparent">
+            <CardHeader className="bg-[rgb(253,253,253,0.5)] py-2">
               <div className="flex justify-between items-start">
                 <div>
-                  <h3 className="font-semibold text-lg">{internship.company}</h3>
-                  <p className="text-sm text-slate-600">{internship.role}</p>
+                  <h3 className="font-semibold text-lg text-slate-900">{internship.company}</h3>
+                  <p className="text-sm text-slate-700">{internship.role}</p>
                 </div>
                 <StatusBadge status={internship.status} />
               </div>
@@ -36,21 +43,21 @@ const InternshipCards = ({ internships, toggleStatus }) => {
             <CardContent className="pt-6 pb-2">
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-slate-500">Location:</span>
-                  <span className="text-sm font-medium">{internship.location}</span>
+                  <span className="text-sm text-slate-400">Location:</span>
+                  <span className="text-sm font-medium text-white">{internship.location}</span>
                 </div>
                 
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-slate-500">Deadline:</span>
-                  <span className="text-sm font-medium flex items-center gap-1">
-                    <Calendar className="h-3.5 w-3.5" />
+                  <span className="text-sm text-slate-400">Deadline:</span>
+                  <span className="text-sm font-medium flex items-center gap-1 text-white">
+                    <Calendar className="h-4 w-4 text-indigo-600" />
                     {internship.deadline}
                   </span>
                 </div>
 
                 <div className="flex flex-col gap-2">
-                  <span className="text-sm text-slate-500">Notes:</span>
-                  <p className="text-sm bg-slate-50 p-2 rounded-md">{internship.notes}</p>
+                  <span className="text-sm text-slate-400">Notes:</span>
+                  <p className="text-sm bg-slate-100 text-white p-2 rounded-md">{internship.notes}</p>
                 </div>
               </div>
             </CardContent>
@@ -63,7 +70,7 @@ const InternshipCards = ({ internships, toggleStatus }) => {
                         href={internship.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-blue-600 hover:text-blue-800 flex items-center gap-1 text-sm"
+                        className="text-indigo-600 hover:text-indigo-800 flex items-center gap-1 text-sm"
                       >
                         <Link className="h-4 w-4" /> Visit job posting
                       </a>
@@ -78,36 +85,42 @@ const InternshipCards = ({ internships, toggleStatus }) => {
                 <Button
                   variant="outline"
                   size="sm"
-                  className={`flex items-center gap-1 ${
-                    internship.applied ? "bg-green-50 border-green-200 text-green-700" : ""
+                  className={`flex items-center gap-1 transition-colors rounded-md ${
+                    internship.applied
+                      ? "bg-green-100 border-green-300 text-green-800 hover:bg-green-200"
+                      : "bg-slate-100 border-slate-300 text-slate-600 hover:bg-slate-200"
                   }`}
                   onClick={() => toggleStatus(internship.id, "applied")}
                 >
-                  {internship.applied ? <Check className="h-3.5 w-3.5" /> : <X className="h-3.5 w-3.5" />}
+                  {internship.applied ? <Check className="h-4 w-4" /> : <X className="h-4 w-4" />}
                   Applied
                 </Button>
                 
                 <Button
                   variant="outline"
                   size="sm"
-                  className={`flex items-center gap-1 ${
-                    internship.followedUp ? "bg-green-50 border-green-200 text-green-700" : ""
+                  className={`flex items-center gap-1 transition-colors rounded-md ${
+                    internship.followedUp
+                      ? "bg-green-100 border-green-300 text-green-800 hover:bg-green-200"
+                      : "bg-slate-100 border-slate-300 text-slate-600 hover:bg-slate-200"
                   }`}
                   onClick={() => toggleStatus(internship.id, "followedUp")}
                 >
-                  {internship.followedUp ? <Check className="h-3.5 w-3.5" /> : <X className="h-3.5 w-3.5" />}
+                  {internship.followedUp ? <Check className="h-4 w-4" /> : <X className="h-4 w-4" />}
                   Follow-up
                 </Button>
                 
                 <Button
                   variant="outline"
                   size="sm"
-                  className={`flex items-center gap-1 ${
-                    internship.interview ? "bg-green-50 border-green-200 text-green-700" : ""
+                  className={`flex items-center gap-1 transition-colors rounded-md ${
+                    internship.interview
+                      ? "bg-green-100 border-green-300 text-green-800 hover:bg-green-200"
+                      : "bg-slate-100 border-slate-300 text-slate-600 hover:bg-slate-200"
                   }`}
                   onClick={() => toggleStatus(internship.id, "interview")}
                 >
-                  {internship.interview ? <Check className="h-3.5 w-3.5" /> : <X className="h-3.5 w-3.5" />}
+                  {internship.interview ? <Check className="h-4 w-4" /> : <X className="h-4 w-4" />}
                   Interview
                 </Button>
               </div>
