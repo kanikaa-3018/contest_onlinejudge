@@ -156,7 +156,12 @@ const Practice = () => {
       </div>
 
       {/* Loading / Error */}
-      {isLoading && <div className="text-center">Loading problems...</div>}
+      {isLoading && (
+        <div className="text-center text-gray-400 animate-pulse items-center mt-40 min-h-screen">
+          <p className="text-lg">Loading Problems...</p>
+          <div className="mt-2 w-12 h-12 mx-auto border-4 border-dashed border-indigo-500 rounded-full animate-spin"></div>
+        </div>
+      )}
       {isError && (
         <div className="text-center text-red-400">Failed to load problems.</div>
       )}

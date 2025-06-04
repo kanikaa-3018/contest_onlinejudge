@@ -13,7 +13,7 @@ import { User } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import loading from "../assets/loading.gif"
+import loading from "../assets/loading.gif";
 import {
   Dialog,
   DialogContent,
@@ -29,10 +29,10 @@ const Profile = () => {
     badge: "",
     rating: null,
     ranking: "",
-    leetcodeUsername: "", 
-    leetcodeRating: "", 
-    leetcodeRanking: "", 
-    leetcodeTopPercentage: "", 
+    leetcodeUsername: "",
+    leetcodeRating: "",
+    leetcodeRanking: "",
+    leetcodeTopPercentage: "",
     recentSubmissions: [],
     contestHistory: [],
     leetcodeContests: [],
@@ -109,7 +109,7 @@ const Profile = () => {
           // console.log(lcProfileRes)
 
           leetcodeData = {
-            name:lcProfileRes.data.name,
+            name: lcProfileRes.data.name,
             username: lcProfileRes.data.username, //fine
             rating: lcProfileRes.data.ranking || "N/A",
             globalRanking: lcProfileRes.data.ranking || "N/A",
@@ -216,7 +216,12 @@ const Profile = () => {
   const handleViewMoreContests = () => setVisibleContests((prev) => prev + 3);
 
   if (loading || !userData)
-    return <div className="text-white p-6 text-center flex justify-center items-center">Loading Profile..</div>;
+    return (
+      <div className="text-center text-gray-400 animate-pulse items-center mt-56 min-h-screen">
+        <p className="text-lg">Loading your Profile...</p>
+        <div className="mt-2 w-12 h-12 mx-auto border-4 border-dashed border-indigo-500 rounded-full animate-spin"></div>
+      </div>
+    );
 
   return (
     <div className="container py-6" style={{ backgroundColor: "#161A30" }}>
@@ -458,7 +463,10 @@ const Profile = () => {
                 ))
               ) : (
                 <div className="text-white flex flex-col items-center">
-                  <img src="https://user-images.githubusercontent.com/74038190/218265814-3084a4ba-809c-4135-afc0-8685d0f634b3.gif" className="h-60"></img>
+                  <img
+                    src="https://user-images.githubusercontent.com/74038190/218265814-3084a4ba-809c-4135-afc0-8685d0f634b3.gif"
+                    className="h-60"
+                  ></img>
                   <h2>Sorry:(( No LeetCode contest data available</h2>
                 </div>
               )}

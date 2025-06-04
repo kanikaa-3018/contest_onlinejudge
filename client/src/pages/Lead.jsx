@@ -196,7 +196,8 @@ const Lead = () => {
   const [lcContests, setLcContests] = useState([]);
   const [problemData, setProblemData] = useState([]);
   const [ratingData, setRatingData] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [statsLoading, setStatsLoading] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [view, setView] = useState("overview");
   const [handles, setHandles] = useState({
@@ -236,6 +237,7 @@ const Lead = () => {
   };
   const handleSubmit = async () => {
     setSubmitted(true);
+    setStatsLoading(true);
     const codeforcesData = await fetchCodeforcesData(handles.codeforces);
     let leetcodeData = null;
     try {
@@ -243,6 +245,7 @@ const Lead = () => {
     } catch (error) {
       console.error("LeetCode data not available:", error);
     }
+    setStatsLoading(false);
 
     setUserData({ codeforcesData, leetcodeData });
   };
@@ -478,6 +481,15 @@ const Lead = () => {
     }
   };
 
+  if (statsLoading)
+  return (
+    <div className="flex flex-col items-center justify-center text-gray-400 animate-pulse py-6">
+      <p className="text-lg mb-2">Loading your Leaderboard..</p>
+      <div className="w-10 h-10 border-4 border-dashed border-indigo-500 rounded-full animate-spin"></div>
+    </div>
+  );
+
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#161a30] to-[#161a30] text-white px-4 py-8 md:px-8">
       <div className="max-w-7xl mx-auto">
@@ -551,6 +563,7 @@ const Lead = () => {
         </Button>
 
         {/* main secyion here */}
+        
         {submitted && userData && (
           <>
             <div className="mb-6">

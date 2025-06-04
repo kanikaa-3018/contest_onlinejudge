@@ -3,8 +3,27 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
-import { BarChart, Bar, XAxis, YAxis, Tooltip, PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
-import { Code2, CheckCircle2, XCircle, Clock, Cpu, BarChart3 } from "lucide-react";
+import { motion } from "framer-motion";
+
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  PieChart,
+  Pie,
+  Cell,
+  ResponsiveContainer,
+} from "recharts";
+import {
+  Code2,
+  CheckCircle2,
+  XCircle,
+  Clock,
+  Cpu,
+  BarChart3,
+} from "lucide-react";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 
 const statusColors = {
@@ -23,16 +42,93 @@ const QuestionsList = () => {
   const [showModal, setShowModal] = useState(false);
   const [activeCode, setActiveCode] = useState("");
   const [activeLang, setActiveLang] = useState("");
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiProficiency, setAiProficiency] = useState(null);
+  const [aiSuggestion, setAiSuggestion] = useState(null);
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem("user"));
   const userId = user?._id;
 
+  const fetchAIInsights = async () => {
+    setAiLoading(true);
+    try {
+      const res1 = await axios.post(
+        "http://localhost:8080/api/ai/proficiency",
+        {
+          submissions,
+        }
+      );
+      const res2 = await axios.post("http://localhost:8080/api/ai/suggestion", {
+        submissions,
+      });
+
+      setAiProficiency(res1.data?.candidates?.[0]?.content?.parts?.[0]?.text);
+      setAiSuggestion(res2.data?.candidates?.[0]?.content?.parts?.[0]?.text);
+    } catch (err) {
+      console.error("AI fetch failed", err);
+    } finally {
+      setAiLoading(false);
+    }
+  };
+
+  const formatSuggestion = (text) => {
+    return text
+      .replace(
+        /\*\*(.*?)\*\*/g,
+        '<strong class="text-yellow-400 font-semibold">$1</strong>'
+      )
+      .replace(/\*(.*?)\*/g, '<em class="text-emerald-400 italic">$1</em>')
+      .replace(
+        /(C\+\+|Python|string manipulation|loops|input|syntax error|arithmetic|success|failure)/gi,
+        (match) =>
+          `<span class="text-pink-400 font-semibold animate-pulse">${match}</span>`
+      );
+  };
+
+const formatProficiency = (text) => {
+  return text
+    
+    .replace(
+      /Proficiency Score: (\d+)\/100/,
+      `<div class="text-xl font-bold text-cyan-300 mb-1">Proficiency Score: $1/100</div>`
+    )
+    // Section Headings with smaller bottom margin
+    .replace(
+      /Explanation:/g,
+      '<h4 class="text-lg font-semibold text-sky-400 mt-4 mb-1">📘 Explanation</h4>'
+    )
+    .replace(
+      /Breakdown:/g,
+      '<h4 class="text-lg font-semibold text-blue-400 mt-4 mb-1">📊 Breakdown</h4>'
+    )
+    .replace(
+      /In conclusion,/g,
+      '<h4 class="text-lg font-semibold text-purple-400 mt-4 mb-1">🧠 Conclusion</h4><p>'
+    )
+    // Bullet points
+    .replace(/\* (.*?)\n/g, '<li class="ml-6 text-sm text-gray-300">$1</li>')
+    // Remove ** bold marks
+    .replace(/\*\*(.*?)\*\*/g, '$1')
+    // Wrap <li> inside <ul> only once per group (improved)
+    .replace(/(?:<li[\s\S]*?<\/li>\n?)+/g, (match) => `<ul class="list-disc pl-6 mb-2">${match}</ul>`)
+    // Replace leftover new lines with <br>, but avoid extra breaks after headings or lists
+    .replace(/([^\n])\n([^\n])/g, '$1<br/>$2');
+};
+
+
+
   useEffect(() => {
-    axios.get("http://localhost:8080/api/questions")
+    if (activeTab === 2) fetchAIInsights();
+  }, [activeTab]);
+
+  useEffect(() => {
+    axios
+      .get("http://localhost:8080/api/questions")
       .then((res) => setQuestions(res.data))
       .catch((err) => console.error("Error fetching questions", err));
 
-    axios.get(`http://localhost:8080/api/submissions/status-map/${userId}`)
+    axios
+      .get(`http://localhost:8080/api/submissions/status-map/${userId}`)
       .then((res) => {
         const map = {};
         res.data.forEach((s) => {
@@ -42,7 +138,8 @@ const QuestionsList = () => {
       })
       .catch((err) => console.error("Error fetching status map", err));
 
-    axios.get(`http://localhost:8080/api/submissions/user/${userId}`)
+    axios
+      .get(`http://localhost:8080/api/submissions/user/${userId}`)
       .then((res) => {
         const updated = res.data.map((s) => ({
           ...s,
@@ -60,24 +157,36 @@ const QuestionsList = () => {
     return Math.round(base * multiplier * 0.1); // Fake runtime in ms
   };
 
-   const getStatusMap = () => {
+  const getStatusMap = () => {
     const map = {};
     submissions.forEach((s) => (map[s.questionId] = s.status));
     return map;
   };
 
-    const languageStats = submissions.reduce((acc, curr) => {
+  const languageStats = submissions.reduce((acc, curr) => {
     acc[curr.language] = (acc[curr.language] || 0) + 1;
     return acc;
   }, {});
 
-  const pieData = Object.entries(languageStats).map(([lang, count]) => ({ name: lang, value: count }));
-  const COLORS = ["#4ade80", "#f87171", "#60a5fa", "#fbbf24", "#a78bfa", "#38bdf8"];
+  const pieData = Object.entries(languageStats).map(([lang, count]) => ({
+    name: lang,
+    value: count,
+  }));
+  const COLORS = [
+    "#4ade80",
+    "#f87171",
+    "#60a5fa",
+    "#fbbf24",
+    "#a78bfa",
+    "#38bdf8",
+  ];
 
   const total = submissions.length;
   const success = submissions.filter((s) => s.status === "Success").length;
   const failed = submissions.filter((s) => s.status === "Failed").length;
-  const avgRuntime = (submissions.reduce((sum, s) => sum + (s.runtime || 0), 0) / total).toFixed(2);
+  const avgRuntime = (
+    submissions.reduce((sum, s) => sum + (s.runtime || 0), 0) / total
+  ).toFixed(2);
   const successRate = total > 0 ? ((success / total) * 100).toFixed(1) : 0;
   const mostUsedLang = pieData.sort((a, b) => b.value - a.value)[0]?.name;
 
@@ -115,7 +224,9 @@ const QuestionsList = () => {
               >
                 <div className="flex justify-between items-center mb-3">
                   <h2 className="text-2xl font-semibold">{q.title}</h2>
-                  <span className={`px-4 py-1 rounded-full text-sm font-semibold ${statusColors[status]}`}>
+                  <span
+                    className={`px-4 py-1 rounded-full text-sm font-semibold ${statusColors[status]}`}
+                  >
                     {status}
                   </span>
                 </div>
@@ -146,12 +257,23 @@ const QuestionsList = () => {
             </thead>
             <tbody>
               {submissions.map((s, i) => (
-                <tr key={i} className="border-t border-gray-600 hover:bg-[#26294a]">
+                <tr
+                  key={i}
+                  className="border-t border-gray-600 hover:bg-[#26294a]"
+                >
                   <td className="p-3">{s.questionTitle}</td>
                   <td className="p-3">
-                    <span className={`px-2 py-1 rounded-full ${statusColors[s.status]}`}>{s.status}</span>
+                    <span
+                      className={`px-2 py-1 rounded-full ${
+                        statusColors[s.status]
+                      }`}
+                    >
+                      {s.status}
+                    </span>
                   </td>
-                  <td className="p-3">{new Date(s.createdAt).toLocaleString()}</td>
+                  <td className="p-3">
+                    {new Date(s.createdAt).toLocaleString()}
+                  </td>
                   <td className="p-3">{s.runtime ?? "N/A"} ms</td>
                   <td className="p-3 capitalize">{s.language}</td>
                   <td className="p-3">
@@ -181,15 +303,29 @@ const QuestionsList = () => {
             <BarChart3 size={28} /> My Coding Stats
           </h2>
           {total === 0 ? (
-            <p className="text-center text-gray-400">No submissions yet. Try solving some questions!</p>
+            <p className="text-center text-gray-400">
+              No submissions yet. Try solving some questions!
+            </p>
           ) : (
             <div className="grid md:grid-cols-2 gap-8">
               <div className="space-y-4 text-gray-300">
-                <p className="flex items-center gap-2"><CheckCircle2 size={20} /> <strong>Total:</strong> {total}</p>
-                <p className="flex items-center gap-2"><CheckCircle2 size={20} /> <strong>Success:</strong> {success}</p>
-                <p className="flex items-center gap-2"><XCircle size={20} /> <strong>Failed:</strong> {failed}</p>
-                <p className="flex items-center gap-2"><Cpu size={20} /> <strong>Most Used Lang:</strong> {mostUsedLang}</p>
-                <p className="flex items-center gap-2"><Clock size={20} /> <strong>Avg Runtime:</strong> {avgRuntime} ms</p>
+                <p className="flex items-center gap-2">
+                  <CheckCircle2 size={20} /> <strong>Total:</strong> {total}
+                </p>
+                <p className="flex items-center gap-2">
+                  <CheckCircle2 size={20} /> <strong>Success:</strong> {success}
+                </p>
+                <p className="flex items-center gap-2">
+                  <XCircle size={20} /> <strong>Failed:</strong> {failed}
+                </p>
+                <p className="flex items-center gap-2">
+                  <Cpu size={20} /> <strong>Most Used Lang:</strong>{" "}
+                  {mostUsedLang}
+                </p>
+                <p className="flex items-center gap-2">
+                  <Clock size={20} /> <strong>Avg Runtime:</strong> {avgRuntime}{" "}
+                  ms
+                </p>
               </div>
               <ResponsiveContainer width="100%" height={250}>
                 <PieChart>
@@ -210,6 +346,52 @@ const QuestionsList = () => {
               </ResponsiveContainer>
             </div>
           )}
+          <div className="mt-8 bg-gradient-to-r from-[#1f2937] to-[#2a2c4d] p-6 rounded-xl shadow-xl border border-indigo-600">
+            <h3 className="text-2xl font-bold text-indigo-300 mb-4 flex items-center gap-2">
+              🤖 AI Insights
+            </h3>
+
+            {aiLoading ? (
+              <div className="text-center text-gray-400 animate-pulse">
+                <p className="text-lg">Analyzing your code...</p>
+                <div className="mt-2 w-12 h-12 mx-auto border-4 border-dashed border-indigo-500 rounded-full animate-spin"></div>
+              </div>
+            ) : (
+              <>
+                {aiProficiency && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6 }}
+                    className="bg-[#202440] p-6 rounded-lg border-l-4 border-green-500 shadow-md mb-2"
+                  >
+                    <div
+                      className="text-sm text-gray-200 leading-relaxed"
+                      dangerouslySetInnerHTML={{
+                        __html: formatProficiency(aiProficiency),
+                      }}
+                    />
+                  </motion.div>
+                )}
+
+                {aiSuggestion && (
+                  <motion.div
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.6 }}
+                    className="bg-[#202440] p-4 rounded-lg border-l-4 border-yellow-400"
+                  >
+                    <p
+                      className="text-sm text-gray-300 leading-relaxed"
+                      dangerouslySetInnerHTML={{
+                        __html: formatSuggestion(aiSuggestion),
+                      }}
+                    />
+                  </motion.div>
+                )}
+              </>
+            )}
+          </div>
         </div>
       )}
 
@@ -227,7 +409,11 @@ const QuestionsList = () => {
               Submitted Code ({activeLang})
             </h2>
             <div className="overflow-auto max-h-[60vh] rounded-lg">
-              <SyntaxHighlighter language={activeLang} style={oneDark} wrapLines={true}>
+              <SyntaxHighlighter
+                language={activeLang}
+                style={oneDark}
+                wrapLines={true}
+              >
                 {activeCode}
               </SyntaxHighlighter>
             </div>
