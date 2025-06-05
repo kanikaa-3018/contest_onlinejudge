@@ -7,19 +7,26 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
-app.post("/run", (req, res) => {
+app.post("/run", async (req, res) => {
   const { language, code, input } = req.body;
 
   if (!language || !code) {
     return res.status(400).json({ error: "Missing language or code" });
   }
 
-  executeCode(language, code, input || "", (result) => {
-    res.json({ output: result });
-  });
+  try {
+    executeCode(language, code, input || "", (result) => {
+      res.json({ output: result });
+    });
+  } catch (err) {
+    console.error("Execution error:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
 });
 
+
 const PORT = 5001;
-app.listen(PORT, () => {
-  console.log(`Compiler server running at http://localhost:${PORT}`);
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Compiler server running at http://0.0.0.0:${PORT}`);
 });
+
