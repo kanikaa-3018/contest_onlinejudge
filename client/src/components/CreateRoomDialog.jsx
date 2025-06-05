@@ -44,7 +44,7 @@ const CreateRoomDialog = () => {
     e.preventDefault();
 
     try {
-      const response = await fetch("http://localhost:8080/api/rooms/create", {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/rooms/create`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

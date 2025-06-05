@@ -131,7 +131,7 @@ const CodeEditor = ({ roomId, userId }) => {
     setIsRunning(true);
     setOutput("Running...");
     try {
-      const response = await axios.post("http://localhost:8080/execute", {
+      const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/execute`, {
         language,
         code,
         input,

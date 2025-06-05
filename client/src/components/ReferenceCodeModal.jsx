@@ -24,7 +24,7 @@ function ReferenceCodeModal({ questionId }) {
   const [open, setOpen] = useState(false)
 
   const saveReferenceCode = async () => {
-    const response = await fetch(`http://localhost:8080/api/questions/${questionId}/reference-code`, {
+    const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/questions/${questionId}/reference-code`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",

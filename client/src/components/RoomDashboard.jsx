@@ -23,7 +23,7 @@ const RoomDashboard = () => {
   useEffect(() => {
     const fetchRooms = async () => {
       try {
-        const response = await fetch("http://localhost:8080/api/rooms");
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/rooms`);
         if (!response.ok) {
           throw new Error("Failed to fetch rooms");
         }

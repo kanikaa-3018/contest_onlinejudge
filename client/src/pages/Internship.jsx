@@ -18,7 +18,7 @@ const Internship = () => {
 
   useEffect(() => {
     setLoading(true);
-    fetch("http://localhost:8080/api/internships")
+    fetch(`${import.meta.env.VITE_BACKEND_URL}/api/internships`)
       .then((res) => {
         if (!res.ok) {
           throw new Error("Failed to fetch internships");

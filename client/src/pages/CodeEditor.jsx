@@ -66,7 +66,7 @@ const CodeEditor = () => {
   useEffect(() => {
     const fetchQuestion = async () => {
       try {
-        const res = await fetch(`http://localhost:8080/api/questions/${id}`);
+        const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/questions/${id}`);
         if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
         const data = await res.json();
         setQuestion(data);
@@ -88,7 +88,7 @@ const CodeEditor = () => {
   const generateHint = async (questionID) => {
     try {
       const response = await fetch(
-        `http://localhost:8080/api/questions/generate-hints/${questionID}`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/questions/generate-hints/${questionID}`,
         {
           method: "POST",
           headers: {
@@ -122,7 +122,7 @@ const CodeEditor = () => {
     setVerdict("Running...");
     setOutput("");
     try {
-      const response = await fetch("http://localhost:8080/execute", {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/execute`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -162,7 +162,7 @@ const CodeEditor = () => {
 
     try {
       const response = await fetch(
-        `http://localhost:8080/api/questions/${id}/submit`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/questions/${id}/submit`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -181,7 +181,7 @@ const CodeEditor = () => {
         setFailedCaseIndex(-1);
         setTestCaseResults(Array(totalTestCases).fill({ passed: true }));
 
-        const response2 = await fetch("http://localhost:8080/api/submissions", {
+        const response2 = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/submissions`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -219,7 +219,7 @@ const CodeEditor = () => {
           }\nGot: ${result.actual}`
         );
 
-        await fetch("http://localhost:8080/api/submissions", {
+        await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/submissions`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -247,7 +247,7 @@ const CodeEditor = () => {
     setFeedback("");
 
     try {
-      const response = await fetch("http://localhost:8080/analyze", {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/analyze`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ code, language }),

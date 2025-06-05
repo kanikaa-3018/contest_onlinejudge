@@ -7,6 +7,8 @@ const dotenv = require("dotenv");
 const fetch=require("node-fetch")
 dotenv.config();
 
+const backendurl= process.env.BACKEND_URL;
+
 
 // GET all questions
 router.get("/", async (req, res) => {
@@ -181,7 +183,7 @@ router.post("/:id/submit", async (req, res) => {
     for (let i = 0; i < testCases.length; i++) {
       const { input, output: expectedOutput } = testCases[i];
 
-      const response = await axios.post("http://localhost:8080/execute", {
+      const response = await axios.post(`${backendurl}/execute`, {
         language,
         code,
         input,

@@ -28,7 +28,7 @@ const AdminDashboard = () => {
 
   const fetchQuestions = async () => {
     try {
-      const res = await axios.get("http://localhost:8080/api/questions");
+      const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/questions`);
       setQuestions(res.data);
     } catch (err) {
       console.error("Failed to fetch questions", err);
@@ -55,8 +55,8 @@ const AdminDashboard = () => {
     e.preventDefault();
     try {
       const url = editId
-        ? `http://localhost:8080/api/questions/${editId}`
-        : `http://localhost:8080/api/questions`;
+        ? `${import.meta.env.VITE_BACKEND_URL}/api/questions/${editId}`
+        : `${import.meta.env.VITE_BACKEND_URL}/api/questions`;
       const method = editId ? "put" : "post";
       await axios[method](url, form, {
         headers: { Authorization: `Bearer ${token}` },
@@ -89,7 +89,7 @@ const AdminDashboard = () => {
     if (!window.confirm("Are you sure you want to delete this question?"))
       return;
     try {
-      await axios.delete(`http://localhost:8080/api/questions/${id}`, {
+      await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/api/questions/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       fetchQuestions();
@@ -100,7 +100,7 @@ const AdminDashboard = () => {
 
   const fetchReferenceCode = async (questionId) => {
     try {
-      const res = await axios.get(`http://localhost:8080/api/questions/${questionId}/reference-code`);
+      const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/questions/${questionId}/reference-code`);
       console.log(res.data.referenceCode[0].code)
       if (res.data && res.data.referenceCode) {
         // const selectedLanguage = "python"; 
@@ -122,7 +122,7 @@ const AdminDashboard = () => {
       }
   
       const res = await axios.post(
-        "http://localhost:8080/api/generate-tests",
+        `${import.meta.env.VITE_BACKEND_URL}/api/generate-tests`,
         { code },
         {
           headers: {

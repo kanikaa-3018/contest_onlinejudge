@@ -21,7 +21,7 @@ const LeaderboardTable = () => {
   useEffect(() => {
     const fetchLeaderboard = async () => {
       try {
-        const response = await fetch("http://localhost:8080/api/global-leaderboard");
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/global-leaderboard`);
         const data = await response.json();
 
         if (!Array.isArray(data)) {

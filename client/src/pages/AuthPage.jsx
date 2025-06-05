@@ -36,8 +36,8 @@ const AuthPage = () => {
     setError("");
 
     const url = isLogin
-      ? "http://localhost:8080/api/users/login"
-      : "http://localhost:8080/api/users/register";
+      ? `${import.meta.env.VITE_BACKEND_URL}/api/users/login`
+      : `${import.meta.env.VITE_BACKEND_URL}/api/users/register`;
 
     const payload = isLogin
       ? {

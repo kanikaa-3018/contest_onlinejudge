@@ -53,12 +53,12 @@ const QuestionsList = () => {
     setAiLoading(true);
     try {
       const res1 = await axios.post(
-        "http://localhost:8080/api/ai/proficiency",
+        `${import.meta.env.VITE_BACKEND_URL}/api/ai/proficiency`,
         {
           submissions,
         }
       );
-      const res2 = await axios.post("http://localhost:8080/api/ai/suggestion", {
+      const res2 = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/ai/suggestion`, {
         submissions,
       });
 
@@ -123,12 +123,12 @@ const formatProficiency = (text) => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:8080/api/questions")
+      .get(`${import.meta.env.VITE_BACKEND_URL}/api/questions`)
       .then((res) => setQuestions(res.data))
       .catch((err) => console.error("Error fetching questions", err));
 
     axios
-      .get(`http://localhost:8080/api/submissions/status-map/${userId}`)
+      .get(`${import.meta.env.VITE_BACKEND_URL}/api/submissions/status-map/${userId}`)
       .then((res) => {
         const map = {};
         res.data.forEach((s) => {
@@ -139,7 +139,7 @@ const formatProficiency = (text) => {
       .catch((err) => console.error("Error fetching status map", err));
 
     axios
-      .get(`http://localhost:8080/api/submissions/user/${userId}`)
+      .get(`${import.meta.env.VITE_BACKEND_URL}/api/submissions/user/${userId}`)
       .then((res) => {
         const updated = res.data.map((s) => ({
           ...s,

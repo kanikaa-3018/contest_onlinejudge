@@ -34,7 +34,7 @@ function ResumeAnalyzer() {
       }, 200);
 
       try {
-        const response = await fetch('http://localhost:8080/api/analyze-resume', {
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/analyze-resume`, {
           method: 'POST',
           body: formData,
         });
@@ -76,7 +76,7 @@ function ResumeAnalyzer() {
       }, 200);
 
       try {
-        const response = await fetch('http://localhost:8080/api/analyze-sample', {
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/analyze-sample`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ sampleType }),
@@ -108,8 +108,8 @@ function ResumeAnalyzer() {
   });
 
   const { data: analysisData, isLoading: isLoadingAnalysis } = useQuery({
-    queryKey: ['http://localhost:8080/api/analysis', analysisId],
-    queryFn: () => fetch(`http://localhost:8080/api/analysis/${analysisId}`).then((res) => res.json()),
+    queryKey: [`${import.meta.env.VITE_BACKEND_URL}/api/analysis`, analysisId],
+    queryFn: () => fetch(`${import.meta.env.VITE_BACKEND_URL}/api/analysis/${analysisId}`).then((res) => res.json()),
     enabled: !!analysisId,
   });
 
