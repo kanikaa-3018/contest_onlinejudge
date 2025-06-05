@@ -163,7 +163,7 @@ app.post("/execute", async (req, res) => {
   const { language, code, input } = req.body;
 
   try {
-    const response = await axios.post(`${dockerurl}/run`, {
+    const response = await axios.post(`http://localhost:5001/run`, {
       language,
       code,
       input,
