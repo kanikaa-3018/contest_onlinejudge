@@ -38,7 +38,7 @@ const ContestHistoryLeaderboard = () => {
           newRating: entry.newRating,
           delta: entry.newRating - entry.oldRating,
         }));
-        setContestHistory(data.reverse().slice(0, 10)); // latest 10 only
+        setContestHistory(data.reverse().slice(0, 10));
         setLoading(false);
       } catch (err) {
         setError("Failed to fetch contest history.");
@@ -49,67 +49,113 @@ const ContestHistoryLeaderboard = () => {
     fetchRatingHistory();
   }, [cfHandle]);
 
-  if (loading) return <p className="text-white">Loading...</p>;
-  if (error) return <p className="text-red-500">{error}</p>;
+  if (loading) return <p className="text-white text-center">Loading...</p>;
+  if (error) return <p className="text-red-500 text-center">{error}</p>;
 
   return (
     <>
-    <h1 className="text-4xl font-bold mt-3 mb-5 ml-2">What else we offer?</h1>
-    <Card className="bg-[#14142B] text-white border border-[#2A2A3B]">
-      <CardHeader className="flex flex-row items-center justify-between">
-        <div>
-          
-          <CardTitle>Contest History</CardTitle>
-          <CardDescription className="text-gray-400">
-            Your performance in past Codeforces contests
-          </CardDescription>
-        </div>
-        <Award className="h-5 w-5 text-[#00FFC6]" />
-      </CardHeader>
-      <CardContent>
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm text-left">
-            <thead className="bg-[#2A2A3B]">
-              <tr>
-                {["Contest", "Rank", "Old", "New", "Δ Rating"].map((header) => (
-                  <th
-                    key={header}
-                    className="px-4 py-3 uppercase text-xs text-[#00FFC6]"
-                  >
-                    {header}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {contestHistory.map((entry) => (
-                <tr key={entry.id} className="border-b border-[#2A2A3B]">
-                  <td className="px-4 py-3 font-medium">{entry.contestName}</td>
-                  <td className="px-4 py-3">{entry.rank}</td>
-                  <td className="px-4 py-3">{entry.oldRating}</td>
-                  <td className="px-4 py-3">{entry.newRating}</td>
-                  <td
-                    className={`px-4 py-3 font-semibold ${
-                      entry.delta >= 0 ? "text-green-400" : "text-red-400"
-                    }`}
-                  >
-                    {entry.delta >= 0 ? `+${entry.delta}` : entry.delta}
-                  </td>
+      <h1 className="text-2xl sm:text-4xl font-bold mt-4 mb-6 ml-2 text-white">
+        What else we offer?
+      </h1>
+
+      <Card className="bg-[#14142B] text-white border border-[#2A2A3B]">
+        <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
+          <div>
+            <CardTitle className="text-lg sm:text-xl">Contest History</CardTitle>
+            <CardDescription className="text-sm sm:text-base text-gray-400">
+              Your performance in past Codeforces contests
+            </CardDescription>
+          </div>
+          <Award className="h-5 w-5 text-[#00FFC6]" />
+        </CardHeader>
+
+        <CardContent className="space-y-4">
+          {/* Table view for desktop */}
+          <div className="hidden sm:block overflow-x-auto">
+            <table className="min-w-[700px] w-full text-left">
+              <thead className="bg-[#2A2A3B]">
+                <tr>
+                  {["Contest", "Rank", "Old", "New", "Δ Rating"].map((header) => (
+                    <th
+                      key={header}
+                      className="px-4 py-3 text-xs text-[#00FFC6] uppercase"
+                    >
+                      {header}
+                    </th>
+                  ))}
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </CardContent>
-      <CardFooter>
-        <Button variant="outline" className="border-[#00FFC6] text-[#00FFC6]">
-          View Full Rating Graph
-        </Button>
-      </CardFooter>
-    </Card>
+              </thead>
+              <tbody>
+                {contestHistory.map((entry) => (
+                  <tr key={entry.id} className="border-b border-[#2A2A3B]">
+                    <td className="px-4 py-3 font-medium">{entry.contestName}</td>
+                    <td className="px-4 py-3">{entry.rank}</td>
+                    <td className="px-4 py-3">{entry.oldRating}</td>
+                    <td className="px-4 py-3">{entry.newRating}</td>
+                    <td
+                      className={`px-4 py-3 font-semibold ${
+                        entry.delta >= 0 ? "text-green-400" : "text-red-400"
+                      }`}
+                    >
+                      {entry.delta >= 0 ? `+${entry.delta}` : entry.delta}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Card view for mobile */}
+          <div className="flex flex-col gap-4 sm:hidden">
+            {contestHistory.map((entry) => (
+              <div
+                key={entry.id}
+                className="border border-[#2A2A3B] bg-[#1c1c35] rounded-lg p-4 shadow-sm"
+              >
+                <p className="font-semibold text-[#00FFC6] text-sm mb-2">
+                  {entry.contestName}
+                </p>
+                <div className="grid grid-cols-2 gap-2 text-xs text-white">
+                  <div>
+                    <p className="text-gray-400">Rank</p>
+                    <p>{entry.rank}</p>
+                  </div>
+                  <div>
+                    <p className="text-gray-400">Old Rating</p>
+                    <p>{entry.oldRating}</p>
+                  </div>
+                  <div>
+                    <p className="text-gray-400">New Rating</p>
+                    <p>{entry.newRating}</p>
+                  </div>
+                  <div>
+                    <p className="text-gray-400">Δ Rating</p>
+                    <p
+                      className={`font-semibold ${
+                        entry.delta >= 0 ? "text-green-400" : "text-red-400"
+                      }`}
+                    >
+                      {entry.delta >= 0 ? `+${entry.delta}` : entry.delta}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+
+        <CardFooter className="flex justify-center">
+          <Button
+            variant="outline"
+            className="border-[#00FFC6] text-[#00FFC6] w-full sm:w-auto"
+            onClick={() => window.location.href = "/rating-graph"}
+          >
+            View Full Rating Graph
+          </Button>
+        </CardFooter>
+      </Card>
     </>
   );
-  
 };
 
 export default ContestHistoryLeaderboard;

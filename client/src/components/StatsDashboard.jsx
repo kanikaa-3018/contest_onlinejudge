@@ -118,65 +118,60 @@ const StatsDashboard = () => {
   const progress = Math.min((stats.solved / stats.total) * 100, 100);
 
   return (
-    <Card className="bg-[#14142B] text-white border border-[#2A2A3B]">
-      <CardHeader>
-        <CardTitle>Your Stats</CardTitle>
-        <CardDescription className="text-gray-400">
-          Your coding journey so far
-        </CardDescription>
-      </CardHeader>
+    <Card className="bg-[#14142B] text-white border border-[#2A2A3B] w-full">
+  <CardHeader>
+    <CardTitle className="text-xl sm:text-2xl">Your Stats</CardTitle>
+    <CardDescription className="text-gray-400 text-sm sm:text-base">
+      Your coding journey so far
+    </CardDescription>
+  </CardHeader>
 
-      <CardContent className="space-y-6 min-h-[400px]">
-        {/* Problems Solved with progress */}
-        <div className="space-y-2">
-          <div className="flex items-center justify-between">
-            <span className="text-sm font-medium">Problems Solved</span>
-            <span className="text-sm font-medium text-[#00FFC6]">
-              {stats.solved}/{stats.total}
-            </span>
-          </div>
-          <Progress value={progress} className="bg-gray-700" />
-        </div>
+  <CardContent className="space-y-6 min-h-[400px] px-4 sm:px-6">
+    {/* Problems Solved with progress */}
+    <div className="space-y-2">
+      <div className="flex items-center justify-between">
+        <span className="text-sm font-medium">Problems Solved</span>
+        <span className="text-sm font-medium text-[#00FFC6]">
+          {stats.solved}/{stats.total}
+        </span>
+      </div>
+      <Progress value={progress} className="bg-gray-700 h-2" />
+    </div>
 
-        {/* Main stats grid */}
-        <div className="grid grid-cols-2 gap-6">
-          {/* Rating & Max Rating */}
-          <StatItem icon={<TrendingUp size={20} />} label="Current Rating" value={stats.rating} />
-          <StatItem icon={<Star size={20} />} label="Max Rating" value={stats.maxRating} />
+    {/* Main stats grid */}
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4">
+      <StatItem icon={<TrendingUp size={20} />} label="Current Rating" value={stats.rating} />
+      <StatItem icon={<Star size={20} />} label="Max Rating" value={stats.maxRating} />
+      <StatItem icon={<Award size={20} />} label="Rank" value={capitalize(stats.rank)} />
+      <StatItem icon={<Award size={20} />} label="Best Rank" value={stats.bestRank} />
+      <StatItem icon={<Calendar size={20} />} label="Contests" value={stats.contests} />
+      <StatItem icon={<Calendar size={20} />} label="Last Contest" value={stats.lastContestDate} />
+    </div>
 
-          {/* Rank & Best Rank */}
-          <StatItem icon={<Award size={20} />} label="Rank" value={capitalize(stats.rank)} />
-          <StatItem icon={<Award size={20} />} label="Best Rank" value={stats.bestRank} />
+    {/* Problems solved by difficulty */}
+    <div>
+      <h3 className="text-[#00FFC6] font-semibold mb-2 flex items-center gap-2 text-sm sm:text-base">
+        <BarChart2 size={20} /> Solved Problems by Difficulty
+      </h3>
+      <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-6 text-gray-400 text-sm">
+        <DifficultyBadge label="Easy" value={stats.solvedByDifficulty.easy} color="green" />
+        <DifficultyBadge label="Medium" value={stats.solvedByDifficulty.medium} color="yellow" />
+        <DifficultyBadge label="Hard" value={stats.solvedByDifficulty.hard} color="red" />
+      </div>
+    </div>
+  </CardContent>
 
-          {/* Contests & Last Contest */}
-          <StatItem icon={<Calendar size={20} />} label="Contests" value={stats.contests} />
-          <StatItem icon={<Calendar size={20} />} label="Last Contest" value={stats.lastContestDate} />
+  <CardFooter>
+    <Button
+      variant="outline"
+      className="border-[#00FFC6] text-[#00FFC6] w-full sm:w-auto"
+      onClick={() => (window.location.href = "/profile")}
+    >
+      View Full Profile
+    </Button>
+  </CardFooter>
+</Card>
 
-        </div>
-
-        {/* Problems solved by difficulty */}
-        <div>
-          <h3 className="text-[#00FFC6] font-semibold mb-2 flex items-center gap-2">
-            <BarChart2 size={20} /> Solved Problems by Difficulty
-          </h3>
-          <div className="flex space-x-6 text-gray-400 text-sm">
-            <DifficultyBadge label="Easy" value={stats.solvedByDifficulty.easy} color="green" />
-            <DifficultyBadge label="Medium" value={stats.solvedByDifficulty.medium} color="yellow" />
-            <DifficultyBadge label="Hard" value={stats.solvedByDifficulty.hard} color="red" />
-          </div>
-        </div>
-      </CardContent>
-
-      <CardFooter>
-        <Button
-          variant="outline"
-          className="border-[#00FFC6] text-[#00FFC6]"
-          onClick={() => (window.location.href = "/profile")}
-        >
-          View Full Profile
-        </Button>
-      </CardFooter>
-    </Card>
   );
 };
 
@@ -186,7 +181,7 @@ const StatItem = ({ icon, label, value }) => (
     <div className="text-[#00FFC6]">{icon}</div>
     <div>
       <p className="text-xs text-gray-400">{label}</p>
-      <p className="text-lg font-bold">{value}</p>
+      <p className="text-md font-bold">{value}</p>
     </div>
   </div>
 );
@@ -200,7 +195,7 @@ const DifficultyBadge = ({ label, value, color }) => {
   };
   return (
     <div
-      className={`px-3 py-1 rounded-full font-semibold ${colors[color]} bg-opacity-30`}
+      className={`px-3 py-1 rounded-md font-semibold ${colors[color]} bg-opacity-30`}
     >
       {label}: {value}
     </div>

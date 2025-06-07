@@ -19,15 +19,24 @@ const GoogleSheetSummary = () => {
         `}
       </style>
 
-      <div className="flex flex-wrap justify-center gap-6 mt-4 opacity-0 fade-in flex-row">
+      <div
+        className="fade-in mx-auto mt-4 flex flex-col md:flex-row justify-center gap-4 px-4"
+        style={{ maxWidth: 720 }}
+        aria-label="Google Sheets and Notion quick access buttons"
+      >
         <button
-          className="flex items-center gap-2 px-8 py-3 text-lg font-semibold rounded-2xl text-white cursor-pointer
+          type="button"
+          className="
+            flex items-center gap-2 px-6 py-3 text-base font-semibold rounded-2xl text-white cursor-pointer
             bg-gradient-to-br from-purple-700 to-blue-600
             shadow-lg shadow-blue-500/30
             transition-transform duration-300 ease-in-out
             hover:scale-105 hover:shadow-blue-600/50
             select-none
-            sm:w-full sm:justify-center"
+            w-full md:w-auto
+            md:flex-1
+            justify-center
+          "
           onClick={() => window.open(sheetUrl, "_blank")}
           aria-label="Open Google Sheets Daily CP Summary"
         >
@@ -35,13 +44,18 @@ const GoogleSheetSummary = () => {
         </button>
 
         <button
-          className="flex items-center gap-2 px-8 py-3 text-lg font-semibold rounded-2xl text-white cursor-pointer
+          type="button"
+          className="
+            flex items-center gap-2 px-6 py-3 text-base font-semibold rounded-2xl text-white cursor-pointer
             bg-gradient-to-br from-black to-gray-700
             shadow-lg shadow-gray-700/40
             transition-transform duration-300 ease-in-out
             hover:scale-105 hover:shadow-gray-900/60
             select-none
-            sm:w-full sm:justify-center"
+            w-full md:w-auto
+            md:flex-1
+            justify-center
+          "
           onClick={() => window.open(notionUrl, "_blank")}
           aria-label="Open Notion Page"
         >

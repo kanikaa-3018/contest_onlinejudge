@@ -99,12 +99,13 @@ const Practice = () => {
       <h2 className="text-3xl font-bold mb-6">Practice Problems</h2>
 
       {/* Filters */}
-      <div className="flex flex-col md:flex-row gap-4 mb-8 items-center">
+   
+      <div className="flex flex-col gap-4 mb-8 sm:grid md:grid sm:grid-cols-2 md:grid-cols-4 sm:gap-4">
         {/* Platform */}
         <select
           value={platform}
           onChange={(e) => setPlatform(e.target.value)}
-          className="bg-[#1F1D36] text-white p-3 rounded-xl"
+          className="bg-[#1F1D36] text-white p-3 rounded-xl w-full"
         >
           {PLATFORMS.map((p) => (
             <option key={p} value={p}>
@@ -117,7 +118,7 @@ const Practice = () => {
         <select
           value={selectedTag}
           onChange={(e) => setSelectedTag(e.target.value)}
-          className="bg-[#1F1D36] text-white p-3 rounded-xl"
+          className="bg-[#1F1D36] text-white p-3 rounded-xl w-full"
         >
           <option value="">All Tags</option>
           {TAGS.map((tag) => (
@@ -131,7 +132,7 @@ const Practice = () => {
         <select
           value={selectedRating}
           onChange={(e) => setSelectedRating(e.target.value)}
-          className="bg-[#1F1D36] text-white p-3 rounded-xl min-w-[150px]"
+          className="bg-[#1F1D36] text-white p-3 rounded-xl w-full"
           disabled={platform === "LeetCode"}
         >
           <option value="">All Ratings</option>
@@ -141,10 +142,12 @@ const Practice = () => {
             </option>
           ))}
         </select>
+
+        {/* Difficulty (only for LeetCode) */}
         <select
           value={selectedDifficulty}
           onChange={(e) => setSelectedDifficulty(e.target.value)}
-          className="bg-[#1F1D36] text-white p-3 rounded-xl"
+          className="bg-[#1F1D36] text-white p-3 rounded-xl w-full"
         >
           <option value="">All Difficulties</option>
           {DIFFICULTIES.map((diff) => (

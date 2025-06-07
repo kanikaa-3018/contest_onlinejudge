@@ -1,42 +1,15 @@
 import { useEffect, useState } from "react";
-
-const colors = [
-  "#ebedf0", // empty (light gray)
-  "#c6f6d5", // light green
-  "#9ae6b4",
-  "#68d391",
-  "#38a169", // dark green
-];
-
-// Grid config
-const rows = 7;
-const cols = 20;
-
-const getRandomColor = () => {
-  const weights = [0.15, 0.25, 0.3, 0.2, 0.1];
-  const sum = weights.reduce((a,b) => a+b, 0);
-  const rand = Math.random() * sum;
-  let acc = 0;
-  for (let i=0; i<weights.length; i++) {
-    acc += weights[i];
-    if (rand < acc) return colors[i];
-  }
-  return colors[0];
-};
+import { TerminalSquare } from "lucide-react";
 
 const VSCodeTypewriter = () => {
   const [output, setOutput] = useState("");
-  const [gridColors, setGridColors] = useState(
-    Array(rows * cols).fill(colors[0])
-  );
-
   const fullText = [
     "AI Assistant: 'Ready to help you level up your coding skills!'",
     "AI Assistant: 'I can suggest problems based on your weaknesses and track your progress.'",
     "AI Assistant: 'Let’s get started with the next coding challenge!'",
   ].join("\n");
 
-  // Typing effect
+  // Typewriter Effect
   useEffect(() => {
     let i = 0;
     const interval = setInterval(() => {
@@ -47,49 +20,71 @@ const VSCodeTypewriter = () => {
     return () => clearInterval(interval);
   }, []);
 
-  // Update grid colors smoothly
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setGridColors((prev) =>
-        prev.map(() => getRandomColor())
-      );
-    }, 1500);
-    return () => clearInterval(interval);
-  }, []);
-
   return (
-    <div className="max-w-3xl mx-auto p-8 bg-[#161b22] rounded-xl shadow-xl text-gray-200 font-sans select-none">
-      {/* Headline */}
-      <h2 className="text-4xl font-semibold mb-8 text-center tracking-wide text-gradient bg-gradient-to-r from-green-400 to-blue-500 bg-clip-text text-transparent">
-        GitHub Contribution Style AI Assistant
-      </h2>
-
-      {/* Contribution Graph */}
-      <div
-        className="grid grid-cols-20 grid-rows-7 gap-2 mb-10 justify-center"
-        aria-label="GitHub contribution graph style"
-      >
-        {gridColors.map((color, i) => (
-          <div
-            key={i}
-            style={{ backgroundColor: color, transition: "background-color 1s ease" }}
-            className="w-5 h-5 rounded-sm shadow-sm"
-            aria-hidden="true"
-          />
-        ))}
+    <div
+      className="w-full max-w-[260px] mx-auto rounded-xl overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.7)] border border-[#2c313a] bg-[#1e1e1e] text-[#d4d4d4]"
+      style={{ minWidth: "320px", fontFamily: "Consolas, 'Courier New', monospace" }}
+    >
+      {/* VS Code Style Header */}
+      <div className="flex items-center justify-between px-4 py-2 bg-[#252526] border-b border-[#3c3c3c] select-none">
+        <div className="flex items-center space-x-2">
+          <span
+            className="h-3 w-3 rounded-full"
+            style={{
+              background: "radial-gradient(circle at 30% 30%, #f1707a, #b03032)",
+              boxShadow: "0 0 4px #f1707a",
+            }}
+          ></span>
+          <span
+            className="h-3 w-3 rounded-full"
+            style={{
+              background: "radial-gradient(circle at 30% 30%, #f3d88c, #b38c00)",
+              boxShadow: "0 0 4px #f3d88c",
+            }}
+          ></span>
+          <span
+            className="h-3 w-3 rounded-full"
+            style={{
+              background: "radial-gradient(circle at 30% 30%, #4caf50, #2e7d32)",
+              boxShadow: "0 0 4px #4caf50",
+            }}
+          ></span>
+        </div>
+        <span className="text-sm text-[#cccccc] truncate max-w-[150px]">
+          AI Assistant
+        </span>
+        <TerminalSquare className="text-[#888888] w-4 h-4" />
       </div>
 
-      <hr className="border-gray-700 mb-8" />
-
-      {/* Quotes Area */}
-      <pre
-        className="whitespace-pre-wrap font-mono text-lg leading-relaxed text-[#f0ab69] min-h-[120px] px-4 py-3 bg-[#0d1117] rounded-md shadow-inner"
-        aria-live="polite"
-        aria-atomic="true"
+      {/* Terminal Output Area */}
+      <div
+        className="p-6 bg-[#1e1e1e] min-h-[180px] max-h-[220px] overflow-y-auto whitespace-pre-wrap overflow-x-auto"
+        style={{ fontSize: "0.875rem", lineHeight: "1.4" }}
       >
-        {output}
-        <span className="inline-block w-1 h-6 bg-[#f0ab69] animate-pulse ml-1 align-bottom"></span>
-      </pre>
+        <pre className="leading-relaxed text-[#d4d4d4]">
+          {output}
+          <span className="inline-block w-2 h-5 ml-1 bg-[#d4d4d4] animate-blink cursor-shadow align-middle" />
+        </pre>
+      </div>
+
+      <style jsx>{`
+        .animate-blink {
+          animation: blink-caret 1s step-start infinite;
+          box-shadow: 0 0 8px 2px #d4d4d4;
+          border-radius: 1px;
+        }
+        @keyframes blink-caret {
+          0%, 100% {
+            opacity: 1;
+          }
+          50% {
+            opacity: 0;
+          }
+        }
+        .cursor-shadow {
+          filter: drop-shadow(0 0 4px #d4d4d4);
+        }
+      `}</style>
     </div>
   );
 };

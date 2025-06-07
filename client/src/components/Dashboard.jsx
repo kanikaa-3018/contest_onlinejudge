@@ -23,7 +23,8 @@ import MainHero from "./MainHero";
 import AIIntegrationShowcase from "./AIIntegrationShowcase";
 
 const Dashboard = () => {
-  const userData = localStorage.getItem("user");
+  const userData = JSON.parse(localStorage.getItem("user"));
+
 
   const [output, setOutput] = useState("");
   const textLines = [
@@ -50,6 +51,8 @@ const Dashboard = () => {
         }
       }
     }, 100);
+
+    console.log(userData.username)
     return () => clearInterval(typeInterval);
   }, []);
 
@@ -62,23 +65,29 @@ const Dashboard = () => {
       transition={{ duration: 0.6 }}
     >
       <MainHero />
-            {/* Greeting Section */}
-            <motion.div
+      {/* Greeting Section */}
+      <motion.div
         className="flex flex-col gap-2"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4, duration: 0.6 }}
       >
-        <h1 className="text-3xl font-bold tracking-tight text-[#00FFC6] mt-8 ">
-          Welcome back, Kanika
-        </h1>
+        {userData ? (
+          <h1 className="text-3xl font-bold tracking-tight text-[#00FFC6] mt-8 ">
+            Welcome back, {userData?.username}
+          </h1>
+        ) : (
+          <h1 className="text-3xl font-bold tracking-tight text-[#00FFC6] mt-8 ">
+            Welcome back, user
+          </h1>
+        )}
         <p className="text-sm text-gray-400">
           Track your progress, join contests, and improve your coding skills
         </p>
       </motion.div>
       <GoogleSheetSummary />
 
-      <div className="grid grid-cols-3 md:grid-cols-3 gap-4 h-full">
+      <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-3 gap-4 h-full">
         <motion.div
           className="h-full flex flex-col"
           initial={{ opacity: 0, y: 30 }}
@@ -107,9 +116,7 @@ const Dashboard = () => {
         </motion.div>
       </div>
 
-
-
-<AIIntegrationShowcase/>
+      <AIIntegrationShowcase />
 
       {/* <VSCodeTypewriter /> */}
       <motion.div

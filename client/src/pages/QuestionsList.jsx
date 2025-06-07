@@ -199,7 +199,7 @@ const formatProficiency = (text) => {
         {Tabs.map((tab, idx) => (
           <button
             key={idx}
-            className={`px-6 py-2 rounded-full font-medium transition ${
+            className={`px-6 py-2 rounded-2xl font-medium transition sm:text-sm sm:rounded-sm ${
               activeTab === idx
                 ? "bg-blue-600 text-white"
                 : "bg-gray-700 hover:bg-gray-600"
@@ -243,67 +243,113 @@ const formatProficiency = (text) => {
 
       {/* Tab 2: Submissions */}
       {activeTab === 1 && (
-        <div className="overflow-x-auto bg-[#1E1E2E] p-4 rounded-lg">
-          <table className="w-full text-left text-sm border-collapse">
-            <thead>
-              <tr className="bg-[#2A2C4D] text-white">
-                <th className="p-3">Question</th>
-                <th className="p-3">Status</th>
-                <th className="p-3">Time</th>
-                <th className="p-3">Runtime</th>
-                <th className="p-3">Language</th>
-                <th className="p-3">Code</th>
-              </tr>
-            </thead>
-            <tbody>
-              {submissions.map((s, i) => (
-                <tr
+        <>
+          {/* Large screen table */}
+          <div className="hidden md:block overflow-x-auto bg-[#1E1E2E] p-4 rounded-lg">
+            <table className="w-full text-left text-sm border-collapse">
+              <thead>
+                <tr className="bg-[#2A2C4D] text-white">
+                  <th className="p-3">Question</th>
+                  <th className="p-3">Status</th>
+                  <th className="p-3">Time</th>
+                  <th className="p-3">Runtime</th>
+                  <th className="p-3">Language</th>
+                  <th className="p-3">Code</th>
+                </tr>
+              </thead>
+              <tbody>
+                {submissions.map((s, i) => (
+                  <tr
+                    key={i}
+                    className="border-t border-gray-600 hover:bg-[#26294a]"
+                  >
+                    <td className="p-3">{s.questionTitle}</td>
+                    <td className="p-3">
+                      <span
+                        className={`px-2 py-1 rounded-full ${
+                          statusColors[s.status]
+                        }`}
+                      >
+                        {s.status}
+                      </span>
+                    </td>
+                    <td className="p-3">{new Date(s.createdAt).toLocaleString()}</td>
+                    <td className="p-3">{s.runtime ?? "N/A"} ms</td>
+                    <td className="p-3 capitalize">{s.language}</td>
+                    <td className="p-3">
+                      <button
+                        onClick={() => {
+                          setActiveCode(s.code);
+                          setActiveLang(s.language);
+                          setShowModal(true);
+                        }}
+                        className="text-blue-400 hover:underline"
+                        title="View Code"
+                      >
+                        📄 View
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Mobile cards */}
+          <div className="md:hidden space-y-4">
+            {submissions.length === 0 ? (
+              <p className="text-center text-gray-400">No submissions found.</p>
+            ) : (
+              submissions.map((s, i) => (
+                <div
                   key={i}
-                  className="border-t border-gray-600 hover:bg-[#26294a]"
+                  className="bg-[#1E1E2E] p-4 rounded-lg shadow hover:bg-[#26294a] transition"
                 >
-                  <td className="p-3">{s.questionTitle}</td>
-                  <td className="p-3">
+                  <div className="flex justify-between items-center mb-2">
+                    <h3 className="text-lg font-semibold">{s.questionTitle}</h3>
                     <span
-                      className={`px-2 py-1 rounded-full ${
+                      className={`px-2 py-1 rounded-full text-xs font-semibold ${
                         statusColors[s.status]
                       }`}
                     >
                       {s.status}
                     </span>
-                  </td>
-                  <td className="p-3">
+                  </div>
+                  <p className="text-xs text-gray-400 mb-1">
                     {new Date(s.createdAt).toLocaleString()}
-                  </td>
-                  <td className="p-3">{s.runtime ?? "N/A"} ms</td>
-                  <td className="p-3 capitalize">{s.language}</td>
-                  <td className="p-3">
-                    <button
-                      onClick={() => {
-                        setActiveCode(s.code);
-                        setActiveLang(s.language);
-                        setShowModal(true);
-                      }}
-                      className="text-blue-400 hover:underline"
-                      title="View Code"
-                    >
-                      📄 View
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+                  </p>
+                  <p className="text-xs text-gray-400 mb-1">
+                    Runtime: {s.runtime ?? "N/A"} ms
+                  </p>
+                  <p className="text-xs text-gray-400 mb-3 capitalize">
+                    Language: {s.language}
+                  </p>
+                  <button
+                    onClick={() => {
+                      setActiveCode(s.code);
+                      setActiveLang(s.language);
+                      setShowModal(true);
+                    }}
+                    className="text-blue-400 hover:underline text-sm"
+                    title="View Code"
+                  >
+                    📄 View Code
+                  </button>
+                </div>
+              ))
+            )}
+          </div>
+        </>
       )}
 
-      {/* Tab 3: Placeholder */}
+      {/* Tab 3: Stats & AI Insights */}
       {activeTab === 2 && (
         <div className="max-w-4xl mx-auto bg-[#1E1E2E] p-6 rounded-xl shadow-lg">
           <h2 className="text-3xl font-bold text-center mb-6 flex items-center justify-center gap-2">
             <BarChart3 size={28} /> My Coding Stats
           </h2>
           {total === 0 ? (
-            <p className="text-center text-gray-400">
+            <p className="text-center text-gray-400 text-lg">
               No submissions yet. Try solving some questions!
             </p>
           ) : (
