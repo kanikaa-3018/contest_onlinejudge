@@ -40,6 +40,7 @@ export const Sidebar = ({ isMobileOpen = false, closeSidebar = () => {} }) => {
     <div
       className={cn(
         "fixed sm:static z-40 h-screen overflow-y-auto transition-all duration-300 ease-in-out border-r bg-[#161A30] border-[#31304D]",
+        "flex flex-col", // Ensures stacking and pushing content
         isCollapsed ? "w-16" : "w-64",
         isMobileOpen ? "left-0" : "left-[-100%] sm:left-0"
       )}
@@ -123,11 +124,11 @@ export const Sidebar = ({ isMobileOpen = false, closeSidebar = () => {} }) => {
         />
       </div>
 
-    
+      {/* Collapse/Expand Button (bottom) */}
       <Button
         variant="ghost"
         size="icon"
-        className="m-2 self-end hidden sm:block"
+        className="m-2 hidden sm:block mt-auto ml-auto align-right"
         onClick={() => setIsCollapsed(!isCollapsed)}
         style={{ color: "#B6BBC4", backgroundColor: "#161A30" }}
       >
