@@ -178,6 +178,8 @@ MONGO_URI=your_mongodb_uri
 JWT_SECRET=your_jwt_secret
 GEMINI_API_KEY=your_openai_key
 RELEVANCE_AI_KEY=your_relevance_ai_key
+BACKEND_URL=your_backend_url
+COMPILER_BACKEND_URL=your_compilerserver_url
 ```
 
 ```env
@@ -185,6 +187,7 @@ RELEVANCE_AI_KEY=your_relevance_ai_key
 CF_API_KEY=your_codeforces_api_key
 CF_SECRET=your_codeforces_secret
 VITE_RELEVANCE_AI_KEY=your_relevance_ai_key
+VITE_BACKEND_URL=your_backend_url
 ```
 
 ### 3. Install Backend & Frontend Dependencies
