@@ -123,7 +123,7 @@ export const Sidebar = ({ isMobileOpen = false, closeSidebar = () => {} }) => {
         />
       </div>
 
-      {/* Collapse Toggle */}
+    
       <Button
         variant="ghost"
         size="icon"

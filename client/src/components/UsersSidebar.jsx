@@ -8,17 +8,23 @@ import socket from "../socket.js";
 import { useParams } from "react-router-dom";
 import { FaUser } from "react-icons/fa";
 
-const UsersSidebar = ({ className }) => {
+const UsersSidebar = ({ className, users: usersProp }) => {
   const [collapsed, setCollapsed] = useState(false);
-  const [users, setUsers] = useState([]);
-  const user = JSON.parse(localStorage.getItem("user"));
   const { id: roomId } = useParams();
 
+  // Use prop users if provided (from RoomPage), else fallback to internal state
+  const [users, setUsers] = useState(usersProp || []);
+
   useEffect(() => {
+    if (usersProp) {
+      setUsers(usersProp);
+      return; // Don't listen to socket if usersProp provided
+    }
+
     const userFromStorage = JSON.parse(localStorage.getItem("user"));
     const user = { ...userFromStorage, id: userFromStorage._id };
 
-    socket.emit("join-room", { roomId, user: user });
+    socket.emit("join-room", { roomId, user });
 
     socket.on("room-users", (roomUsers) => {
       setUsers(roomUsers);
@@ -40,7 +46,9 @@ const UsersSidebar = ({ className }) => {
       socket.off("user-joined");
       socket.off("user-left");
     };
-  }, [roomId]);
+  }, [roomId, usersProp]);
+
+  const currentUser = JSON.parse(localStorage.getItem("user"));
 
   return (
     <div
@@ -70,7 +78,11 @@ const UsersSidebar = ({ className }) => {
       </Button>
 
       <div className="flex items-center py-2">
-        {!collapsed ? <h3 className="text-sm font-medium ml-8">Connected Users</h3> : <FaUser className="ml-10 mt-1"/>}
+        {!collapsed ? (
+          <h3 className="text-sm font-medium ml-8 text-white">Connected Users</h3>
+        ) : (
+          <FaUser className="ml-10 mt-1 text-white" />
+        )}
       </div>
       <Separator className="my-2" />
 
@@ -78,19 +90,19 @@ const UsersSidebar = ({ className }) => {
         <div className="space-y-3 pr-3">
           {users.map((u) => (
             <div
-              key={u._id}
+              key={u.id || u._id}
               className={`flex items-center rounded-md p-2 ${
-                u.id === user.id ? "" : "hover:bg-opacity-50"
+                u.id === currentUser._id ? "" : "hover:bg-opacity-50"
               }`}
               style={{
-                backgroundColor: u.id === user.id ? "#3f3f46" : "transparent",
+                backgroundColor: u.id === currentUser._id ? "#3f3f46" : "transparent",
               }}
             >
               <UserAvatar name={u.name} online={u.online} />
               {!collapsed && (
                 <div className="ml-3">
-                  <p className="text-sm font-medium">
-                    {u._id === user._id ? "You" : u.name}
+                  <p className="text-sm font-medium text-white">
+                    {u._id === currentUser._id ? "You" : u.name}
                   </p>
                   <p className="text-xs" style={{ color: "#a1a1aa" }}>
                     {u.online ? "Online" : "Offline"}
@@ -99,6 +111,9 @@ const UsersSidebar = ({ className }) => {
               )}
             </div>
           ))}
+          {users.length === 0 && (
+            <p className="text-gray-400 text-sm text-center mt-4">No users connected</p>
+          )}
         </div>
       </ScrollArea>
     </div>
