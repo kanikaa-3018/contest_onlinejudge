@@ -52,7 +52,7 @@ const Dashboard = () => {
       }
     }, 100);
 
-    console.log(userData.username)
+   
     return () => clearInterval(typeInterval);
   }, []);
 
@@ -72,7 +72,7 @@ const Dashboard = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4, duration: 0.6 }}
       >
-        {userData ? (
+        {/* {userData ? (
           <h1 className="text-3xl font-bold tracking-tight text-[#00FFC6] mt-8 ">
             Welcome back, {userData?.username}
           </h1>
@@ -80,7 +80,7 @@ const Dashboard = () => {
           <h1 className="text-3xl font-bold tracking-tight text-[#00FFC6] mt-8 ">
             Welcome back, user
           </h1>
-        )}
+        )} */}
         <p className="text-sm text-gray-400">
           Track your progress, join contests, and improve your coding skills
         </p>

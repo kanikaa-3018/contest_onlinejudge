@@ -315,24 +315,24 @@ const CodeEditor = () => {
               {/* Question Panel (same as left panel in your Split) */}
               <div className="bg-[#1E1E2E] p-6 rounded-xl shadow-lg">
                 <h1 className="text-3xl font-bold text-blue-400">
-                  {question.title}
+                  {question?.title}
                 </h1>
                 <p className="text-gray-300 mt-4 leading-relaxed">
-                  {question.description}
+                  {question?.description}
                 </p>
 
-                {question.constraints && (
+                {question?.constraints && (
                   <div className="p-4 mt-4 rounded-lg border border-gray-700">
                     <h3 className="text-lg font-semibold mb-2">
                       Constraints:
                     </h3>
                     <pre className="text-gray-300 whitespace-pre-wrap">
-                      {question.constraints}
+                      {question?.constraints}
                     </pre>
                   </div>
                 )}
 
-                {question.testCases.slice(0, 2).map((tc, index) => (
+                {question?.testCases.slice(0, 2).map((tc, index) => (
                   <div
                     key={index}
                     className="grid grid-cols-1 gap-4 mb-4 mt-3"
@@ -502,22 +502,22 @@ const CodeEditor = () => {
           {/* Left Panel */}
           <div className="bg-[#1E1E2E] p-6 rounded-xl shadow-lg overflow-auto">
             <h1 className="text-3xl font-bold text-blue-400">
-              {question.title}
+              {question?.title}
             </h1>
             <p className="text-gray-300 mt-4 leading-relaxed">
-              {question.description}
+              {question?.description}
             </p>
 
-            {question.constraints && (
+            {question?.constraints && (
               <div className="p-4 mt-4 rounded-lg border border-gray-700">
                 <h3 className="text-lg font-semibold mb-2">Constraints:</h3>
                 <pre className="text-gray-300 whitespace-pre-wrap">
-                  {question.constraints}
+                  {question?.constraints}
                 </pre>
               </div>
             )}
 
-            {question.testCases.slice(0, 2).map((tc, index) => (
+            {question?.testCases.slice(0, 2).map((tc, index) => (
               <div
                 key={index}
                 className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 mt-3"
