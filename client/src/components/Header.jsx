@@ -10,17 +10,8 @@ export const Header = ({ toggleSidebar }) => {
   const [usernameInitials, setUsernameInitials] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  useEffect(() => {
-    const storedTheme = localStorage.getItem("theme");
-
-    if (storedTheme === "dark") {
-      setDarkMode(true);
-      document.documentElement.classList.add("dark");
-    } else {
-      setDarkMode(false);
-      document.documentElement.classList.remove("dark");
-    }
-
+  // Function to update user state from localStorage
+  const updateUserStatus = () => {
     const user = localStorage.getItem("user");
     if (user) {
       try {
@@ -34,11 +25,37 @@ export const Header = ({ toggleSidebar }) => {
             .slice(0, 2);
           setUsernameInitials(initials || "US");
           setIsLoggedIn(true);
+          return;
         }
       } catch {
         console.warn("Failed to parse user from localStorage.");
       }
     }
+    setIsLoggedIn(false);
+    setUsernameInitials(null);
+  };
+
+  useEffect(() => {
+    // Load theme on mount
+    const storedTheme = localStorage.getItem("theme");
+    if (storedTheme === "dark") {
+      setDarkMode(true);
+      document.documentElement.classList.add("dark");
+    } else {
+      setDarkMode(false);
+      document.documentElement.classList.remove("dark");
+    }
+
+    // Initial check for user login status
+    updateUserStatus();
+
+    // Listen for custom event to update user login status dynamically
+    const handleUserStatusChange = () => {
+      updateUserStatus();
+    };
+    window.addEventListener("userStatusChanged", handleUserStatusChange);
+
+    return () => window.removeEventListener("userStatusChanged", handleUserStatusChange);
   }, []);
 
   const toggleDarkMode = () => {
@@ -54,8 +71,8 @@ export const Header = ({ toggleSidebar }) => {
     localStorage.removeItem("user");
     localStorage.removeItem("cfHandle");
     localStorage.removeItem("lcHandle");
-    setIsLoggedIn(false);
-    setUsernameInitials(null);
+    // Notify other parts of app about logout
+    window.dispatchEvent(new Event("userStatusChanged"));
   };
 
   return (
@@ -68,14 +85,12 @@ export const Header = ({ toggleSidebar }) => {
     >
       {/* Left section: search & hamburger */}
       <div className="flex items-center gap-4 flex-1">
-        {/* Mobile Hamburger */}
         {toggleSidebar && (
           <button className="sm:hidden" onClick={toggleSidebar}>
             <Menu className="h-6 w-6 text-[#F0ECE5]" />
           </button>
         )}
 
-        {/* Search bar */}
         <div className="relative w-full max-w-sm">
           <Search
             className="absolute left-2.5 top-2.5 h-4 w-4"
@@ -96,7 +111,6 @@ export const Header = ({ toggleSidebar }) => {
 
       {/* Right section */}
       <div className="flex items-center gap-4">
-        {/* Dark mode toggle */}
         <Button
           onClick={toggleDarkMode}
           size="sm"
@@ -106,17 +120,12 @@ export const Header = ({ toggleSidebar }) => {
             border: "none",
           }}
         >
-          {darkMode ? (
-            <Sun className="w-4 h-4" />
-          ) : (
-            <Moon className="w-4 h-4" />
-          )}
+          {darkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
           <span className="ml-1 text-sm hidden sm:inline">
             {darkMode ? "Light Mode" : "Dark Mode"}
           </span>
         </Button>
 
-        {/* User section */}
         {isLoggedIn ? (
           <div className="flex items-center gap-2">
             <Avatar>

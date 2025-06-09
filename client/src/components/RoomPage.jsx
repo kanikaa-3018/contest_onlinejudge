@@ -13,7 +13,7 @@ import ChatBox from "./ChatBox.jsx";
 import UsersSidebar from "./UsersSidebar.jsx";
 import { useIsMobile } from "../hooks/use-mobile";
 import socket from "../socket.js";
-import { ArrowLeft, Code, FileText, MessageCircle, Users,Phone, Settings } from "lucide-react";
+import { ArrowLeft, Code, FileText, MessageCircle, Users, Phone, Settings } from "lucide-react";
 
 const RoomPage = () => {
   const navigate = useNavigate();
@@ -23,10 +23,20 @@ const RoomPage = () => {
   const [docContent, setDocContent] = useState();
   const [users, setUsers] = useState([]);
 
+  
   const userFromStorage = JSON.parse(localStorage.getItem("user"));
-  const user = { ...userFromStorage, id: userFromStorage._id };
+  const user = userFromStorage ? { ...userFromStorage, id: userFromStorage._id } : null;
+
+  // useEffect(() => {
+  //   if (!user) {
+     
+  //     navigate("/auth");
+  //   }
+  // }, [user, navigate]);
 
   useEffect(() => {
+    if (!user) return; // don't join socket room if no user
+
     socket.emit("join-room", { roomId: id, user });
 
     socket.on("room-users", (roomUsers) => {
@@ -94,6 +104,24 @@ const RoomPage = () => {
       </div>
     </div>
   );
+
+  if (!user) {
+   
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#0f0f23] text-white">
+        <div className="text-center animate-pulse">
+          <h1 className="text-3xl font-bold mb-2">Redirecting to login...</h1>
+          <p className="text-gray-400 text-sm">
+            If not redirected, click{" "}
+            <Link to="/auth" className="text-blue-400 underline">
+              here
+            </Link>
+            .
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   const roomName = "Room #" + id;
 
@@ -228,10 +256,7 @@ const RoomPage = () => {
           </div>
         ) : (
           // Desktop layout unchanged, pass users to sidebar
-          <ResizablePanelGroup
-            direction="horizontal"
-            className="flex-1 min-h-0"
-          >
+          <ResizablePanelGroup direction="horizontal" className="flex-1 min-h-0">
             <ResizablePanel defaultSize={50} minSize={30}>
               <CodeEditor roomId={id} userId={user.id} />
             </ResizablePanel>

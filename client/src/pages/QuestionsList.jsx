@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { motion } from "framer-motion";
+import { FaFolderOpen, FaLock } from "react-icons/fa";
 
 import {
   BarChart,
@@ -58,9 +59,12 @@ const QuestionsList = () => {
           submissions,
         }
       );
-      const res2 = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/ai/suggestion`, {
-        submissions,
-      });
+      const res2 = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/api/ai/suggestion`,
+        {
+          submissions,
+        }
+      );
 
       setAiProficiency(res1.data?.candidates?.[0]?.content?.parts?.[0]?.text);
       setAiSuggestion(res2.data?.candidates?.[0]?.content?.parts?.[0]?.text);
@@ -85,37 +89,43 @@ const QuestionsList = () => {
       );
   };
 
-const formatProficiency = (text) => {
-  return text
-    
-    .replace(
-      /Proficiency Score: (\d+)\/100/,
-      `<div class="text-xl font-bold text-cyan-300 mb-1">Proficiency Score: $1/100</div>`
-    )
-    // Section Headings with smaller bottom margin
-    .replace(
-      /Explanation:/g,
-      '<h4 class="text-lg font-semibold text-sky-400 mt-4 mb-1">📘 Explanation</h4>'
-    )
-    .replace(
-      /Breakdown:/g,
-      '<h4 class="text-lg font-semibold text-blue-400 mt-4 mb-1">📊 Breakdown</h4>'
-    )
-    .replace(
-      /In conclusion,/g,
-      '<h4 class="text-lg font-semibold text-purple-400 mt-4 mb-1">🧠 Conclusion</h4><p>'
-    )
-    // Bullet points
-    .replace(/\* (.*?)\n/g, '<li class="ml-6 text-sm text-gray-300">$1</li>')
-    // Remove ** bold marks
-    .replace(/\*\*(.*?)\*\*/g, '$1')
-    // Wrap <li> inside <ul> only once per group (improved)
-    .replace(/(?:<li[\s\S]*?<\/li>\n?)+/g, (match) => `<ul class="list-disc pl-6 mb-2">${match}</ul>`)
-    // Replace leftover new lines with <br>, but avoid extra breaks after headings or lists
-    .replace(/([^\n])\n([^\n])/g, '$1<br/>$2');
-};
+  const formatProficiency = (text) => {
+    return (
+      text
 
-
+        .replace(
+          /Proficiency Score: (\d+)\/100/,
+          `<div class="text-xl font-bold text-cyan-300 mb-1">Proficiency Score: $1/100</div>`
+        )
+        // Section Headings with smaller bottom margin
+        .replace(
+          /Explanation:/g,
+          '<h4 class="text-lg font-semibold text-sky-400 mt-4 mb-1">📘 Explanation</h4>'
+        )
+        .replace(
+          /Breakdown:/g,
+          '<h4 class="text-lg font-semibold text-blue-400 mt-4 mb-1">📊 Breakdown</h4>'
+        )
+        .replace(
+          /In conclusion,/g,
+          '<h4 class="text-lg font-semibold text-purple-400 mt-4 mb-1">🧠 Conclusion</h4><p>'
+        )
+        // Bullet points
+        .replace(
+          /\* (.*?)\n/g,
+          '<li class="ml-6 text-sm text-gray-300">$1</li>'
+        )
+        // Remove ** bold marks
+        .replace(/\*\*(.*?)\*\*/g, "$1")
+        // Wrap <li> inside <ul> only once per group (improved)
+        .replace(
+          /(?:<li[\s\S]*?<\/li>\n?)+/g,
+          (match) => `<ul class="list-disc pl-6 mb-2">${match}</ul>`
+        )
+        // Replace leftover new lines with <br>, but avoid extra breaks after headings or lists
+        .replace(/([^\n])\n([^\n])/g, "$1<br/>$2")
+    );
+  };
 
   useEffect(() => {
     if (activeTab === 2) fetchAIInsights();
@@ -128,7 +138,11 @@ const formatProficiency = (text) => {
       .catch((err) => console.error("Error fetching questions", err));
 
     axios
-      .get(`${import.meta.env.VITE_BACKEND_URL}/api/submissions/status-map/${userId}`)
+      .get(
+        `${
+          import.meta.env.VITE_BACKEND_URL
+        }/api/submissions/status-map/${userId}`
+      )
       .then((res) => {
         const map = {};
         res.data.forEach((s) => {
@@ -245,70 +259,136 @@ const formatProficiency = (text) => {
       {activeTab === 1 && (
         <>
           {/* Large screen table */}
-          <div className="hidden md:block overflow-x-auto bg-[#1E1E2E] p-4 rounded-lg">
-            <table className="w-full text-left text-sm border-collapse">
-              <thead>
-                <tr className="bg-[#2A2C4D] text-white">
-                  <th className="p-3">Question</th>
-                  <th className="p-3">Status</th>
-                  <th className="p-3">Time</th>
-                  <th className="p-3">Runtime</th>
-                  <th className="p-3">Language</th>
-                  <th className="p-3">Code</th>
-                </tr>
-              </thead>
-              <tbody>
-                {submissions.map((s, i) => (
-                  <tr
-                    key={i}
-                    className="border-t border-gray-600 hover:bg-[#26294a]"
-                  >
-                    <td className="p-3">{s.questionTitle}</td>
-                    <td className="p-3">
-                      <span
-                        className={`px-2 py-1 rounded-full ${
-                          statusColors[s.status]
-                        }`}
+          <div className="hidden md:block overflow-x-auto bg-[#1E1E2E] p-6 rounded-lg shadow-lg">
+            {submissions.length === 0 ? (
+              <div className="text-center text-gray-400 py-16 flex flex-col items-center justify-center space-y-4">
+                {user ? (
+                  <>
+                    <FaFolderOpen className="text-6xl text-blue-500 animate-pulse" />
+                    <p className="mb-2 text-xl font-semibold text-white">
+                      No submissions found yet
+                    </p>
+                    <p className="max-w-md">
+                      Start solving problems now to see your submissions here!
+                      Your journey to coding mastery begins with a single step.
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <FaLock className="text-6xl text-red-500 animate-pulse" />
+                    <p className="mb-2 text-xl font-semibold text-white">
+                      No submissions to display
+                    </p>
+                    <p className="max-w-md">
+                      Please{" "}
+                      <Link
+                        to="/auth"
+                        className="text-blue-400 underline hover:text-blue-600 transition"
                       >
-                        {s.status}
-                      </span>
-                    </td>
-                    <td className="p-3">{new Date(s.createdAt).toLocaleString()}</td>
-                    <td className="p-3">{s.runtime ?? "N/A"} ms</td>
-                    <td className="p-3 capitalize">{s.language}</td>
-                    <td className="p-3">
-                      <button
-                        onClick={() => {
-                          setActiveCode(s.code);
-                          setActiveLang(s.language);
-                          setShowModal(true);
-                        }}
-                        className="text-blue-400 hover:underline"
-                        title="View Code"
-                      >
-                        📄 View
-                      </button>
-                    </td>
+                        log in
+                      </Link>{" "}
+                      to view your submissions or start coding.
+                    </p>
+                  </>
+                )}
+              </div>
+            ) : (
+              <table className="w-full text-left text-sm border-collapse">
+                <thead>
+                  <tr className="bg-[#2A2C4D] text-white">
+                    <th className="p-3">Question</th>
+                    <th className="p-3">Status</th>
+                    <th className="p-3">Time</th>
+                    <th className="p-3">Runtime</th>
+                    <th className="p-3">Language</th>
+                    <th className="p-3">Code</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {submissions.map((s, i) => (
+                    <tr
+                      key={i}
+                      className="border-t border-gray-600 hover:bg-[#26294a]"
+                    >
+                      <td className="p-3">{s.questionTitle}</td>
+                      <td className="p-3">
+                        <span
+                          className={`px-2 py-1 rounded-full ${
+                            statusColors[s.status]
+                          }`}
+                        >
+                          {s.status}
+                        </span>
+                      </td>
+                      <td className="p-3">
+                        {new Date(s.createdAt).toLocaleString()}
+                      </td>
+                      <td className="p-3">{s.runtime ?? "N/A"} ms</td>
+                      <td className="p-3 capitalize">{s.language}</td>
+                      <td className="p-3">
+                        <button
+                          onClick={() => {
+                            setActiveCode(s.code);
+                            setActiveLang(s.language);
+                            setShowModal(true);
+                          }}
+                          className="text-blue-400 hover:underline"
+                          title="View Code"
+                        >
+                          📄 View
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
           </div>
 
           {/* Mobile cards */}
-          <div className="md:hidden space-y-4">
+          <div className="md:hidden space-y-6">
             {submissions.length === 0 ? (
-              <p className="text-center text-gray-400">No submissions found.</p>
+              <div className="text-center text-gray-400 py-16 flex flex-col items-center justify-center space-y-4">
+                {user ? (
+                  <>
+                    <FaFolderOpen className="text-6xl text-blue-500 animate-pulse" />
+                    <p className="mb-2 text-xl font-semibold text-white">
+                      No submissions found yet
+                    </p>
+                    <p className="max-w-xs px-4">
+                      Start solving problems now to see your submissions here!
+                      Your journey to coding mastery begins with a single step.
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <FaLock className="text-6xl text-red-500 animate-pulse" />
+                    <p className="mb-2 text-xl font-semibold text-white">
+                      No submissions to display
+                    </p>
+                    <p className="max-w-xs px-4">
+                      Please{" "}
+                      <Link
+                        to="/auth"
+                        className="text-blue-400 underline hover:text-blue-600 transition"
+                      >
+                        log in
+                      </Link>{" "}
+                      to view your submissions or start coding.
+                    </p>
+                  </>
+                )}
+              </div>
             ) : (
               submissions.map((s, i) => (
                 <div
                   key={i}
-                  className="bg-[#1E1E2E] p-4 rounded-lg shadow hover:bg-[#26294a] transition"
+                  className="bg-[#1E1E2E] p-5 rounded-lg shadow-lg hover:bg-[#26294a] transition"
                 >
-                  <div className="flex justify-between items-center mb-2">
+                  <div className="flex justify-between items-center mb-3">
                     <h3 className="text-lg font-semibold">{s.questionTitle}</h3>
                     <span
-                      className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                      className={`px-3 py-1 rounded-full text-xs font-semibold ${
                         statusColors[s.status]
                       }`}
                     >
@@ -321,7 +401,7 @@ const formatProficiency = (text) => {
                   <p className="text-xs text-gray-400 mb-1">
                     Runtime: {s.runtime ?? "N/A"} ms
                   </p>
-                  <p className="text-xs text-gray-400 mb-3 capitalize">
+                  <p className="text-xs text-gray-400 mb-4 capitalize">
                     Language: {s.language}
                   </p>
                   <button
