@@ -4,12 +4,12 @@ const ContestHistory = ({ cfcontests = [], lcContests = [] }) => {
   const [cfVisible, setCfVisible] = useState(3);
   const [lcVisible, setLcVisible] = useState(3);
 
-  // Handler to show 3 more contests for Codeforces
+  
   const handleShowMoreCF = () => {
     setCfVisible((prev) => prev + 3);
   };
 
-  // Handler to show 3 more contests for LeetCode
+  
   const handleShowMoreLC = () => {
     setLcVisible((prev) => prev + 3);
   };

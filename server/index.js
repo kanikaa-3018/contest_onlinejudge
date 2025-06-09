@@ -21,7 +21,7 @@ const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 const app = express();
 connectDB();
 
-const dockerurl=process.env.COMPILER_SERVER_URL
+const dockerurl=process.env.COMPILER_SERVER_URL;
 
 app.use(cors());
 app.use(express.json({ limit: "30mb" }));

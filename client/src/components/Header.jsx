@@ -52,6 +52,8 @@ export const Header = ({ toggleSidebar }) => {
 
   const handleLogout = () => {
     localStorage.removeItem("user");
+    localStorage.removeItem("cfHandle");
+    localStorage.removeItem("lcHandle");
     setIsLoggedIn(false);
     setUsernameInitials(null);
   };

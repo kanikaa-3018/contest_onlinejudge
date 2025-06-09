@@ -20,8 +20,11 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { useNavigate ,Link} from "react-router-dom";
+import {motion} from "framer-motion"
 
 const Profile = () => {
+  const navigate = useNavigate();
   const [userData, setUserData] = useState({
     username: "",
     name: "",
@@ -47,6 +50,8 @@ const Profile = () => {
   const [visibleContests, setVisibleContests] = useState(3);
   const handle = localStorage.getItem("cfHandle") || "tourist";
   const leetcodeHandle = localStorage.getItem("lcHandle") || null;
+  const user = localStorage.getItem("user");
+  // console.log(leetcodeHandle)
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -97,12 +102,14 @@ const Profile = () => {
         try {
           const [lcContRes, lcSubRes, lcProfileRes] = await Promise.all([
             axios.get(
-              "https://alfa-leetcode-api.onrender.com/kanika_sin_08/contest/history"
+              `https://alfa-leetcode-api.onrender.com/${leetcodeHandle}/contest/history`
             ),
             axios.get(
-              "https://alfa-leetcode-api.onrender.com/kanika_sin_08/submission"
+              `https://alfa-leetcode-api.onrender.com/${leetcodeHandle}/submission`
             ),
-            axios.get("https://alfa-leetcode-api.onrender.com/kanika_sin_08"),
+            axios.get(
+              `https://alfa-leetcode-api.onrender.com/${leetcodeHandle}`
+            ),
           ]);
           // console.log(lcContRes);
           // console.log(lcSubRes);
@@ -222,6 +229,34 @@ const Profile = () => {
         <div className="mt-2 w-12 h-12 mx-auto border-4 border-dashed border-indigo-500 rounded-full animate-spin"></div>
       </div>
     );
+
+  if (!user) {
+  return (
+    <div className="min-h-screen flex items-center justify-center  text-white">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.9, y: -30 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+        className="text-center bg-gray-800 p-8 rounded-2xl shadow-2xl border border-gray-700"
+      >
+        <h1 className="text-4xl font-extrabold mb-4 text-white tracking-wide">
+          Please log in to continue
+        </h1>
+
+        <Link
+          to="/auth"
+          className="inline-block mt-2 px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 transition-all duration-300 ease-in-out text-white font-semibold text-lg shadow-md hover:scale-105"
+        >
+          Go to Login Page →
+        </Link>
+
+        <p className="text-sm mt-4 text-gray-400">
+          Don't have an account? <a href="/auth" className="text-blue-400 underline">Sign up now</a>
+        </p>
+      </motion.div>
+    </div>
+  );
+}
 
   return (
     <div

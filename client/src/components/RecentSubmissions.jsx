@@ -11,22 +11,20 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Code } from "react-feather";
+import { Input } from "@/components/ui/input"; // assuming shadcn/ui Input component
 
 const RecentSubmissions = () => {
   const [recentSubmissions, setRecentSubmissions] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-
-  const cfHandle = localStorage.getItem("cfHandle");
+  const [cfHandle, setCfHandle] = useState(localStorage.getItem("cfHandle") || "");
+  const [inputHandle, setInputHandle] = useState("");
 
   useEffect(() => {
-    const fetchSubmissions = async () => {
-      if (!cfHandle) {
-        setError("Codeforces handle not found.");
-        setLoading(false);
-        return;
-      }
+    if (!cfHandle) return;
 
+    const fetchSubmissions = async () => {
+      setLoading(true);
       try {
         const response = await axios.get(
           `https://codeforces.com/api/user.status?handle=${cfHandle}&from=1&count=3`
@@ -39,15 +37,51 @@ const RecentSubmissions = () => {
           language: sub.programmingLanguage,
         }));
         setRecentSubmissions(submissions);
-        setLoading(false);
+        setError("");
       } catch (err) {
         setError("Failed to fetch recent submissions.");
+      } finally {
         setLoading(false);
       }
     };
 
     fetchSubmissions();
   }, [cfHandle]);
+
+  const handleLogin = () => {
+    if (inputHandle.trim()) {
+      localStorage.setItem("cfHandle", inputHandle.trim());
+      setCfHandle(inputHandle.trim());
+      setError("");
+    } else {
+      setError("Please enter a valid handle.");
+    }
+  };
+
+  if (!cfHandle) {
+    return (
+      <Card className="bg-[#14142B] text-white border border-[#2A2A3B] w-[350px] mx-auto">
+        <CardHeader>
+          <CardTitle>Login</CardTitle>
+          <CardDescription className="text-gray-400">
+            Enter your Codeforces handle to view recent submissions
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="flex flex-col gap-4">
+          <Input
+            placeholder="Codeforces handle"
+            className="bg-[#1c1c35] text-white border-[#2A2A3B]"
+            value={inputHandle}
+            onChange={(e) => setInputHandle(e.target.value)}
+          />
+          {error && <p className="text-red-500 text-sm">{error}</p>}
+          <Button onClick={handleLogin} className="bg-[#00FFC6] text-black hover:bg-[#00e6b3]">
+            Login
+          </Button>
+        </CardContent>
+      </Card>
+    );
+  }
 
   if (loading) return <p className="text-white">Loading...</p>;
   if (error) return <p className="text-red-500">{error}</p>;
@@ -63,7 +97,7 @@ const RecentSubmissions = () => {
         </div>
         <Code className="h-5 w-5 text-[#00FFC6]" />
       </CardHeader>
-      <CardContent className="space-y-4  min-h-[400px]">
+      <CardContent className="space-y-4 min-h-[400px]">
         {recentSubmissions.map((sub) => (
           <div
             key={sub.id}
@@ -88,10 +122,7 @@ const RecentSubmissions = () => {
         ))}
       </CardContent>
       <CardFooter>
-        <Button
-          variant="outline"
-          className="border-[#00FFC6] text-[#00FFC6]"
-        >
+        <Button variant="outline" className="border-[#00FFC6] text-[#00FFC6]">
           View Submission History
         </Button>
       </CardFooter>

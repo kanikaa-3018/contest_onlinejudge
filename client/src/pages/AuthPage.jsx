@@ -65,7 +65,7 @@ const AuthPage = () => {
       localStorage.setItem("user", JSON.stringify(res.data));
       localStorage.setItem("cfHandle", cfHandle || formData.cfHandle);
       localStorage.setItem("role", role);
-      localStorage.setItem("lchandle", lcHandle || formData.lcHandle);
+      localStorage.setItem("lcHandle", lcHandle || formData.lcHandle);
       isLogin ? toast.success("User Logged in Successfully!") : toast.success("User Registered Successfully!");
       navigate(role === "admin" ? "/admin" : "/");
     } catch (err) {

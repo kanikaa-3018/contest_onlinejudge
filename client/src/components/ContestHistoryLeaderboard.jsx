@@ -10,22 +10,20 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Award } from "react-feather";
+import { Input } from "@/components/ui/input"; // Assuming you use shadcn/ui or similar
 
 const ContestHistoryLeaderboard = () => {
   const [contestHistory, setContestHistory] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-
-  const cfHandle = localStorage.getItem("cfHandle");
+  const [cfHandle, setCfHandle] = useState(localStorage.getItem("cfHandle") || "");
+  const [inputHandle, setInputHandle] = useState("");
 
   useEffect(() => {
-    const fetchRatingHistory = async () => {
-      if (!cfHandle) {
-        setError("Codeforces handle not found.");
-        setLoading(false);
-        return;
-      }
+    if (!cfHandle) return;
 
+    const fetchRatingHistory = async () => {
+      setLoading(true);
       try {
         const response = await axios.get(
           `https://codeforces.com/api/user.rating?handle=${cfHandle}`
@@ -39,15 +37,50 @@ const ContestHistoryLeaderboard = () => {
           delta: entry.newRating - entry.oldRating,
         }));
         setContestHistory(data.reverse().slice(0, 10));
-        setLoading(false);
       } catch (err) {
-        setError("Failed to fetch contest history.");
+        setError("Failed to fetch contest history. Please check your handle.");
+      } finally {
         setLoading(false);
       }
     };
 
     fetchRatingHistory();
   }, [cfHandle]);
+
+  const handleLogin = () => {
+    if (inputHandle.trim()) {
+      localStorage.setItem("cfHandle", inputHandle.trim());
+      setCfHandle(inputHandle.trim());
+      setError("");
+    } else {
+      setError("Please enter a valid handle.");
+    }
+  };
+
+  if (!cfHandle) {
+    return (
+      <Card className="bg-[#14142B] text-white border border-[#2A2A3B] max-w-lg mx-auto mt-8">
+        <CardHeader>
+          <CardTitle className="text-lg sm:text-xl">Missing Handle? Login now</CardTitle>
+          <CardDescription className="text-sm sm:text-base text-gray-400">
+            Enter your Codeforces handle to view contest history
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="flex flex-col gap-4">
+          <Input
+            placeholder="Codeforces handle"
+            className="bg-[#1c1c35] text-white border-[#2A2A3B]"
+            value={inputHandle}
+            onChange={(e) => setInputHandle(e.target.value)}
+          />
+          {error && <p className="text-red-500 text-sm">{error}</p>}
+          <Button onClick={handleLogin} className="bg-[#00FFC6] text-black hover:bg-[#00e6b3]">
+            Login
+          </Button>
+        </CardContent>
+      </Card>
+    );
+  }
 
   if (loading) return <p className="text-white text-center">Loading...</p>;
   if (error) return <p className="text-red-500 text-center">{error}</p>;
