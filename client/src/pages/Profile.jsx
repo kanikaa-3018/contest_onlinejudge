@@ -224,10 +224,14 @@ const Profile = () => {
     );
 
   return (
-    <div className="container py-6" style={{ backgroundColor: "#161A30" }}>
-      <div className="grid gap-6 md:grid-cols-3">
-        <div className="md:col-span-1 px-4">
-          <Card className="bg-[#161A30] text-[#B6BBC4] shadow-lg rounded-2xl overflow-hidden">
+    <div
+      className="container mx-auto px-4 py-6"
+      style={{ backgroundColor: "#161A30" }}
+    >
+      <div className="grid gap-4 md:grid-cols-3">
+        {/* User Info Card */}
+        <div className="md:col-span-1 px-0 md:px-4">
+          <Card className="bg-[#161A30] text-[#B6BBC4] shadow-lg rounded-2xl overflow-hidden w-full max-w-md mx-auto md:mx-0">
             <div className="bg-gradient-to-r from-indigo-500 to-purple-600 h-28 relative">
               <div className="absolute -bottom-12 left-1/2 transform -translate-x-1/2">
                 <div className="rounded-full bg-[#31304D] p-4 w-24 h-24 flex items-center justify-center border-4 border-[#161A30]">
@@ -237,10 +241,10 @@ const Profile = () => {
             </div>
 
             <CardHeader className="pt-16 pb-2 px-4 text-center">
-              <CardTitle className="text-[#F0ECE5] text-xl">
+              <CardTitle className="text-[#F0ECE5] text-xl truncate">
                 {userData.name || "Your Handle"}
               </CardTitle>
-              <CardDescription className="text-[#B6BBC4]">
+              <CardDescription className="text-[#B6BBC4] truncate">
                 {userData.username} • {userData.leetcodeUsername}
               </CardDescription>
               <button
@@ -298,7 +302,8 @@ const Profile = () => {
           </Card>
         </div>
 
-        <div className="md:col-span-2">
+        {/* Tabs Section */}
+        <div className="md:col-span-2 px-0 md:px-4 mt-8 md:mt-0 max-w-full overflow-x-auto">
           <Tabs defaultValue="submissions" className="space-y-4">
             <TabsList>
               <TabsTrigger
@@ -330,12 +335,12 @@ const Profile = () => {
                     className="mb-4 bg-[#31304D] text-[#B6BBC4]"
                   >
                     <CardHeader>
-                      <div className="flex justify-between items-center">
+                      <div className="flex justify-between items-center flex-wrap gap-2">
                         <a
                           href={sub.problemLink}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-[#F0ECE5] text-lg hover:underline"
+                          className="text-[#F0ECE5] text-lg hover:underline truncate max-w-[70vw]"
                         >
                           {sub.problem}
                         </a>
@@ -358,14 +363,12 @@ const Profile = () => {
                         {sub.status}
                       </Badge>
 
-                      {/* Codeforces Specific Details */}
                       {sub.platform === "Codeforces" && (
                         <div>
                           Difficulty: {sub.difficulty} • Runtime: {sub.runtime}
                         </div>
                       )}
 
-                      {/* LeetCode Specific Details */}
                       {sub.platform === "LeetCode" && (
                         <div>Language: {sub.language}</div>
                       )}
@@ -407,7 +410,7 @@ const Profile = () => {
                         href={contest.contestLink}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-[#F0ECE5] text-lg hover:underline"
+                        className="text-[#F0ECE5] text-lg hover:underline truncate"
                       >
                         {contest.name}
                       </a>
@@ -439,24 +442,25 @@ const Profile = () => {
                 </button>
               )}
             </TabsContent>
+
             <TabsContent value="lcContests">
               {userData.leetcodeContests &&
               userData.leetcodeContests.length > 0 ? (
-                userData?.leetcodeContests?.map((contest) => (
+                userData.leetcodeContests.map((contest) => (
                   <Card
                     key={contest.id}
                     className="mb-4 bg-[#31304D] text-[#B6BBC4]"
                   >
                     <CardHeader>
-                      <CardTitle className="text-[#F0ECE5] text-lg hover:underline">
-                        {contest?.name}
+                      <CardTitle className="text-[#F0ECE5] text-lg hover:underline truncate">
+                        {contest.name}
                       </CardTitle>
-                      <CardDescription>{contest?.date}</CardDescription>
+                      <CardDescription>{contest.date}</CardDescription>
                     </CardHeader>
                     <CardContent>
                       <p>
-                        Rank: {contest?.rank} • Solved: {contest?.solved} /{" "}
-                        {contest?.totalProblems}
+                        Rank: {contest.rank} • Solved: {contest.solved} /{" "}
+                        {contest.totalProblems}
                       </p>
                     </CardContent>
                   </Card>
@@ -466,47 +470,48 @@ const Profile = () => {
                   <img
                     src="https://user-images.githubusercontent.com/74038190/218265814-3084a4ba-809c-4135-afc0-8685d0f634b3.gif"
                     className="h-60"
-                  ></img>
+                    alt="No data"
+                  />
                   <h2>Sorry:(( No LeetCode contest data available</h2>
                 </div>
               )}
             </TabsContent>
           </Tabs>
         </div>
+
+        {editModalOpen && (
+          <Dialog open={editModalOpen} onOpenChange={setEditModalOpen}>
+            <DialogContent className="bg-[#1A1B2E] text-white">
+              <DialogHeader>
+                <DialogTitle>Update Platform Handles</DialogTitle>
+              </DialogHeader>
+              <form onSubmit={handleUpdateUsername} className="space-y-4 mt-2">
+                <Label htmlFor="cf">Codeforces Handle</Label>
+                <Input
+                  id="cf"
+                  value={formData.cfUsername}
+                  onChange={(e) =>
+                    setFormData({ ...formData, cfUsername: e.target.value })
+                  }
+                />
+
+                <Label htmlFor="lc">LeetCode Username</Label>
+                <Input
+                  id="lc"
+                  value={formData.lcUsername}
+                  onChange={(e) =>
+                    setFormData({ ...formData, lcUsername: e.target.value })
+                  }
+                />
+
+                <Button type="submit" className="mt-2 w-full">
+                  Save & Update
+                </Button>
+              </form>
+            </DialogContent>
+          </Dialog>
+        )}
       </div>
-
-      {setEditModalOpen && (
-        <Dialog open={editModalOpen} onOpenChange={setEditModalOpen}>
-          <DialogContent className="bg-[#1A1B2E] text-white">
-            <DialogHeader>
-              <DialogTitle>Update Platform Handles</DialogTitle>
-            </DialogHeader>
-            <form onSubmit={handleUpdateUsername} className="space-y-4 mt-2">
-              <Label htmlFor="cf">Codeforces Handle</Label>
-              <Input
-                id="cf"
-                value={formData.cfUsername}
-                onChange={(e) =>
-                  setFormData({ ...formData, cfUsername: e.target.value })
-                }
-              />
-
-              <Label htmlFor="lc">LeetCode Username</Label>
-              <Input
-                id="lc"
-                value={formData.lcUsername}
-                onChange={(e) =>
-                  setFormData({ ...formData, lcUsername: e.target.value })
-                }
-              />
-
-              <Button type="submit" className="mt-2 w-full">
-                Save & Update
-              </Button>
-            </form>
-          </DialogContent>
-        </Dialog>
-      )}
     </div>
   );
 };
