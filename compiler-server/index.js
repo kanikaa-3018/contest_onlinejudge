@@ -24,9 +24,7 @@ app.post("/run", async (req, res) => {
   }
 });
 
-
-const PORT = 5001;
+const PORT = process.env.PORT || 5001;
 app.listen(PORT, '0.0.0.0', () => {
-  console.log(`Compiler server running at http://0.0.0.0:${PORT}`);
+  console.log(`Server is running on port ${PORT}`);
 });
-
