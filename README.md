@@ -11,6 +11,22 @@ Unlike traditional coding platforms, CodeArena isn't just a judge or tracker —
 
 ---
 
+
+## 🎥 Demo Video
+
+Watch CodeArena in action!
+[Demo Video](https://www.loom.com/share/d92f7d6d57c84b329bc8f3a2b89ce10d?sid=d03d4f62-0eec-44f8-9d02-1fa1ba510f29)
+
+
+---
+
+## 🌐 Deployed Links
+
+* **Frontend:** [https://contest-onlinejudge.vercel.app](https://contest-onlinejudge.vercel.app/)
+* **Backend API:** [https://codearena-1f1w.onrender.com](https://codearena-1f1w.onrender.com)
+* **Online Judge Server:** [https://cpp-code-executor.onrender.com](https://cpp-code-executor.onrender.com)
+* **Chrome Extension (Internship Tracker):** Available on [Chrome Web Store]
+
 ## 📚 Table of Contents
 
 * [📌 Overview](#-overview)
