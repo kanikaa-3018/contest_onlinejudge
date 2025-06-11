@@ -24,9 +24,9 @@ app.post("/run", async (req, res) => {
   }
 });
 
-// app.get("/healthz", (req, res) => {
-//   res.status(200).send("OK");
-// });
+app.get("/healthz", (req, res) => {
+  res.status(200).send("OK");
+});
 
 
 const PORT = process.env.PORT || 5001;
