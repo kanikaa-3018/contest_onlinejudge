@@ -1,38 +1,21 @@
-# FROM node:18
-
-# # Install compilers and interpreters
-# RUN apt-get update && \
-#     apt-get install -y g++ openjdk-17-jdk python3 && \
-#     apt-get clean
-
-# # Set working directory
-# WORKDIR /app
-
-# # Copy source files and install Node dependencies
-# COPY . .
-# RUN npm install
-
-# # Expose the backend port
-# EXPOSE 5001
-
-# # Start the server
-# CMD ["node", "index.js"]
-
 FROM node:18
 
-# Install compilers and interpreters
+# Install compilers, interpreters, and PM2
 RUN apt-get update && \
     apt-get install -y g++ openjdk-17-jdk python3 && \
-    apt-get clean && \
-    npm install -g pm2
+    npm install -g pm2 && \
+    apt-get clean
 
 # Set working directory
 WORKDIR /app
-# Copy source files and install Node dependencies
-COPY . .
-RUN npm install
-# Expose the backend port
-EXPOSE 5001
-# Start the server
-CMD ["pm2-runtime", "index.js"]
 
+# Copy and install dependencies
+COPY package*.json ./
+RUN npm install
+COPY . .
+
+# Expose port
+EXPOSE 5001
+
+# Start with PM2
+CMD ["pm2-runtime", "index.js"]
