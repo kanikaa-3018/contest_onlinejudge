@@ -7,10 +7,6 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
-app.get("/healthz", (req, res) => {
-  res.status(200).send("OK");
-});
-
 app.post("/run", async (req, res) => {
   const { language, code, input } = req.body;
 
@@ -19,11 +15,7 @@ app.post("/run", async (req, res) => {
   }
 
   try {
-    executeCode(language, code, input || "", (result, error) => {
-      if (error) {
-        console.error("Docker Execution Error:", error);
-        return res.status(500).json({ error: "Code execution failed" });
-      }
+    executeCode(language, code, input || "", (result) => {
       res.json({ output: result });
     });
   } catch (err) {
@@ -31,6 +23,11 @@ app.post("/run", async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
+
+app.get("/healthz", (req, res) => {
+  res.status(200).send("OK");
+});
+
 
 const PORT = process.env.PORT || 5001;
 app.listen(PORT, '0.0.0.0', () => {
