@@ -23,20 +23,16 @@ FROM node:18
 # Install compilers and interpreters
 RUN apt-get update && \
     apt-get install -y g++ openjdk-17-jdk python3 && \
-    apt-get clean
-
-# Install PM2 globally to manage process
-RUN npm install -g pm2
+    apt-get clean && \
+    npm install -g pm2
 
 # Set working directory
 WORKDIR /app
-
-# Copy source and install dependencies
+# Copy source files and install Node dependencies
 COPY . .
 RUN npm install
-
-# Expose backend port
+# Expose the backend port
 EXPOSE 5001
-
-# Use PM2 to keep server alive
+# Start the server
 CMD ["pm2-runtime", "index.js"]
+
