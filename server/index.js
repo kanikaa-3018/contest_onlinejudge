@@ -171,7 +171,7 @@ app.post("/execute", async (req, res) => {
 
     res.json({ output: response.data.output });
   } catch (err) {
-    console.error("Error executing code:", err);
+    console.error("Error executing code:", err?.response?.data || err.message || err);
     res.status(500).json({ error: "Compiler server error." });
   }
 });
