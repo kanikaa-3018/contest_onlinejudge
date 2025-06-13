@@ -10,7 +10,6 @@ export const Header = ({ toggleSidebar }) => {
   const [usernameInitials, setUsernameInitials] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  // Function to update user state from localStorage
   const updateUserStatus = () => {
     const user = localStorage.getItem("user");
     if (user) {
@@ -36,7 +35,6 @@ export const Header = ({ toggleSidebar }) => {
   };
 
   useEffect(() => {
-    // Load theme on mount
     const storedTheme = localStorage.getItem("theme");
     if (storedTheme === "dark") {
       setDarkMode(true);
@@ -46,16 +44,11 @@ export const Header = ({ toggleSidebar }) => {
       document.documentElement.classList.remove("dark");
     }
 
-    // Initial check for user login status
     updateUserStatus();
 
-    // Listen for custom event to update user login status dynamically
-    const handleUserStatusChange = () => {
-      updateUserStatus();
-    };
-    window.addEventListener("userStatusChanged", handleUserStatusChange);
-
-    return () => window.removeEventListener("userStatusChanged", handleUserStatusChange);
+    window.addEventListener("userStatusChanged", updateUserStatus);
+    return () =>
+      window.removeEventListener("userStatusChanged", updateUserStatus);
   }, []);
 
   const toggleDarkMode = () => {
@@ -71,7 +64,6 @@ export const Header = ({ toggleSidebar }) => {
     localStorage.removeItem("user");
     localStorage.removeItem("cfHandle");
     localStorage.removeItem("lcHandle");
-    // Notify other parts of app about logout
     window.dispatchEvent(new Event("userStatusChanged"));
   };
 
@@ -120,7 +112,11 @@ export const Header = ({ toggleSidebar }) => {
             border: "none",
           }}
         >
-          {darkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+          {darkMode ? (
+            <Sun className="w-4 h-4" />
+          ) : (
+            <Moon className="w-4 h-4" />
+          )}
           <span className="ml-1 text-sm hidden sm:inline">
             {darkMode ? "Light Mode" : "Dark Mode"}
           </span>

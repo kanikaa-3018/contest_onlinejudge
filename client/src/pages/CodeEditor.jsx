@@ -4,7 +4,7 @@ import Editor from "@monaco-editor/react";
 import Split from "react-split";
 import { Button } from "@/components/ui/button";
 import { FaRobot } from "react-icons/fa";
-import {toast} from "react-toastify";
+import { toast } from "react-toastify";
 import {
   Select,
   SelectContent,
@@ -63,7 +63,7 @@ const CodeEditor = () => {
   const user = JSON.parse(localStorage.getItem("user"));
 
   const [loading, setLoading] = useState(false);
-  const [feedback, setFeedback] = useState(""); 
+  const [feedback, setFeedback] = useState("");
 
   useEffect(() => {
     // Listener to check screen width
@@ -79,7 +79,9 @@ const CodeEditor = () => {
   useEffect(() => {
     const fetchQuestion = async () => {
       try {
-        const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/questions/${id}`);
+        const res = await fetch(
+          `${import.meta.env.VITE_BACKEND_URL}/api/questions/${id}`
+        );
         if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
         const data = await res.json();
         setQuestion(data);
@@ -101,7 +103,9 @@ const CodeEditor = () => {
   const generateHint = async (questionID) => {
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/api/questions/generate-hints/${questionID}`,
+        `${
+          import.meta.env.VITE_BACKEND_URL
+        }/api/questions/generate-hints/${questionID}`,
         {
           method: "POST",
           headers: {
@@ -111,7 +115,7 @@ const CodeEditor = () => {
       );
 
       const data = await response.json();
-      
+
       if (typeof data.hints === "string") {
         const hintArray = data.hints
           .split(/\d+\.\s+/)
@@ -135,15 +139,18 @@ const CodeEditor = () => {
     setVerdict("Running...");
     setOutput("");
     try {
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/execute`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          language: languageMap[language],
-          code,
-          input,
-        }),
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/execute`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            language: languageMap[language],
+            code,
+            input,
+          }),
+        }
+      );
       const result = await response.json();
 
       if (result.output) {
@@ -194,17 +201,20 @@ const CodeEditor = () => {
         setFailedCaseIndex(-1);
         setTestCaseResults(Array(totalTestCases).fill({ passed: true }));
 
-        const response2 = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/submissions`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            userId: user._id,
-            questionId: id,
-            code,
-            language,
-            status: "Success",
-          }),
-        });
+        const response2 = await fetch(
+          `${import.meta.env.VITE_BACKEND_URL}/api/submissions`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              userId: user._id,
+              questionId: id,
+              code,
+              language,
+              status: "Success",
+            }),
+          }
+        );
         // const data= await response2.json();
         // console.log(response2)
       } else {
@@ -260,11 +270,14 @@ const CodeEditor = () => {
     setFeedback("");
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/analyze`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ code, language }),
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/analyze`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ code, language }),
+        }
+      );
       // console.log(code);
       // console.log(language);
       // console.log(response);
@@ -323,9 +336,7 @@ const CodeEditor = () => {
 
                 {question?.constraints && (
                   <div className="p-4 mt-4 rounded-lg border border-gray-700">
-                    <h3 className="text-lg font-semibold mb-2">
-                      Constraints:
-                    </h3>
+                    <h3 className="text-lg font-semibold mb-2">Constraints:</h3>
                     <pre className="text-gray-300 whitespace-pre-wrap">
                       {question?.constraints}
                     </pre>
@@ -333,10 +344,7 @@ const CodeEditor = () => {
                 )}
 
                 {question?.testCases.slice(0, 2).map((tc, index) => (
-                  <div
-                    key={index}
-                    className="grid grid-cols-1 gap-4 mb-4 mt-3"
-                  >
+                  <div key={index} className="grid grid-cols-1 gap-4 mb-4 mt-3">
                     {tc.input && (
                       <div className="bg-[#10131c] p-4 rounded-lg border border-[#2e354a]">
                         <h3 className="text-md font-medium text-gray-300 mb-1 mt-1">
@@ -369,7 +377,9 @@ const CodeEditor = () => {
                       <Accordion type="multiple" className="w-full">
                         {hints.map((hint, index) => (
                           <AccordionItem key={index} value={`hint-${index}`}>
-                            <AccordionTrigger>Hint {index + 1}</AccordionTrigger>
+                            <AccordionTrigger>
+                              Hint {index + 1}
+                            </AccordionTrigger>
                             <AccordionContent>{hint}</AccordionContent>
                           </AccordionItem>
                         ))}
@@ -387,10 +397,10 @@ const CodeEditor = () => {
 
           {view === "editor" && (
             <div className="flex flex-col space-y-4 overflow-auto">
-              {/* Code Editor Panel (same as your right panel) */}
-              <div className="flex justify-between items-center">
+              {/* Language Selector + Buttons */}
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0 sm:space-x-4">
                 <Select value={language} onValueChange={handleLanguageChange}>
-                  <SelectTrigger className="w-[180px]">
+                  <SelectTrigger className="w-full sm:w-[180px]">
                     <SelectValue placeholder="Select language" />
                   </SelectTrigger>
                   <SelectContent>
@@ -400,20 +410,29 @@ const CodeEditor = () => {
                     <SelectItem value="JavaScript">JavaScript</SelectItem>
                   </SelectContent>
                 </Select>
-                <div className="space-x-2">
-                  <Button variant="secondary" onClick={handleRun}>
+
+                {/* Action Buttons */}
+                <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+                  <Button
+                    variant="secondary"
+                    onClick={handleRun}
+                    className="w-full sm:w-auto"
+                  >
                     Run
                   </Button>
-                  <Button onClick={handleSubmit}>Submit</Button>
+                  <Button onClick={handleSubmit} className="w-full sm:w-auto">
+                    Submit
+                  </Button>
                   <Button
                     onClick={handleAnalyze}
-                    className="bg-blue-600 hover:bg-blue-700 text-white  font-semibold"
+                    className="bg-blue-600 hover:bg-blue-700 text-white font-semibold w-full sm:w-auto"
                   >
                     {loading ? "Analyzing..." : <FaRobot />}
                   </Button>
                 </div>
               </div>
 
+              {/* Code Editor */}
               <div className="border rounded overflow-hidden">
                 <Editor
                   height="300px"
@@ -424,6 +443,7 @@ const CodeEditor = () => {
                 />
               </div>
 
+              {/* Input / Output Boxes */}
               <div className="grid md:grid-cols-2 gap-4">
                 <div>
                   <h3 className="text-white mb-2">Input</h3>
@@ -446,6 +466,7 @@ const CodeEditor = () => {
                 </div>
               </div>
 
+              {/* Verdict */}
               <div className="mt-2 p-4 border rounded bg-[#1e1e2f]">
                 <h3 className="text-white text-lg font-semibold mb-2">
                   Verdict:
@@ -465,7 +486,6 @@ const CodeEditor = () => {
                   {verdict ? `${verdict}: ${output}` : ""}
                 </p>
 
-                {/* Show test cases only if verdict is not empty, not running, and totalTestCases > 0 */}
                 {verdict &&
                   verdict !== "Running all test cases..." &&
                   totalTestCases > 0 && (

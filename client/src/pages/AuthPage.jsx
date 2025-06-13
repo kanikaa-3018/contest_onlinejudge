@@ -44,7 +44,7 @@ const AuthPage = () => {
           email: formData.email,
           password: formData.password,
           cfHandle: formData.cfHandle,
-          lcHandle: formData. lcHandle,
+          lcHandle: formData.lcHandle,
         }
       : {
           name: formData.username,
@@ -52,7 +52,7 @@ const AuthPage = () => {
           email: formData.email,
           password: formData.password,
           cfHandle: formData.cfHandle,
-          lcHandle: formData. lcHandle,
+          lcHandle: formData.lcHandle,
           role: formData.role,
         };
 
@@ -64,12 +64,19 @@ const AuthPage = () => {
       localStorage.setItem("userId", _id);
       localStorage.setItem("user", JSON.stringify(res.data));
       localStorage.setItem("cfHandle", cfHandle || formData.cfHandle);
-      localStorage.setItem("role", role);
       localStorage.setItem("lcHandle", lcHandle || formData.lcHandle);
-      isLogin ? toast.success("User Logged in Successfully!") : toast.success("User Registered Successfully!");
+      localStorage.setItem("role", role);
+
+      // ✅ Trigger header update
+      window.dispatchEvent(new Event("userStatusChanged"));
+
+      isLogin
+        ? toast.success("User Logged in Successfully!")
+        : toast.success("User Registered Successfully!");
+
       navigate(role === "admin" ? "/admin" : "/");
     } catch (err) {
-      toast.error("Something went wrong in authentication, Please Try again!");
+      toast.error("Authentication failed. Please try again!");
       setError(err.response?.data?.message || "Something went wrong");
     }
   };
