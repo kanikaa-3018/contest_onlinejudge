@@ -1,10 +1,10 @@
-import { useState, useEffect, useRef } from "react";
-import socket from "../socket.js"; // your socket instance
-import { useParams } from "react-router-dom";
-import SimpleMDE from "react-simplemde-editor";
-import "easymde/dist/easymde.min.css";
+import { useEffect, useRef, useState } from "react";
+import MDEditor from "@uiw/react-md-editor";
+import socket from "../socket";
+import "@uiw/react-md-editor/markdown-editor.css";
+import "@uiw/react-markdown-preview/markdown.css";
 
-const initialDoc = `# Project Documentation
+const placeholderText = `# Project Documentation
 
 ## Overview
 This is a collaborative project for...
@@ -16,74 +16,68 @@ This is a collaborative project for...
 ## TODO
 - [ ] Implement authentication
 - [ ] Add error handling
-- [ ] Create user profiles`;
+- [ ] Create user profiles
+`;
 
-const DocumentEditor = ({ initialContent = initialDoc, onContentChange, className }) => {
-  const { id: roomId } = useParams();
-  const [content, setContent] = useState(initialContent);
-  const userFromStorage = JSON.parse(localStorage.getItem("user"));
-  const userId = userFromStorage?._id || "unknown";
+const DocumentEditor = ({ roomId, userId }) => {
+  const [content, setContent] = useState("");
   const isLocalUpdate = useRef(false);
 
-  
-  const handleChange = (e) => {
-    const newContent = e.target.value;
-    isLocalUpdate.current = true;
-    setContent(newContent);
-    socket.emit("document-change", { roomId, content: newContent, userId });
-  };
-
-  
   useEffect(() => {
     socket.on("load-state", (state) => {
-      if (state.documentContent !== undefined) setContent(state.documentContent);
+      if (state.documentContent !== undefined) {
+        setContent(state.documentContent);
+      }
     });
 
-    const handleDocUpdate = ({ content: newContent, userId: senderId }) => {
+    socket.on("document-change", ({ content: newContent, userId: senderId }) => {
       if (senderId !== userId) {
-        isLocalUpdate.current = false;
         setContent(newContent);
       }
-    };
-
-    socket.on("document-change", handleDocUpdate);
+    });
 
     return () => {
-      socket.off("document-change", handleDocUpdate);
-      socket.off("load-state")
+      socket.off("load-state");
+      socket.off("document-change");
     };
   }, [userId]);
 
-  
-  useEffect(() => {
-    if (onContentChange && isLocalUpdate.current) {
-      onContentChange(content);
-      isLocalUpdate.current = false;
-    }
-  }, [content, onContentChange]);
+  const handleChange = (newValue) => {
+    isLocalUpdate.current = true;
+    setContent(newValue || "");
+    socket.emit("document-change", { roomId, content: newValue || "", userId });
+  };
 
   return (
-    <div
-      className={`flex h-full flex-col rounded-md border ${className}`}
-      style={{ borderColor: "#27272a" }}
-    >
-      <div
-        className="flex items-center justify-between border-b px-3 py-2 hide-scrollbar" 
-        style={{ borderColor: "#27272a" }}
-      >
-        <span className="text-sm font-medium">Documentation</span>
-        <span className="text-xs" style={{ color: "#a1a1aa" }}>
-          Markdown supported
-        </span>
+    <div data-color-mode="dark" className="relative h-full p-6 bg-[#0d1117] rounded-xl border border-[#2c2f35] shadow-lg">
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-white text-lg font-semibold">📄 Documentation</h2>
+        <span className="text-sm text-green-400 font-mono">● Live Sync</span>
       </div>
-      <textarea
-        className="h-full w-full resize-none p-4 text-sm leading-relaxed focus:outline-none hide-scrollbar "
-        style={{ backgroundColor: "#0f0f23", color: "#e4e4e7", fontFamily: "monospace" }}
-        value={content}
-        onChange={handleChange}
-        placeholder={initialDoc}
-        spellCheck={false}
-      />
+{/* 
+      Placeholder
+      {content.trim() === "" && (
+        <div className="absolute top-20 left-6 right-6 text-sm text-gray-600 whitespace-pre-wrap pointer-events-none z-10">
+          {placeholderText}
+        </div>
+      )} */}
+
+      <div className="rounded-md overflow-hidden">
+        <MDEditor
+          value={content}
+          onChange={handleChange}
+          height={500}
+          preview="edit"
+          textareaProps={{
+            placeholder: "Start typing your docs here...",
+            style: {
+              padding: "1rem",
+              fontSize: "14px",
+              fontFamily: "JetBrains Mono, monospace",
+            },
+          }}
+        />
+      </div>
     </div>
   );
 };

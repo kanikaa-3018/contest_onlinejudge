@@ -21,6 +21,9 @@ import Internship from "./pages/Internship.jsx"
 import RoomDashboard from "./components/RoomDashboard.jsx";
 import RoomPage from "./components/RoomPage.jsx";
 import ResumeAnalyzer from "./pages/ResumeAnalyzer.jsx";
+import "@uiw/react-md-editor/markdown-editor.css";
+import "@uiw/react-markdown-preview/markdown.css";
+
 
 
 const queryClient = new QueryClient();

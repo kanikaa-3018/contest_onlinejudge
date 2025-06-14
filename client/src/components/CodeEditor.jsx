@@ -9,6 +9,7 @@ import {
 } from "./ui/select";
 import socket from "../socket";
 import axios from "axios";
+import debounce from "lodash.debounce";
 
 const BOILERPLATES = {
   javascript: `// JavaScript Boilerplate
@@ -16,14 +17,14 @@ function main() {
   console.log("Hello, JavaScript!");
 }
 main();`,
-  
+
   python: `# Python Boilerplate
 def main():
     print("Hello, Python!")
 
 if __name__ == "__main__":
     main()`,
-  
+
   java: `// Java Boilerplate
 import java.util.*;
 
@@ -32,7 +33,7 @@ public class Main {
         System.out.println("Hello, Java!");
     }
 }`,
-  
+
   cpp: `// C++ Boilerplate
 #include <iostream>
 using namespace std;
@@ -43,11 +44,12 @@ int main() {
 }`,
 };
 
-
 const COLORS = ["#FF4C4C", "#4C9AFF", "#4CFF88", "#FFB84C", "#9D4CFF"];
 
 const CodeEditor = ({ roomId, userId }) => {
   const editorRef = useRef(null);
+  const isRemoteUpdate = useRef(false);
+
   const [code, setCode] = useState("// Start coding collaboratively...\n");
   const [language, setLanguage] = useState("javascript");
   const [remoteCursors, setRemoteCursors] = useState({});
@@ -55,6 +57,12 @@ const CodeEditor = ({ roomId, userId }) => {
   const [output, setOutput] = useState("");
   const [isRunning, setIsRunning] = useState(false);
   const [codeEdited, setCodeEdited] = useState(false);
+
+  const emitCodeChange = useRef(
+    debounce((value) => {
+      socket.emit("code-change", { roomId, code: value, userId });
+    }, 300)
+  ).current;
 
   function handleEditorDidMount(editor) {
     editorRef.current = editor;
@@ -65,10 +73,12 @@ const CodeEditor = ({ roomId, userId }) => {
     });
 
     editor.onDidChangeModelContent(() => {
+      if (isRemoteUpdate.current) return;
+
       const value = editor.getValue();
       setCode(value);
-      setCodeEdited(true); 
-      socket.emit("code-change", { roomId, code: value, userId });
+      setCodeEdited(true);
+      emitCodeChange(value);
     });
   }
 
@@ -79,11 +89,14 @@ const CodeEditor = ({ roomId, userId }) => {
       if (state.input !== undefined) setInput(state.input);
       if (state.output !== undefined) setOutput(state.output);
     });
+
     socket.on("code-change", ({ code: newCode, userId: senderId }) => {
       if (senderId !== userId && editorRef.current) {
         const currentCode = editorRef.current.getValue();
         if (currentCode !== newCode) {
+          isRemoteUpdate.current = true;
           editorRef.current.setValue(newCode);
+          isRemoteUpdate.current = false;
         }
       }
     });
@@ -131,11 +144,14 @@ const CodeEditor = ({ roomId, userId }) => {
     setIsRunning(true);
     setOutput("Running...");
     try {
-      const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/execute`, {
-        language,
-        code,
-        input,
-      });
+      const response = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/execute`,
+        {
+          language,
+          code,
+          input,
+        }
+      );
       setOutput(response.data.output);
       socket.emit("output-change", {
         roomId,
@@ -159,7 +175,6 @@ const CodeEditor = ({ roomId, userId }) => {
 
     const decorations = Object.entries(remoteCursors).map(([id, cursor]) => {
       const { position, color, name } = cursor;
-
       return {
         range: new window.monaco.Range(
           position.lineNumber,
@@ -187,7 +202,6 @@ const CodeEditor = ({ roomId, userId }) => {
     });
 
     const decorationIds = editorRef.current.deltaDecorations([], decorations);
-
     return () => {
       if (editorRef.current)
         editorRef.current.deltaDecorations(decorationIds, []);
@@ -196,19 +210,18 @@ const CodeEditor = ({ roomId, userId }) => {
 
   const onLanguageChange = (lang) => {
     setLanguage(lang);
-  
-    const boilerplate = BOILERPLATES[lang];
-   
-    if (!codeEdited) {
-      setCode(boilerplate);
-      if (editorRef.current) {
-        editorRef.current.setValue(boilerplate);
-      }
+    const boilerplate = BOILERPLATES[lang] || "";
+
+    setCode(boilerplate);
+    if (editorRef.current) {
+      editorRef.current.setValue(boilerplate);
     }
-   
-  
+
     socket.emit("language-change", { roomId, language: lang, userId });
     socket.emit("code-change", { roomId, code: boilerplate, userId });
+
+    // Optional: Reset codeEdited if you want language switch to re-enable boilerplate updates
+    setCodeEdited(false);
   };
 
   return (
@@ -272,16 +285,17 @@ const CodeEditor = ({ roomId, userId }) => {
             cursorBlinking: "smooth",
             renderWhitespace: "all",
             automaticLayout: true,
-            fontFamily:
-              "JetBrains Mono, Fira Code, Consolas, Menlo, monospace",
+            fontFamily: "JetBrains Mono, Fira Code, Consolas, Menlo, monospace",
           }}
         />
       </div>
 
       {/* Input and Output */}
-      <div className="p-4 bg-[#1e1e1e] border-t border-gray-700 hide-scrollbar mb-6 " style={{ maxHeight: "30vh", overflowY: "auto" }}>
+      <div
+        className="p-4 bg-[#1e1e1e] border-t border-gray-700 hide-scrollbar mb-6"
+        style={{ maxHeight: "30vh", overflowY: "auto" }}
+      >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          
           <div>
             <label className="text-sm font-semibold text-gray-300 mb-1 block">
               Custom Input:
@@ -302,8 +316,6 @@ const CodeEditor = ({ roomId, userId }) => {
               }}
             />
           </div>
-
-          {/* Output Box */}
           <div>
             <label className="text-sm font-semibold text-gray-300 mb-1 block">
               Output:
@@ -315,7 +327,7 @@ const CodeEditor = ({ roomId, userId }) => {
         </div>
       </div>
 
-      {/* Styles for remote cursors */}
+      {/* Remote cursor styles */}
       <style>{`
         .remote-cursor {
           position: relative;
@@ -345,12 +357,10 @@ const CodeEditor = ({ roomId, userId }) => {
           white-space: nowrap;
           user-select: none;
         }
-
         .remote-caret {
           border-left-color: currentColor;
           border-left-style: solid;
         }
-
         @keyframes blink {
           0%, 100% { border-color: transparent; }
           50% { border-color: currentColor; }
