@@ -62,16 +62,16 @@ const Contests = () => {
     queryFn: () => fetchContests("https://codeforces.com/api/contest.list"),
   });
 
-  const {
-    data: codechef,
-    isLoading: ccLoading,
-    isError: ccError,
-  } = useQuery({
-    queryKey: ["codechef"],
-    queryFn: () => fetchContests("https://codechef-api.vercel.app/contests"),
-  });
+  // const {
+  //   data: codechef,
+  //   isLoading: ccLoading,
+  //   isError: ccError,
+  // } = useQuery({
+  //   queryKey: ["codechef"],
+  //   queryFn: () => fetchContests("https://codechef-api.vercel.app/contests"),
+  // });
 
-  if (cfLoading || ccLoading)
+  if (cfLoading)
     return (
       <div className="text-center text-gray-400 animate-pulse items-center mt-40 min-h-screen">
         <p className="text-lg">Loading Contests...</p>
@@ -79,7 +79,7 @@ const Contests = () => {
       </div>
     );
 
-  if (cfError || ccError)
+  if (cfError )
     return <div className="text-red-400 p-4">Error loading contests.</div>;
 
   let allContests = [
@@ -89,14 +89,7 @@ const Contests = () => {
       start: new Date(c.startTimeSeconds * 1000),
       end: new Date((c.startTimeSeconds + c.durationSeconds) * 1000),
     })),
-    ...(Array.isArray(codechef)
-      ? codechef.map((c) => ({
-          ...c,
-          site: "codechef",
-          start: new Date(c.start_time),
-          end: new Date(c.end_time),
-        }))
-      : []),
+    
   ];
 
   if (platformFilter !== "all") {
@@ -212,7 +205,7 @@ const ContestCard = ({ contest }) => (
     }
 
     const hasCF = contests.some((c) => c.site === "codeforces");
-    const hasCC = contests.some((c) => c.site === "codechef");
+    // const hasCC = contests.some((c) => c.site === "codechef");
 
     if (hasCF) {
       return {
@@ -221,12 +214,12 @@ const ContestCard = ({ contest }) => (
       };
     }
 
-    if (hasCC) {
-      return {
-        backgroundColor: "#facc15",
-        color: "black",
-      };
-    }
+    // if (hasCC) {
+    //   return {
+    //     backgroundColor: "#facc15",
+    //     color: "black",
+    //   };
+    // }
 
     return {};
   };
