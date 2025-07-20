@@ -169,8 +169,7 @@ User ↔ Frontend (React + Tailwind) ↔ Backend (Express + Node)
 ---
 
 ## Demo Video
-
-https://github.com/user-attachments/assets/1783b851-0e26-4a64-a08e-f43877100efd
+https://github.com/user-attachments/assets/16276e7f-6e64-481a-ae61-a4f2be6a2fb3
 
 
 ## 🚀 Installation Guide
