@@ -70,14 +70,22 @@ const HeroSection = () => {
               >
                 Get Started
               </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                className="group w-full sm:w-auto border-[#31304D] text-[#B6BBC4]"
+              <a
+                href="https://github.com/kanikaa-3018/contest_onlinejudge.git" 
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group w-full sm:w-auto"
+                style={{ textDecoration: 'none' }}
               >
-                <Github className="mr-2 h-5 w-5 transition-transform group-hover:scale-110" />
-                View on GitHub
-              </Button>
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="w-full sm:w-auto border-[#646CFF] text-white bg-[#232946] hover:bg-[#646CFF] hover:text-white hover:border-[#646CFF] focus:ring-2 focus:ring-[#646CFF] focus:outline-none transition-colors duration-200"
+                >
+                  <Github className="mr-2 h-5 w-5 transition-transform group-hover:scale-110" />
+                  View on GitHub
+                </Button>
+              </a>
             </div>
 
             {/* Floating Cards Section */}
