@@ -1,6 +1,7 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/userModel.js');
+const { validateRegister } = require("../utils/validation.js");
 
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '1d' });
@@ -8,15 +9,19 @@ const generateToken = (id) => {
 
 const registerUser = async (req, res) => {
   try {
-    const { name, username, email, password,role } = req.body;
 
-    if (!name || !username || !email || !password || !role) {
-      return res.status(400).json({ message: 'All fields are required' });
-    }
+    validateRegister(req);
+
+    const { name, username, email, password, role } = req.body;
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({ message: 'User already exists' });
+    }
+
+    const checkUsername = await User.findOne({ name });
+    if (checkUsername) {
+      return res.status(400).json({ message: 'Username is taken' });
     }
 
     const salt = await bcrypt.genSalt(10);
