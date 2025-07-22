@@ -12,6 +12,7 @@ const AuthPage = () => {
     username: "",
     email: "",
     password: "",
+    confirmPassword: "",
     cfHandle: "",
     lcHandle: "",
     role: "user",
@@ -51,6 +52,7 @@ const AuthPage = () => {
           username: formData.username,
           email: formData.email,
           password: formData.password,
+          confirmPassword: formData.confirmPassword,
           cfHandle: formData.cfHandle,
           lcHandle: formData.lcHandle,
           role: formData.role,
@@ -144,6 +146,16 @@ const AuthPage = () => {
               value={formData.password}
               onChange={handleChange}
             />
+            {!isLogin && (
+            <Input
+              name="confirmPassword"
+              placeholder="Confirm password"
+              type="password"
+              className="bg-[#31304D] text-[#F0ECE5] focus:ring-2 focus:ring-[#00C8A9] transition-all"
+              value={formData.confirmPassword}
+              onChange={handleChange}
+            />
+            )}
             {isLogin && (
               <Input
                 name="cfHandle"
@@ -164,7 +176,7 @@ const AuthPage = () => {
             )}
             <Button
               type="submit"
-              className="w-full bg-[#00C8A9] text-[#161A30] hover:bg-[#F0ECE5] hover:text-[#161A30] transition-all p-3 rounded-full"
+              className="w-full bg-[#00C8A9] text-[#161A30] hover:bg-[#F0ECE5] hover:text-[#161A30] transition-all p-3 rounded-full cursor-pointer"
             >
               {isLogin ? "Login" : "Register"}
             </Button>
@@ -174,7 +186,7 @@ const AuthPage = () => {
             {isLogin ? "Don't have an account?" : "Already have an account?"}{" "}
             <button
               onClick={toggleMode}
-              className="text-[#00C8A9] hover:underline"
+              className="text-[#00C8A9] hover:underline cursor-pointer"
             >
               {isLogin ? "Register" : "Login"}
             </button>
