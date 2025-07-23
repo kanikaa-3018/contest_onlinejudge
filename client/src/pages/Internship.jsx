@@ -16,6 +16,7 @@ const Internship = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  // No changes needed in logic
   useEffect(() => {
     setLoading(true);
     fetch(`${import.meta.env.VITE_BACKEND_URL}/api/internships`)
@@ -41,41 +42,36 @@ const Internship = () => {
       internship.role.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-
-const toggleStatus = (id, field) => {
-  setInternships((prevInternships) =>
-    prevInternships.map((internship) =>
-      internship.id === id
-        ? { ...internship, [field]: !internship[field] }
-        : internship
-    )
-  );
-};
+  const toggleStatus = (id, field) => {
+    setInternships((prevInternships) =>
+      prevInternships.map((internship) =>
+        internship.id === id
+          ? { ...internship, [field]: !internship[field] }
+          : internship
+      )
+    );
+  };
 
   return (
-    <div
-      className="min-h-screen p-6"
-      style={{ backgroundColor: "#161A30", color: "#B6BBC4" }}
-    >
-      <div
-        className="max-w-7xl mx-auto"
-        style={{
-          backgroundColor: "#161a30",
-          borderRadius: "8px",
-          padding: "24px",
-        }}
-      >
+    // CORRECTED: Removed all hardcoded styles. The page now inherits its background.
+    <div className="p-2 sm:p-6">
+      <div className="max-w-7xl mx-auto rounded-lg p-4 sm:p-6 bg-card">
         {/* Header */}
-        <div className="mb-8 flex items-center justify-between">
+        <div className="mb-8 flex flex-col sm:flex-row items-start sm:items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold mb-2" style={{ color: "#fff" }}>
+            {/* CORRECTED: Use theme-aware text colors */}
+            <h1 className="text-3xl font-bold mb-2 text-foreground">
               Internship Tracker
             </h1>
-            <p style={{ color: "#5A7184" }}>
+            <p className="text-muted-foreground">
               Track and manage your internship applications in one place
             </p>
           </div>
-          <Button variant="outline" onClick={() => navigate("/resume")}>
+          <Button
+            variant="outline"
+            onClick={() => navigate("/resume")}
+            className="mt-4 sm:mt-0"
+          >
             Resume Analyzer
           </Button>
         </div>
@@ -83,80 +79,57 @@ const toggleStatus = (id, field) => {
         {/* Controls */}
         <div className="flex flex-col sm:flex-row justify-between gap-4 mb-6">
           <div className="relative w-full sm:max-w-xs">
-            <Search
-              className="absolute left-3 top-1/2 -translate-y-1/2"
-              style={{ color: "#1976D2", height: 16, width: 16 }}
-            />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            {/* CORRECTED: Input now uses theme colors */}
             <Input
               className="pl-10"
               placeholder="Search companies or roles..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              style={{ borderColor: "#1976D2" }}
             />
           </div>
           <div className="flex gap-2">
+            {/* CORRECTED: Tabs now use theme colors */}
             <Tabs
               value={view}
               onValueChange={(v) => setView(v)}
               className="sm:w-auto"
             >
-              <TabsList style={{ borderColor: "#1976D2" }}>
-                <TabsTrigger
-                  value="table"
-                  style={{ color: view === "table" ? "#1976D2" : "#5A7184" }}
-                >
-                  Table
-                </TabsTrigger>
-                <TabsTrigger
-                  value="cards"
-                  style={{ color: view === "cards" ? "#1976D2" : "#5A7184" }}
-                >
-                  Cards
-                </TabsTrigger>
+              <TabsList>
+                <TabsTrigger value="table">Table</TabsTrigger>
+                <TabsTrigger value="cards">Cards</TabsTrigger>
               </TabsList>
             </Tabs>
           </div>
         </div>
 
-        {loading && <p style={{ color: "#1976D2" }}>Loading internships...</p>}
-        {error && <p style={{ color: "#D32F2F" }}>{error}</p>}
+        {loading && <p className="text-primary">Loading internships...</p>}
+        {error && <p className="text-destructive">{error}</p>}
 
         {!loading && !error && (
           <>
             {/* Summary Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-              <Card
-                className="p-4 flex flex-col"
-                style={{ backgroundColor: "#31304D", color: "#fff" }}
-              >
-                <p className="text-sm">Total Applications</p>
-                <p className="text-2xl font-bold">{internships.length}</p>
+              {/* CORRECTED: Summary cards now use theme variables */}
+              <Card className="p-4 flex flex-col bg-background">
+                <p className="text-sm text-muted-foreground">Total Applications</p>
+                <p className="text-2xl font-bold text-foreground">{internships.length}</p>
               </Card>
-              <Card
-                className="p-4 flex flex-col"
-                style={{ backgroundColor: "#31304D", color: "#fff" }}
-              >
-                <p className="text-sm">Applied</p>
-                <p className="text-2xl font-bold">
+              <Card className="p-4 flex flex-col bg-background">
+                <p className="text-sm text-muted-foreground">Applied</p>
+                <p className="text-2xl font-bold text-foreground">
                   {internships.filter((i) => i.applied).length}
                 </p>
               </Card>
-              <Card
-                className="p-4 flex flex-col"
-                style={{ backgroundColor: "#31304D", color: "#fff" }}
-              >
-                <p className="text-sm">Follow-ups Made</p>
-                <p className="text-2xl font-bold">
+              <Card className="p-4 flex flex-col bg-background">
+                <p className="text-sm text-muted-foreground">Follow-ups Made</p>
+                <p className="text-2xl font-bold text-foreground">
                   {internships.filter((i) => i.followedUp).length}
                 </p>
               </Card>
-              <Card
-                className="p-4 flex flex-col"
-                style={{ backgroundColor: "#31304D", color: "#fff" }}
-              >
-                <p className="text-sm">Interviews</p>
-                <p className="text-2xl font-bold">
+              <Card className="p-4 flex flex-col bg-background">
+                <p className="text-sm text-muted-foreground">Interviews</p>
+                <p className="text-2xl font-bold text-foreground">
                   {internships.filter((i) => i.interview).length}
                 </p>
               </Card>

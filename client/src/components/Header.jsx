@@ -10,6 +10,7 @@ export const Header = ({ toggleSidebar }) => {
   const [usernameInitials, setUsernameInitials] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
+  // No changes needed in logic functions
   const updateUserStatus = () => {
     const user = localStorage.getItem("user");
     if (user) {
@@ -68,92 +69,51 @@ export const Header = ({ toggleSidebar }) => {
   };
 
   return (
-    <header
-      className="flex h-14 items-center gap-4 px-4 lg:px-6 border-b justify-between"
-      style={{
-        backgroundColor: "#161A30",
-        borderColor: "#31304D",
-      }}
-    >
+    // CORRECTED: Replaced inline styles with theme-aware classes
+    <header className="flex h-14 items-center gap-4 border-b border-border bg-card px-4 lg:px-6 justify-between">
       {/* Left section: search & hamburger */}
       <div className="flex items-center gap-4 flex-1">
         {toggleSidebar && (
           <button className="sm:hidden" onClick={toggleSidebar}>
-            <Menu className="h-6 w-6 text-[#F0ECE5]" />
+            <Menu className="h-6 w-6 text-foreground" />
           </button>
         )}
 
         <div className="relative w-full max-w-sm">
-          <Search
-            className="absolute left-2.5 top-2.5 h-4 w-4"
-            style={{ color: "#B6BBC4" }}
-          />
+          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+          {/* CORRECTED: Replaced inline styles with theme-aware classes */}
           <Input
             type="search"
             placeholder="Search problems, contests..."
-            className="w-full appearance-none pl-8 shadow-none border-none"
-            style={{
-              backgroundColor: "#31304D",
-              color: "#F0ECE5",
-              borderRadius: "6px",
-            }}
+            className="w-full appearance-none rounded-md border-none bg-background pl-8 shadow-none text-foreground placeholder:text-muted-foreground"
           />
         </div>
       </div>
 
       {/* Right section */}
       <div className="flex items-center gap-4">
-        <Button
-          onClick={toggleDarkMode}
-          size="sm"
-          style={{
-            backgroundColor: "#31304D",
-            color: "#F0ECE5",
-            border: "none",
-          }}
-        >
-          {darkMode ? (
-            <Sun className="w-4 h-4" />
-          ) : (
-            <Moon className="w-4 h-4" />
-          )}
-          <span className="ml-1 text-sm hidden sm:inline">
-            {darkMode ? "Light Mode" : "Dark Mode"}
-          </span>
+        {/* CORRECTED: Replaced inline styles with theme-aware classes */}
+        <Button onClick={toggleDarkMode} size="icon" variant="ghost">
+          <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+          <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+          <span className="sr-only">Toggle theme</span>
         </Button>
 
         {isLoggedIn ? (
           <div className="flex items-center gap-2">
             <Avatar>
               <AvatarImage src="" alt="User Avatar" />
-              <AvatarFallback
-                style={{ backgroundColor: "#B6BBC4", color: "#161A30" }}
-              >
+              <AvatarFallback className="bg-muted text-muted-foreground">
                 {usernameInitials}
               </AvatarFallback>
             </Avatar>
-            <Button
-              size="sm"
-              onClick={handleLogout}
-              style={{
-                backgroundColor: "#31304D",
-                color: "#F0ECE5",
-                border: "none",
-              }}
-            >
+            <Button size="sm" variant="ghost" onClick={handleLogout}>
               Logout
             </Button>
           </div>
         ) : (
           <Link to="/auth">
-            <Button
-              size="sm"
-              style={{
-                backgroundColor: "#31304D",
-                color: "#F0ECE5",
-                border: "none",
-              }}
-            >
+            <Button size="sm" variant="ghost">
               Login
             </Button>
           </Link>
