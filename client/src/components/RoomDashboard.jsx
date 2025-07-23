@@ -141,6 +141,7 @@ const RoomDashboard = () => {
                   isActive={room.isActive}
                   activeUserCount={room.activeUserCount}
                   lastActivity={room.lastActivity}
+                  users={room.connectedUsers || []} // Pass connected users data
                 />
               ))}
             </div>
@@ -178,6 +179,7 @@ const RoomDashboard = () => {
                   isActive={room.isActive}
                   activeUserCount={room.activeUserCount}
                   lastActivity={room.lastActivity}
+                  users={room.connectedUsers || []} // Pass connected users data
                 />
               ))}
             </div>
@@ -214,6 +216,7 @@ const RoomDashboard = () => {
                   isActive={room.isActive}
                   activeUserCount={room.activeUserCount}
                   lastActivity={room.lastActivity}
+                  users={room.connectedUsers || []} // Pass connected users data
                 />
               ))}
             </div>

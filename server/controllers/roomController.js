@@ -26,7 +26,7 @@ const createRoom = async (req, res) => {
 const getAllRooms = async (req, res) => {
   try {
     const rooms = await Room.find({ isPrivate: false })
-      .populate("users", "name email")
+      .populate("users", "name email avatar")
       .populate("createdBy", "name email");
 
     // Add real-time activity data
@@ -37,11 +37,28 @@ const getAllRooms = async (req, res) => {
       const activeUserCount = socketsInRoom ? socketsInRoom.size : 0;
       const isActive = activeUserCount > 0;
 
+      // Get connected users info from socket rooms
+      const connectedUsers = [];
+      if (socketsInRoom) {
+        for (const socketId of socketsInRoom) {
+          const socket = io.sockets.sockets.get(socketId);
+          if (socket && socket.userData) {
+            connectedUsers.push({
+              id: socket.userData.id,
+              name: socket.userData.name,
+              avatar: socket.userData.avatar,
+              online: true,
+            });
+          }
+        }
+      }
+
       return {
         ...room.toObject(),
         activeUserCount,
         isActive,
         lastActivity: room.updatedAt || room.createdAt,
+        connectedUsers: connectedUsers.slice(0, 6), // Limit to 6 for performance
       };
     });
 
