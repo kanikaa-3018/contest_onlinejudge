@@ -118,10 +118,25 @@ const RoomDashboard = () => {
       </div>
 
       <Tabs defaultValue="all" value={filter} onValueChange={setFilter}>
-        <TabsList className="mb-6">
-          <TabsTrigger value="all">All Rooms</TabsTrigger>
-          <TabsTrigger value="active">Active</TabsTrigger>
-          <TabsTrigger value="my">My Rooms</TabsTrigger>
+        <TabsList className="mb-6 tabs-list-with-bg">
+          <TabsTrigger
+            value="all"
+            className="tabs-trigger-with-bg data-[state=active]:bg-primary/10 data-[state=active]:text-primary data-[state=active]:font-medium data-[state=active]:border-b-2 data-[state=active]:border-primary"
+          >
+            All Rooms
+          </TabsTrigger>
+          <TabsTrigger
+            value="active"
+            className="tabs-trigger-with-bg data-[state=active]:bg-primary/10 data-[state=active]:text-primary data-[state=active]:font-medium data-[state=active]:border-b-2 data-[state=active]:border-primary"
+          >
+            Active
+          </TabsTrigger>
+          <TabsTrigger
+            value="my"
+            className="tabs-trigger-with-bg data-[state=active]:bg-primary/10 data-[state=active]:text-primary data-[state=active]:font-medium data-[state=active]:border-b-2 data-[state=active]:border-primary"
+          >
+            My Rooms
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="all" className="mt-0">

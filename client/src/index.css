@@ -358,3 +358,54 @@ body.light .subtext {
 .hide-scrollbar::-webkit-scrollbar {
   display: none;
 }
+
+/* Add these classes to your index.css */
+
+/* Tab styling with proper backgrounds */
+.tabs-list-with-bg {
+  background: hsl(var(--card)) !important;
+  border: 1px solid hsl(var(--border)) !important;
+  padding: 4px !important;
+}
+
+.tabs-trigger-with-bg {
+  background: transparent !important;
+  color: hsl(var(--muted-foreground)) !important;
+  border-radius: calc(var(--radius) - 2px) !important;
+  transition: all 0.2s ease !important;
+}
+
+.tabs-trigger-with-bg[data-state="active"] {
+  background: hsl(var(--background)) !important;
+  color: hsl(var(--foreground)) !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+  
+}
+
+.tabs-trigger-with-bg:hover {
+  background: hsl(var(--muted) / 0.5) !important;
+  color: hsl(var(--foreground)) !important;
+}
+
+/* Room button styles with proper theming */
+.room-button-active {
+  background-color: #22c55e !important;
+  color: white !important;
+  border-color: #22c55e !important;
+}
+
+.room-button-active:hover {
+  background-color: #16a34a !important;
+}
+
+.room-button-inactive {
+  background-color: hsl(var(--card)) !important;
+  color: hsl(var(--foreground)) !important;
+  border-color: hsl(var(--border)) !important;
+}
+
+.room-button-inactive:hover {
+  background-color: hsl(var(--accent)) !important;
+  color: hsl(var(--accent-foreground)) !important;
+  border-color: hsl(var(--border)) !important;
+}
