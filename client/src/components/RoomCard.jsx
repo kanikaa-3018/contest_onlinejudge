@@ -23,15 +23,26 @@ const formatTimeAgo = (timestamp) => {
   return new Date(timestamp).toLocaleDateString();
 };
 
-const RoomCard = ({ id, name, description, language, createdBy, socket }) => {
-  const [userCount, setUserCount] = useState(0);
-  const [lastActive, setLastActive] = useState("Inactive");
+const RoomCard = ({
+  id,
+  name,
+  description,
+  language,
+  createdBy,
+  socket,
+  isActive,
+  activeUserCount,
+  lastActivity,
+}) => {
+  const [userCount, setUserCount] = useState(activeUserCount || 0);
+  const [lastActive, setLastActive] = useState(lastActivity || Date.now());
+  const [roomActive, setRoomActive] = useState(isActive || false);
 
   useEffect(() => {
     if (!socket) return;
-  
+
     socket.emit("get-room", id);
-  
+
     const handleRoomMetadata = (data) => {
       if (data.error) {
         console.error(data.error);
@@ -40,32 +51,40 @@ const RoomCard = ({ id, name, description, language, createdBy, socket }) => {
         setLastActive(data.lastActive);
       }
     };
-  
+
     socket.on("room-metadata", handleRoomMetadata);
-  
+
     return () => {
       socket.off("room-metadata", handleRoomMetadata);
     };
   }, [socket, id]);
-  
 
   return (
     <Card
-      className="overflow-hidden border transition-all hover:shadow-md"
+      className={`overflow-hidden border transition-all hover:shadow-lg hover:scale-105 ${
+        roomActive ? "ring-2 ring-green-500 ring-opacity-50" : ""
+      }`}
       style={{
-        borderColor: "#27272a",
+        borderColor: roomActive ? "#22c55e" : "#27272a",
         backgroundColor: "rgba(15, 15, 35, 0.6)",
         backdropFilter: "blur(8px)",
       }}
     >
       <CardHeader className="pb-2">
         <div className="flex items-start justify-between">
-          <CardTitle className="text-lg font-bold">{name}</CardTitle>
+          <div className="flex items-center gap-2">
+            <CardTitle className="text-lg font-bold">{name}</CardTitle>
+            {roomActive && (
+              <div className="flex items-center gap-1">
+                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                <span className="text-xs text-green-400 font-medium">LIVE</span>
+              </div>
+            )}
+          </div>
 
           <Badge
             variant="outline"
-            className="text-xs font-medium"
-            style={{ backgroundColor: "#27272a" }}
+            className={`text-xs font-medium ${getLanguageColor(language)}`}
           >
             {language}
           </Badge>
@@ -89,12 +108,16 @@ const RoomCard = ({ id, name, description, language, createdBy, socket }) => {
         >
           <div className="flex items-center">
             <Users className="mr-1 h-3 w-3" />
-            <span>{userCount} users</span>
+            <span className={roomActive ? "text-green-400 font-medium" : ""}>
+              {userCount} {roomActive ? "active" : "users"}
+            </span>
           </div>
           <div className="flex items-center">
             <Clock className="mr-1 h-3 w-3" />
             <span>
-              {lastActive
+              {roomActive
+                ? "Active now"
+                : lastActive
                 ? `Active ${formatTimeAgo(lastActive)}`
                 : "Loading..."}
             </span>
@@ -102,12 +125,32 @@ const RoomCard = ({ id, name, description, language, createdBy, socket }) => {
         </div>
       </CardContent>
       <CardFooter className="pt-2">
-        <Button asChild variant="default" className="w-full">
-          <Link to={`/room/${id}`}>Join Room</Link>
+        <Button
+          asChild
+          variant={roomActive ? "default" : "secondary"}
+          className={`w-full ${
+            roomActive ? "bg-green-600 hover:bg-green-700" : ""
+          }`}
+        >
+          <Link to={`/room/${id}`}>
+            {roomActive ? "Join Live Room" : "Join Room"}
+          </Link>
         </Button>
       </CardFooter>
     </Card>
   );
+};
+
+// Helper function for language-based color coding
+const getLanguageColor = (language) => {
+  const colors = {
+    javascript: "bg-yellow-500 text-black",
+    python: "bg-blue-500 text-white",
+    java: "bg-orange-500 text-white",
+    cpp: "bg-purple-500 text-white",
+    c: "bg-gray-500 text-white",
+  };
+  return colors[language?.toLowerCase()] || "bg-gray-500 text-white";
 };
 
 export default RoomCard;
