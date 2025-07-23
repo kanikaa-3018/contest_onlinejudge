@@ -69,9 +69,16 @@ const initSocket = (httpServer) => {
       io.to(roomId).emit("room-metadata", {
         userCount: allUsers.length,
         lastActive: rooms[roomId].lastActive,
+        isActive: true,
+        activeUserCount: allUsers.length,
       });
 
-      // console.log(`👤 ${user.name} (id: ${user.id}) joined room ${roomId}`);
+      // Broadcast to all clients that room activity has changed
+      socket.broadcast.emit("room-activity-update", {
+        roomId,
+        isActive: true,
+        activeUserCount: allUsers.length,
+      });
     });
 
     socket.on("leave-room", ({ roomId, user }) => {
@@ -130,6 +137,19 @@ const initSocket = (httpServer) => {
         });
       } else {
         console.log("❌ Client disconnected without room context:", socket.id);
+      }
+
+      const roomUsers = usersInRoom.get(socket.roomId);
+      if (roomUsers) {
+        // After user leaves, check if room is still active
+        const remainingUsers = Array.from(roomUsers.values());
+        const isStillActive = remainingUsers.length > 0;
+
+        socket.broadcast.emit("room-activity-update", {
+          roomId: socket.roomId,
+          isActive: isStillActive,
+          activeUserCount: remainingUsers.length,
+        });
       }
     });
 
@@ -233,11 +253,11 @@ const initSocket = (httpServer) => {
         socket.emit("room-metadata", { error: "Room not found." });
         return;
       }
-    
+
       const roomData = rooms[roomId];
       const roomUsers = usersInRoom.get(roomId);
       const userCount = roomUsers?.size || 0;
-    
+
       socket.emit("room-metadata", {
         roomId,
         ...roomData,
