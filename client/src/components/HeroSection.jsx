@@ -5,6 +5,7 @@ import CodeTree from "./CodeTree";
 import VsCodeAnimation from "./VsCodeAnimation";
 import FloatingCard from "./FloatingCard";
 import VSCodeTypewriter from "./VSCodeTypewriter";
+import { Link } from "react-router-dom";
 
 const HeroSection = () => {
   return (
@@ -64,12 +65,14 @@ const HeroSection = () => {
 
             {/* CTA buttons */}
             <div className="flex flex-col sm:flex-row gap-3 justify-center sm:justify-start">
-              <Button
-                size="lg"
-                className="bg-[#1829ea] hover:bg-[#1829ea]/80 w-full sm:w-auto text-white"
-              >
-                Get Started
-              </Button>
+              <Link to="/auth" className="w-full sm:w-auto" title="Sign up or log in to get started!">
+                <Button
+                  size="lg"
+                  className="bg-[#1829ea] hover:bg-[#1829ea]/80 w-full sm:w-auto text-white"
+                >
+                  Get Started
+                </Button>
+              </Link>
               <a
                 href="https://github.com/kanikaa-3018/contest_onlinejudge.git" 
                 target="_blank"
