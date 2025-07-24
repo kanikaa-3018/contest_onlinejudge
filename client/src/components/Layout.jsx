@@ -1,10 +1,15 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Sidebar from "../components/Sidebar.jsx";
 import Header from "../components/Header.jsx";
 import { Outlet } from "react-router-dom";
 
 export const Layout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  useEffect(() => {
+    const storedTheme = localStorage.getItem("theme") || "light";
+    document.documentElement.classList.toggle("dark", storedTheme === "dark");
+  }, []);
 
   return (
     <div className="flex h-screen overflow-hidden">
@@ -25,4 +30,4 @@ export const Layout = () => {
   );
 };
 
-export default Layout;
+export default Layout;  
