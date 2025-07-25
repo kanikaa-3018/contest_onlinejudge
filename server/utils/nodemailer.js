@@ -13,25 +13,27 @@ const transporter = nodemailer.createTransport({
 });
 
 // Email subject
-const emailSubject = "Welcome to Movie Explorer";
+const emailSubject = "Welcome to CodeArena";
 
 // Email body template
 const emailBody = (username) => `
 Hi ${username},
 
-Welcome to **Movie Explorer**! 🎬 We're excited to have you on board.
+Welcome to **CodeArena**! 🚀  
+We’re thrilled to have you join our growing community of coders, collaborators, and future tech leaders.
 
-Here's what you can do:
-- Discover and explore a wide range of movies
-- Create your personal watchlist
-- Share movie recommendations with your friends
+Here’s what you can explore right away:
+- 💻 Compete in real-time coding contests
+- 🤖 Get intelligent feedback from our AI agents
+- 🧳 Track your internship applications easily
+- 🤝 Collaborate with peers in live coding rooms
 
-Start your movie journey now by diving into the latest collections and hidden gems!
+Your journey to smarter coding and career growth starts now.
 
-If you have any questions or need help, feel free to reach out. We're here for you.
+If you ever need help or have feedback, we’re just a message away.
 
-Happy exploring!  
-— The Movie Explorer Team
+Happy Coding!  
+— The CodeArena Team
 `;
 
 // Function to send the email
