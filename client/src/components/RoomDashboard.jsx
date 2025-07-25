@@ -23,7 +23,9 @@ const RoomDashboard = () => {
   useEffect(() => {
     const fetchRooms = async () => {
       try {
-        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/rooms`);
+        const response = await fetch(
+          `${import.meta.env.VITE_BACKEND_URL}/api/rooms`
+        );
         if (!response.ok) {
           throw new Error("Failed to fetch rooms");
         }
@@ -39,25 +41,44 @@ const RoomDashboard = () => {
     };
 
     fetchRooms();
+
+    // Listen for real-time room activity updates
+    socket.on("room-activity-update", (activityData) => {
+      setRooms((prevRooms) =>
+        prevRooms.map((room) =>
+          room._id === activityData.roomId
+            ? {
+                ...room,
+                isActive: activityData.isActive,
+                activeUserCount: activityData.activeUserCount,
+              }
+            : room
+        )
+      );
+    });
+
+    return () => {
+      socket.off("room-activity-update");
+    };
   }, []);
 
   useEffect(() => {
     console.log("Updated rooms state:", rooms);
   }, [rooms]);
-  
 
   const filteredRooms = rooms.filter((room) => {
     const matchesSearch =
       room.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       room.description?.toLowerCase().includes(searchQuery.toLowerCase());
-  
+
     if (filter === "all") return matchesSearch;
-    if (filter === "active") return matchesSearch && room.users?.length > 0;
-    if (filter === "my") return matchesSearch && room.createdBy?._id === user?._id;
-  
+    if (filter === "active")
+      return matchesSearch && room.isActive && room.activeUserCount > 0;
+    if (filter === "my")
+      return matchesSearch && room.createdBy?._id === user?._id;
+
     return matchesSearch;
   });
-  
 
   return (
     <div className="container mx-auto max-w-7xl px-4 py-8">
@@ -97,10 +118,25 @@ const RoomDashboard = () => {
       </div>
 
       <Tabs defaultValue="all" value={filter} onValueChange={setFilter}>
-        <TabsList className="mb-6">
-          <TabsTrigger value="all">All Rooms</TabsTrigger>
-          <TabsTrigger value="active">Active</TabsTrigger>
-          <TabsTrigger value="my">My Rooms</TabsTrigger>
+        <TabsList className="mb-6 tabs-list-with-bg">
+          <TabsTrigger
+            value="all"
+            className="tabs-trigger-with-bg data-[state=active]:bg-primary/10 data-[state=active]:text-primary data-[state=active]:font-medium data-[state=active]:border-b-2 data-[state=active]:border-primary"
+          >
+            All Rooms
+          </TabsTrigger>
+          <TabsTrigger
+            value="active"
+            className="tabs-trigger-with-bg data-[state=active]:bg-primary/10 data-[state=active]:text-primary data-[state=active]:font-medium data-[state=active]:border-b-2 data-[state=active]:border-primary"
+          >
+            Active
+          </TabsTrigger>
+          <TabsTrigger
+            value="my"
+            className="tabs-trigger-with-bg data-[state=active]:bg-primary/10 data-[state=active]:text-primary data-[state=active]:font-medium data-[state=active]:border-b-2 data-[state=active]:border-primary"
+          >
+            My Rooms
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="all" className="mt-0">
@@ -117,6 +153,10 @@ const RoomDashboard = () => {
                   language={room.language}
                   socket={socket}
                   createdBy={room.createdBy?.name || "Unknown"}
+                  isActive={room.isActive}
+                  activeUserCount={room.activeUserCount}
+                  lastActivity={room.lastActivity}
+                  users={room.connectedUsers || []} // Pass connected users data
                 />
               ))}
             </div>
@@ -151,6 +191,10 @@ const RoomDashboard = () => {
                   language={room.language}
                   socket={socket}
                   createdBy={room.createdBy?.name || "Unknown"}
+                  isActive={room.isActive}
+                  activeUserCount={room.activeUserCount}
+                  lastActivity={room.lastActivity}
+                  users={room.connectedUsers || []} // Pass connected users data
                 />
               ))}
             </div>
@@ -184,6 +228,10 @@ const RoomDashboard = () => {
                   language={room.language}
                   socket={socket}
                   createdBy={room.createdBy?.name || "Unknown"}
+                  isActive={room.isActive}
+                  activeUserCount={room.activeUserCount}
+                  lastActivity={room.lastActivity}
+                  users={room.connectedUsers || []} // Pass connected users data
                 />
               ))}
             </div>
