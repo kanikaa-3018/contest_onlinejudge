@@ -27,7 +27,9 @@ const MyCalendar = () => {
             end: new Date((contest.startTimeSeconds + contest.durationSeconds) * 1000),
             site: 'codeforces',
             status: contest.phase === 'BEFORE' ? 'upcoming' : 'past',
+            url: `https://codeforces.com/contest/${contest.id}`,
           }));
+
 
         setEvents(contests);
       } catch (err) {
@@ -38,7 +40,7 @@ const MyCalendar = () => {
     fetchContests();
   }, []);
 
-  
+
   const eventsByDate = events.reduce((acc, event) => {
     const dateKey = moment.utc(event.start).startOf('day').format('YYYY-MM-DD');
     if (!acc[dateKey]) acc[dateKey] = [];
@@ -66,14 +68,16 @@ const MyCalendar = () => {
           }}>
             {dayEvents.map((event, i) => (
               <div key={i} style={{ position: 'relative' }}>
-                <div style={{
-                  width: 8,
-                  height: 8,
-                  borderRadius: '50%',
-                  backgroundColor: event.status === 'upcoming' ? 'rgba(99, 255, 184, 0.8)' : 'rgba(253,253,253,0.7)',
-                  boxShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
-                  cursor: 'pointer',
-                }} />
+                <a href={event.url} target="_blank" rel="noopener noreferrer">
+                  <div style={{
+                    width: 8,
+                    height: 8,
+                    borderRadius: '50%',
+                    backgroundColor: event.status === 'upcoming' ? 'rgba(109, 55, 14, 0.8)' : 'rgba(23,25,53,0.7)',
+                    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
+                    cursor: 'pointer',
+                  }} />
+                </a>
                 <div style={{
                   position: 'absolute',
                   top: 12,
@@ -88,7 +92,7 @@ const MyCalendar = () => {
                   opacity: 0,
                   transition: 'opacity 0.2s ease',
                   pointerEvents: 'none',
-                  backdropFilter: 'blur(4px)', 
+                  backdropFilter: 'blur(4px)',
                 }}
                   className="tooltip-box"
                 >
@@ -107,18 +111,25 @@ const MyCalendar = () => {
   // Different styles for past and upcoming events
   const eventStyleGetter = (event) => ({
     style: {
-      backgroundColor: event.status === 'upcoming' ? '#9f00ff' : '#777', 
-      color: '#F0ECE5',
-      borderRadius: '6px',
-      padding: '4px',
-      fontSize: '0.75em', 
-      // fontWeight: 'medium',
+      backgroundColor: event.status === 'upcoming' ? '#5202fa' : '#cdb5ff',
+      color: event.status === 'upcoming' ? '#fdfcff' : '#000000',
+      borderRadius: '8px',
+      padding: '5px',
+      fontSize: '0.75em',
+      fontWeight: 500,
       textAlign: 'center',
       cursor: 'pointer',
-      backdropFilter: 'blur(4px)', 
-      boxShadow: '0 2px 8px rgba(0, 0, 0, 0.4)', 
+      backdropFilter: 'blur(4px)',
+      boxShadow: '0 2px 8px rgba(0, 0, 0, 0.4)',
     },
   });
+
+  const handleEventClick = (event) => {
+    if (event.url) {
+      window.open(event.url, '_blank');
+    }
+  };
+
 
   // Tooltip handlers
   useEffect(() => {
@@ -150,7 +161,7 @@ const MyCalendar = () => {
         textAlign: 'center',
         color: '#F0ECE5',
         marginBottom: '12px',
-        fontSize: '20px', 
+        fontSize: '20px',
         fontWeight: '500',
       }}>
         {moment(date).format('MMMM YYYY')}
@@ -190,26 +201,32 @@ const MyCalendar = () => {
         eventPropGetter={eventStyleGetter}
         style={{
           height: '100%',
-          border: '1px solid #666', 
+          border: '1px solid #666',
           borderRadius: '10px',
           backgroundColor: '#1E1E2E',
           color: '#F0ECE5',
         }}
         toolbar={false}
+        onSelectEvent={handleEventClick}
       />
     </div>
   );
 };
 
 const btnStyle = {
-  margin: '0 5px',
-  padding: '6px 12px',
-  backgroundColor: '#31304D',
+  margin: '0 6px',
+  padding: '8px 16px',
+  backgroundColor: '#2E2B4F',
   color: '#F0ECE5',
-  border: 'none',
-  borderRadius: '6px',
+  border: '1px solid rgba(255, 255, 211, 0.1)',
+  borderRadius: '8px',
   cursor: 'pointer',
   fontSize: '14px',
+  fontWeight: 700,
+  boxShadow: '0 3px 6px rgba(0, 0, 0, 0.4)',
+  transition: 'all 0.25s ease',
 };
+
+
 
 export default MyCalendar;
