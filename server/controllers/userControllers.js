@@ -2,6 +2,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/userModel.js');
 const { validateRegister } = require("../utils/validation.js");
+const {sendMail} = require("../utils/nodemailer.js");
 
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '1d' });
@@ -43,6 +44,8 @@ const registerUser = async (req, res) => {
       role: user.role,
       token: generateToken(user._id),
     });
+    
+    sendMail(user.email, user.name);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
