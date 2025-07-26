@@ -43,7 +43,7 @@
 
 :root {
   --radius: 0.625rem;
-  /* Light theme variables */
+  /* Light theme variables - restored original */
   --background: 240 10% 97%;
   --foreground: 240 10% 9%;
   --card: 240 10% 100%;
@@ -78,7 +78,7 @@
 }
 
 .dark {
-  /* Dark theme variables */
+  /* Dark theme variables - restored original */
   --background: 240 10% 6%;
   --foreground: 0 0% 98%;
   --card: 240 10% 9%;
@@ -233,7 +233,9 @@ body.light .subtext {
   background-color: #1e1e1e;
 }
 .border-border {
-  border-color: #333333;
+  border-color: hsl(
+    var(--border)
+  ); /* Changed from #333333 to use CSS variable */
 }
 .vscode-purple {
   color: #c586c0;
@@ -379,7 +381,6 @@ body.light .subtext {
   background: hsl(var(--background)) !important;
   color: hsl(var(--foreground)) !important;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
-  
 }
 
 .tabs-trigger-with-bg:hover {
