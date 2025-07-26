@@ -387,14 +387,12 @@ const RoomCard = ({
         </div>
       </CardContent>
 
-        <CardFooter className="pt-2">
+      <CardFooter className="pt-2">
         <Button
           asChild
           variant={roomActive ? "default" : "outline"}
           className={`w-full transition-all duration-200 ${
-            roomActive 
-              ? "room-button-active" 
-              : "room-button-inactive"
+            roomActive ? "room-button-active" : "room-button-inactive"
           }`}
         >
           <Link to={`/room/${id}`}>
