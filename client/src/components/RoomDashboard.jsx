@@ -100,7 +100,7 @@ const RoomDashboard = () => {
           />
           <Input
             placeholder="Search rooms..."
-            className="pl-9"
+            className="pl-9 border border-[#a1a1aa]"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
@@ -111,7 +111,8 @@ const RoomDashboard = () => {
             setSearchQuery("");
             setFilter("all");
           }}
-          className="md:w-auto"
+          className="md:w-auto border border-[#a1a1aa]"
+          style={{ borderColor: "#a1a1aa" }}
         >
           Reset Filters
         </Button>
@@ -121,7 +122,7 @@ const RoomDashboard = () => {
         <TabsList className="mb-6 tabs-list-with-bg">
           <TabsTrigger
             value="all"
-            className="tabs-trigger-with-bg data-[state=active]:bg-primary/10 data-[state=active]:text-primary data-[state=active]:font-medium data-[state=active]:border-b-2 data-[state=active]:border-primary"
+            className="tabs-trigger-with-bg data-[state=active]:bg-primary/10 data-[state=active]:text-primary data-[state=active]:font-medium data-[state=active]:border-b-2 data-[state=active]:border-gray-300"
           >
             All Rooms
           </TabsTrigger>
