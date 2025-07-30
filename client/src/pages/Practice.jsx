@@ -4,29 +4,25 @@ import { Card, CardContent } from "@/components/ui/card";
 import { BookOpen, Tag, ExternalLink } from "lucide-react";
 
 const TAGS = [
-  "implementation",
-  "greedy",
-  "dp",
-  "math",
-  "brute force",
-  "data structures",
-  "constructive algorithms",
-  "graphs",
-  "sortings",
-  "binary search",
-  "dfs and similar",
-  "trees",
-  "two pointers",
+  "Implementation",
+  "Greedy",
+  "Dynamic Programming",
+  "Math",
+  "Brute Force",
+  "Data Structures",
+  "Constructive Algorithms",
+  "Graphs",
+  "Sorting",
+  "Binary Search",
+  "DFS and Similar",
+  "Trees",
+  "Two Pointers",
   "Array",
   "Hash Table",
   "String",
-  "Dynamic Programming",
-  "Math",
-  "Sorting",
-  "Greedy",
   "Tree",
   "Depth-First Search",
-  "Breadth-First Search",
+  "Breadth-First Search"
 ];
 
 const DIFFICULTIES = ["Easy", "Medium", "Hard"];
