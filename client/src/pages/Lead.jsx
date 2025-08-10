@@ -179,16 +179,16 @@ const problemData = [
   { name: "Hard", value: 106, color: "#ef4444" },
 ];
 
-const COLORS = ["#4ade80", "#f59e0b", "#ef4444"];
+const COLORS = ["hsl(var(--chart-1))", "hsl(var(--chart-2))", "hsl(var(--chart-3))"];
 
 function getRatingColor(rating) {
-  if (rating < 1200) return "text-gray-400"; // Newbie
-  if (rating < 1400) return "text-green-500"; // Pupil
-  if (rating < 1600) return "text-[#03a89e]"; // Specialist
-  if (rating < 1900) return "text-blue-500"; // Expert
-  if (rating < 2100) return "text-purple-500"; // Candidate Master
-  if (rating < 2400) return "text-[#ff8c00]"; // Master
-  return "text-red-500"; // Grandmaster+
+  if (rating < 1200) return "text-muted-foreground"; // Newbie
+  if (rating < 1400) return "text-green-600 dark:text-green-400"; // Pupil  
+  if (rating < 1600) return "text-cyan-600 dark:text-cyan-400"; // Specialist
+  if (rating < 1900) return "text-blue-600 dark:text-blue-400"; // Expert
+  if (rating < 2100) return "text-purple-600 dark:text-purple-400"; // Candidate Master
+  if (rating < 2400) return "text-orange-600 dark:text-orange-400"; // Master
+  return "text-red-600 dark:text-red-400"; // Grandmaster+
 }
 
 const Lead = () => {
@@ -483,34 +483,34 @@ const Lead = () => {
 
   if (statsLoading)
   return (
-    <div className="flex flex-col items-center justify-center text-gray-400 animate-pulse py-6">
+    <div className="flex flex-col items-center justify-center text-muted-foreground animate-pulse py-6">
       <p className="text-lg mb-2">Loading your Leaderboard..</p>
-      <div className="w-10 h-10 border-4 border-dashed border-indigo-500 rounded-full animate-spin"></div>
+      <div className="w-10 h-10 border-4 border-dashed border-primary rounded-full animate-spin"></div>
     </div>
   );
 
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#161a30] to-[#161a30] text-white px-4 py-8 md:px-8">
+    <div className="min-h-screen bg-background text-foreground px-4 py-8 md:px-8">
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
           <div>
-            <h1 className="text-3xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-[#8B5CF6] to-[#33C3F0]">
+            <h1 className="text-3xl md:text-4xl font-bold text-primary">
               Contest Champions
             </h1>
-            <p className="text-gray-300 mt-2">
+            <p className="text-muted-foreground mt-2">
               Track and compare coding performance across platforms
             </p>
           </div>
           <div className="mt-4 md:mt-0 flex space-x-3">
             <Button
               variant="outline"
-              className="bg-[#221F26] border-[#403E43] hover:bg-[#2d2a33] text-white"
+              className="bg-secondary border-border hover:bg-secondary/80 text-foreground"
             >
               Filter
             </Button>
             <Button
-              className="bg-[#8B5CF6] hover:bg-[#7c4deb]"
+              className="bg-primary hover:bg-primary/80"
               onClick={handleRefreshClick}
             >
               Refresh Data
@@ -519,10 +519,10 @@ const Lead = () => {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-          <Card className="col-span-1 lg:col-span-3 bg-[#221F26] border-[#403E43] text-white">
+          <Card className="col-span-1 lg:col-span-3 bg-card border-border text-card-foreground">
             <CardHeader className="pb-0">
               <CardTitle className="text-xl flex items-center">
-                <Trophy className="mr-2 text-[#f6e58d]" size={24} />
+                <Trophy className="mr-2 text-yellow-500" size={24} />
                 Top Performers
               </CardTitle>
             </CardHeader>
@@ -569,24 +569,24 @@ const Lead = () => {
             <div className="mb-6">
               <Tabs defaultValue="overview" className="w-full">
                 <div className="flex justify-between items-center">
-                  <TabsList className="bg-[#221F26] border border-[#403E43]">
+                  <TabsList className="bg-secondary border border-border">
                     <TabsTrigger
                       value="overview"
-                      className="data-[state=active]:bg-[#8B5CF6] data-[state=active]:text-white"
+                      className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
                       onClick={() => setView("overview")}
                     >
                       Overview
                     </TabsTrigger>
                     <TabsTrigger
                       value="leetcode"
-                      className="data-[state=active]:bg-[#8B5CF6] data-[state=active]:text-white"
+                      className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
                       onClick={() => setView("details")}
                     >
                       LeetCode
                     </TabsTrigger>
                     <TabsTrigger
                       value="codeforces"
-                      className="data-[state=active]:bg-[#8B5CF6] data-[state=active]:text-white"
+                      className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
                       onClick={() => setView("details")}
                     >
                       CodeForces

@@ -22,11 +22,11 @@ const VSCodeTypewriter = () => {
 
   return (
     <div
-      className="w-full max-w-[260px] mx-auto rounded-xl overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.7)] border border-[#2c313a] bg-[#1e1e1e] text-[#d4d4d4]"
-      style={{ minWidth: "320px", fontFamily: "Consolas, 'Courier New', monospace" }}
+      className="w-full max-w-[260px] mx-auto rounded-xl overflow-hidden shadow-lg border border-border bg-card text-card-foreground"
+      style={{ minWidth: "320px", fontFamily: "Consolas, 'Courier New', monospace", backgroundColor: 'hsl(var(--card))' }}
     >
       {/* VS Code Style Header */}
-      <div className="flex items-center justify-between px-4 py-2 bg-[#252526] border-b border-[#3c3c3c] select-none">
+      <div className="flex items-center justify-between px-4 py-2 bg-secondary border-b border-border select-none" style={{ backgroundColor: 'hsl(var(--secondary))' }}>
         <div className="flex items-center space-x-2">
           <span
             className="h-3 w-3 rounded-full"
@@ -58,12 +58,12 @@ const VSCodeTypewriter = () => {
 
       {/* Terminal Output Area */}
       <div
-        className="p-6 bg-[#1e1e1e] min-h-[180px] max-h-[220px] overflow-y-auto whitespace-pre-wrap overflow-x-auto"
-        style={{ fontSize: "0.875rem", lineHeight: "1.4" }}
+        className="p-6 bg-card min-h-[180px] max-h-[220px] overflow-y-auto whitespace-pre-wrap overflow-x-auto"
+        style={{ fontSize: "0.875rem", lineHeight: "1.4", backgroundColor: 'hsl(var(--card))' }}
       >
         <pre className="leading-relaxed text-[#d4d4d4]">
           {output}
-          <span className="inline-block w-2 h-5 ml-1 bg-[#d4d4d4] animate-blink cursor-shadow align-middle" />
+          <span className="inline-block w-2 h-5 ml-1 bg-primary animate-blink cursor-shadow align-middle" />
         </pre>
       </div>
 

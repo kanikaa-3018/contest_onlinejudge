@@ -9,9 +9,10 @@ import React from "react";
 }) => {
   return (
     <div 
-      className="bg-[#1e1e1e]/80 backdrop-blur-sm p-4 rounded-lg border border-border relative overflow-hidden animate-float-slow"
+      className="bg-card p-4 rounded-lg border border-border shadow-lg relative overflow-hidden animate-float-slow"
       style={{ 
-        animationDelay: `${animationDelay}ms` 
+        animationDelay: `${animationDelay}ms`,
+        backgroundColor: 'hsl(var(--card))'
       }}
     >
       <div 
@@ -22,7 +23,7 @@ import React from "react";
         }}
       ></div>
       <div className="flex flex-col items-center text-center space-y-2">
-        <div className="rounded-full bg-v[#1e1e1e] p-3 mb-2 animate-pulse-slow" style={{ color, animationDelay: `${animationDelay + 400}ms` }}>
+        <div className="rounded-full bg-card-foreground/10 p-3 mb-2 animate-pulse-slow" style={{ color, animationDelay: `${animationDelay + 400}ms` }}>
           {icon}
         </div>
         <h3 className="font-medium text-lg" style={{ color }}>{title}</h3>

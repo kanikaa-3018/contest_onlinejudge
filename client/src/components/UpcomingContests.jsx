@@ -58,7 +58,14 @@ const UpcomingContests = () => {
   if (error) return <p>{error}</p>;
 
   return (
-    <Card className="bg-[#14142B] text-white border border-[#2A2A3B]">
+    <Card 
+      className="border"
+      style={{
+        backgroundColor: "hsl(var(--card))",
+        color: "hsl(var(--foreground))",
+        borderColor: "hsl(var(--border))"
+      }}
+    >
       <CardHeader className="flex flex-row items-center justify-between">
         <div>
           <CardTitle>Upcoming Contests</CardTitle>
@@ -66,18 +73,19 @@ const UpcomingContests = () => {
             Stay updated on contests
           </CardDescription>
         </div>
-        <Calendar className="h-5 w-5 text-[#00FFC6]" />
+        <Calendar className="h-5 w-5 text-blue-500" />
       </CardHeader>
 
       <CardContent className="space-y-4 max-h-[400px] overflow-y-auto pr-1">
         {upcomingContests.slice(0, visibleCount).map((contest) => (
           <div
             key={contest.id}
-            className="flex flex-col space-y-2 rounded-md border p-3 border-[#2A2A3B]"
+            className="flex flex-col space-y-2 rounded-md border p-3"
+            style={{ borderColor: "hsl(var(--border))" }}
           >
             <div className="flex items-center justify-between">
-              <span className="font-medium text-[#00FFC6]">{contest.title}</span>
-              <Badge className="bg-[#00D1FF] text-white">
+              <span className="font-medium text-blue-500">{contest.title}</span>
+              <Badge className="bg-blue-600 text-white">
                 {contest.difficulty}
               </Badge>
             </div>
@@ -96,7 +104,7 @@ const UpcomingContests = () => {
       <CardFooter className="flex justify-between">
         <Button
           variant="outline"
-          className="border-[#00FFC6] text-[#00FFC6]"
+          className="border-blue-500 text-blue-500"
           onClick={handleShowMore}
           disabled={visibleCount >= upcomingContests.length}
         >

@@ -3,15 +3,15 @@ import { Trophy } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import axios from 'axios';
 
-// Helper function for CodeForces rating colors
+// Helper function for CodeForces rating colors - now theme aware
 function getRatingColor(rating) {
-  if (rating < 1200) return 'text-gray-400'; // Newbie
-  if (rating < 1400) return 'text-green-500'; // Pupil
-  if (rating < 1600) return 'text-[#03a89e]'; // Specialist
-  if (rating < 1900) return 'text-blue-500'; // Expert
-  if (rating < 2100) return 'text-purple-500'; // Candidate Master
-  if (rating < 2400) return 'text-[#ff8c00]'; // Master
-  return 'text-red-500'; // Grandmaster+
+  if (rating < 1200) return 'text-muted-foreground'; // Newbie
+  if (rating < 1400) return 'text-green-600 dark:text-green-400'; // Pupil  
+  if (rating < 1600) return 'text-cyan-600 dark:text-cyan-400'; // Specialist
+  if (rating < 1900) return 'text-blue-600 dark:text-blue-400'; // Expert
+  if (rating < 2100) return 'text-purple-600 dark:text-purple-400'; // Candidate Master
+  if (rating < 2400) return 'text-orange-600 dark:text-orange-400'; // Master
+  return 'text-red-600 dark:text-red-400'; // Grandmaster+
 }
 
 const LeaderboardTable = () => {
@@ -56,23 +56,23 @@ const LeaderboardTable = () => {
     <div className="overflow-x-auto">
       <table className="w-full">
         <thead>
-          <tr className="border-b border-[#403E43]">
-            <th className="text-left py-4 px-3 text-gray-400">Rank</th>
-            <th className="text-left py-4 px-3 text-gray-400">User</th>
-            <th className="text-left py-4 px-3 text-gray-400">Rating</th>
-            <th className="text-left py-4 px-3 text-gray-400">Country</th>
-            <th className="text-left py-4 px-3 text-gray-400">Organization</th>
+          <tr className="border-b border-border">
+            <th className="text-left py-4 px-3 text-muted-foreground">Rank</th>
+            <th className="text-left py-4 px-3 text-muted-foreground">User</th>
+            <th className="text-left py-4 px-3 text-muted-foreground">Rating</th>
+            <th className="text-left py-4 px-3 text-muted-foreground">Country</th>
+            <th className="text-left py-4 px-3 text-muted-foreground">Organization</th>
           </tr>
         </thead>
         <tbody>
           {users.slice(0, visibleUsers).map((user) => (
-            <tr key={user.id} className="border-b border-[#403E43] hover:bg-[#2d2a33]">
+            <tr key={user.id} className="border-b border-border hover:bg-accent">
               <td className="py-4 px-3">
                 <div className="flex items-center">
                   {user.rank === 1 ? (
-                    <Trophy className="text-[#f6e58d] mr-2" size={18} />
+                    <Trophy className="text-yellow-500 mr-2" size={18} />
                   ) : (
-                    <span className="text-lg font-bold">{user.rank}</span>
+                    <span className="text-lg font-bold text-foreground">{user.rank}</span>
                   )}
                 </div>
               </td>
@@ -84,17 +84,17 @@ const LeaderboardTable = () => {
                     className="w-8 h-8 rounded-full mr-3"
                   />
                   <div>
-                    <div className="font-medium">{user.name}</div>
-                    <div className="text-sm text-gray-400">@{user.username}</div>
+                    <div className="font-medium text-foreground">{user.name}</div>
+                    <div className="text-sm text-muted-foreground">@{user.username}</div>
                   </div>
                 </div>
               </td>
               <td className="py-4 px-3">
                 <span className={getRatingColor(user.rating)}>{user.rating}</span>
-                <div className="text-sm text-gray-400">{user.rankTitle}</div>
+                <div className="text-sm text-muted-foreground">{user.rankTitle}</div>
               </td>
-              <td className="py-4 px-3">{user.country}</td>
-              <td className="py-4 px-3">{user.organization}</td>
+              <td className="py-4 px-3 text-foreground">{user.country}</td>
+              <td className="py-4 px-3 text-foreground">{user.organization}</td>
             </tr>
           ))}
         </tbody>
@@ -104,7 +104,7 @@ const LeaderboardTable = () => {
           <Button 
             variant="ghost" 
             size="sm"
-            className="text-[#8B5CF6] hover:text-white hover:bg-[#8B5CF6]"
+            className="text-primary hover:text-primary-foreground hover:bg-primary"
             onClick={loadMore}
           >
             Load More

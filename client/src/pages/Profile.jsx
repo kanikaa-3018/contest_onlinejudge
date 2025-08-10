@@ -261,16 +261,16 @@ const Profile = () => {
   return (
     <div
       className="container mx-auto px-4 py-6"
-      style={{ backgroundColor: "#161A30" }}
+      style={{ backgroundColor: "hsl(var(--background))" }}
     >
       <div className="grid gap-4 md:grid-cols-3">
         {/* User Info Card */}
         <div className="md:col-span-1 px-0 md:px-4">
-          <Card className="bg-[#161A30] text-[#B6BBC4] shadow-lg rounded-2xl overflow-hidden w-full max-w-md mx-auto md:mx-0">
+          <Card className="bg-card text-card-foreground shadow-lg rounded-2xl overflow-hidden w-full max-w-md mx-auto md:mx-0">
             <div className="bg-gradient-to-r from-indigo-500 to-purple-600 h-28 relative">
               <div className="absolute -bottom-12 left-1/2 transform -translate-x-1/2">
-                <div className="rounded-full bg-[#31304D] p-4 w-24 h-24 flex items-center justify-center border-4 border-[#161A30]">
-                  <User className="h-12 w-12 text-[#F0ECE5]" />
+                <div className="rounded-full bg-card-foreground/10 p-4 w-24 h-24 flex items-center justify-center border-4 border-card">
+                  <User className="h-12 w-12 text-primary" />
                 </div>
               </div>
             </div>

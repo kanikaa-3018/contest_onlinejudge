@@ -205,7 +205,7 @@ const QuestionsList = () => {
   const mostUsedLang = pieData.sort((a, b) => b.value - a.value)[0]?.name;
 
   return (
-    <div className="bg-[#161A30] min-h-screen text-white p-6">
+    <div className="bg-background min-h-screen text-foreground p-6">
       <h1 className="text-4xl font-extrabold mb-6 text-center">Dashboard</h1>
 
       {/* Tabs */}
@@ -234,7 +234,7 @@ const QuestionsList = () => {
               <div
                 key={q._id}
                 onClick={() => navigate(`/editor/${q._id}`)}
-                className="w-full p-6 bg-[#1E1E2E] rounded-lg hover:shadow-lg hover:bg-[#2A2C4D] cursor-pointer transition"
+                className="w-full p-6 bg-card rounded-lg hover:shadow-lg hover:bg-card/80 cursor-pointer transition"
               >
                 <div className="flex justify-between items-center mb-3">
                   <h2 className="text-2xl font-semibold">{q.title}</h2>
@@ -259,7 +259,7 @@ const QuestionsList = () => {
       {activeTab === 1 && (
         <>
           {/* Large screen table */}
-          <div className="hidden md:block overflow-x-auto bg-[#1E1E2E] p-6 rounded-lg shadow-lg">
+          <div className="hidden md:block overflow-x-auto bg-card p-6 rounded-lg shadow-lg">
             {submissions.length === 0 ? (
               <div className="text-center text-gray-400 py-16 flex flex-col items-center justify-center space-y-4">
                 {user ? (

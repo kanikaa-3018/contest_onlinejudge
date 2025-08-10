@@ -17,7 +17,13 @@ export const Layout = () => {
       {/* Main content area */}
       <div className="flex flex-col flex-1 overflow-hidden">
         <Header toggleSidebar={() => setIsSidebarOpen(true)} />
-        <main className="flex-1 overflow-y-auto bg-[#1A1A2E] text-white p-4">
+        <main
+          className="flex-1 overflow-y-auto p-4"
+          style={{
+            backgroundColor: "hsl(var(--background))",
+            color: "hsl(var(--foreground))",
+          }}
+        >
           <Outlet />
         </main>
       </div>

@@ -118,7 +118,14 @@ const StatsDashboard = () => {
   const progress = Math.min((stats.solved / stats.total) * 100, 100);
 
   return (
-    <Card className="bg-[#14142B] text-white border border-[#2A2A3B] w-full">
+    <Card 
+      className="border w-full"
+      style={{
+        backgroundColor: "hsl(var(--card))",
+        color: "hsl(var(--foreground))",
+        borderColor: "hsl(var(--border))"
+      }}
+    >
   <CardHeader>
     <CardTitle className="text-xl sm:text-2xl">Your Stats</CardTitle>
     <CardDescription className="text-gray-400 text-sm sm:text-base">
@@ -131,7 +138,7 @@ const StatsDashboard = () => {
     <div className="space-y-2">
       <div className="flex items-center justify-between">
         <span className="text-sm font-medium">Problems Solved</span>
-        <span className="text-sm font-medium text-[#00FFC6]">
+        <span className="text-sm font-medium text-blue-500">
           {stats.solved}/{stats.total}
         </span>
       </div>
@@ -150,7 +157,7 @@ const StatsDashboard = () => {
 
     {/* Problems solved by difficulty */}
     <div>
-      <h3 className="text-[#00FFC6] font-semibold mb-2 flex items-center gap-2 text-sm sm:text-base">
+      <h3 className="text-blue-500 font-semibold mb-2 flex items-center gap-2 text-sm sm:text-base">
         <BarChart2 size={20} /> Solved Problems by Difficulty
       </h3>
       <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-6 text-gray-400 text-sm">
@@ -164,7 +171,7 @@ const StatsDashboard = () => {
   <CardFooter>
     <Button
       variant="outline"
-      className="border-[#00FFC6] text-[#00FFC6] w-full sm:w-auto"
+      className="border-blue-500 text-blue-500 w-full sm:w-auto"
       onClick={() => (window.location.href = "/profile")}
     >
       View Full Profile
@@ -177,8 +184,11 @@ const StatsDashboard = () => {
 
 // Helper component for each stat item
 const StatItem = ({ icon, label, value }) => (
-  <div className="flex items-center space-x-3 bg-[#1e1e3a] rounded-md p-3 shadow-sm">
-    <div className="text-[#00FFC6]">{icon}</div>
+  <div 
+    className="flex items-center space-x-3 rounded-md p-3 shadow-sm"
+    style={{ backgroundColor: "hsl(var(--muted) / 0.5)" }}
+  >
+    <div className="text-blue-500">{icon}</div>
     <div>
       <p className="text-xs text-gray-400">{label}</p>
       <p className="text-md font-bold">{value}</p>

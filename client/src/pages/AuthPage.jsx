@@ -84,8 +84,8 @@ const AuthPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-r from-[#31304D] to-[#161A30] flex items-center justify-center px-4">
-      <Card className="w-full max-w-md bg-[#1E1E2E] text-[#F0ECE5] rounded-2xl shadow-xl hover:scale-105 transition-transform duration-300 ease-in-out">
+    <div className="min-h-screen bg-background flex items-center justify-center px-4">
+      <Card className="w-full max-w-md bg-card text-card-foreground rounded-2xl shadow-xl hover:scale-105 transition-transform duration-300 ease-in-out">
         <CardContent className="p-8 space-y-6">
           <h2 className="text-3xl font-bold text-center mb-4">
             {isLogin ? "Login" : "Register"}
@@ -101,21 +101,21 @@ const AuthPage = () => {
                 <Input
                   name="username"
                   placeholder="Username"
-                  className="bg-[#31304D] text-[#F0ECE5] focus:ring-2 focus:ring-[#00C8A9] transition-all"
+                  className="bg-input text-foreground focus:ring-2 focus:ring-primary transition-all"
                   value={formData.username}
                   onChange={handleChange}
                 />
                 <Input
                   name="cfHandle"
                   placeholder="Codeforces Handle"
-                  className="bg-[#31304D] text-[#F0ECE5] focus:ring-2 focus:ring-[#00C8A9] transition-all"
+                  className="bg-input text-foreground focus:ring-2 focus:ring-primary transition-all"
                   value={formData.cfHandle}
                   onChange={handleChange}
                 />
                 <Input
                   name="lcHandle"
                   placeholder="Leetcode Handle"
-                  className="bg-[#31304D] text-[#F0ECE5] focus:ring-2 focus:ring-[#00C8A9] transition-all"
+                  className="bg-input text-foreground focus:ring-2 focus:ring-primary transition-all"
                   value={formData.lcHandle}
                   onChange={handleChange}
                 />
@@ -123,7 +123,7 @@ const AuthPage = () => {
                   name="role"
                   value={formData.role}
                   onChange={handleChange}
-                  className="bg-[#31304D] text-[#F0ECE5] focus:ring-2 focus:ring-[#00C8A9] p-3 w-full rounded transition-all"
+                  className="bg-input text-foreground focus:ring-2 focus:ring-primary p-3 w-full rounded transition-all"
                 >
                   <option value="user">User</option>
                   <option value="admin">Admin</option>
@@ -134,7 +134,7 @@ const AuthPage = () => {
               name="email"
               placeholder="Email"
               type="email"
-              className="bg-[#31304D] text-[#F0ECE5] focus:ring-2 focus:ring-[#00C8A9] transition-all"
+              className="bg-input text-foreground focus:ring-2 focus:ring-primary transition-all"
               value={formData.email}
               onChange={handleChange}
             />
@@ -142,7 +142,7 @@ const AuthPage = () => {
               name="password"
               placeholder="Password"
               type="password"
-              className="bg-[#31304D] text-[#F0ECE5] focus:ring-2 focus:ring-[#00C8A9] transition-all"
+              className="bg-input text-foreground focus:ring-2 focus:ring-primary transition-all"
               value={formData.password}
               onChange={handleChange}
             />
@@ -151,7 +151,7 @@ const AuthPage = () => {
               name="confirmPassword"
               placeholder="Confirm password"
               type="password"
-              className="bg-[#31304D] text-[#F0ECE5] focus:ring-2 focus:ring-[#00C8A9] transition-all"
+              className="bg-input text-foreground focus:ring-2 focus:ring-primary transition-all"
               value={formData.confirmPassword}
               onChange={handleChange}
             />

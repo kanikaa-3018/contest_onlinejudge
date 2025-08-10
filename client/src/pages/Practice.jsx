@@ -95,7 +95,7 @@ const Practice = () => {
   const isCF = (problem) => "contestId" in problem;
 
   return (
-    <div className="p-6 bg-gradient-to-tr from-[#0f0f23] via-[#161A30] to-[#1f1f3b] min-h-screen text-[#F0ECE5]">
+    <div className="p-6 bg-background min-h-screen text-foreground">
       <h2 className="text-3xl font-bold mb-6">Practice Problems</h2>
 
       {/* Filters */}
@@ -105,7 +105,7 @@ const Practice = () => {
         <select
           value={platform}
           onChange={(e) => setPlatform(e.target.value)}
-          className="bg-[#1F1D36] text-white p-3 rounded-xl w-full"
+          className="bg-card text-card-foreground p-3 rounded-xl w-full"
         >
           {PLATFORMS.map((p) => (
             <option key={p} value={p}>
@@ -118,7 +118,7 @@ const Practice = () => {
         <select
           value={selectedTag}
           onChange={(e) => setSelectedTag(e.target.value)}
-          className="bg-[#1F1D36] text-white p-3 rounded-xl w-full"
+          className="bg-card text-card-foreground p-3 rounded-xl w-full"
         >
           <option value="">All Tags</option>
           {TAGS.map((tag) => (
@@ -132,7 +132,7 @@ const Practice = () => {
         <select
           value={selectedRating}
           onChange={(e) => setSelectedRating(e.target.value)}
-          className="bg-[#1F1D36] text-white p-3 rounded-xl w-full"
+          className="bg-card text-card-foreground p-3 rounded-xl w-full"
           disabled={platform === "LeetCode"}
         >
           <option value="">All Ratings</option>
@@ -147,7 +147,7 @@ const Practice = () => {
         <select
           value={selectedDifficulty}
           onChange={(e) => setSelectedDifficulty(e.target.value)}
-          className="bg-[#1F1D36] text-white p-3 rounded-xl w-full"
+          className="bg-card text-card-foreground p-3 rounded-xl w-full"
         >
           <option value="">All Difficulties</option>
           {DIFFICULTIES.map((diff) => (
@@ -160,13 +160,13 @@ const Practice = () => {
 
       {/* Loading / Error */}
       {isLoading && (
-        <div className="text-center text-gray-400 animate-pulse items-center mt-40 min-h-screen">
+        <div className="text-center text-muted-foreground animate-pulse items-center mt-40 min-h-screen">
           <p className="text-lg">Loading Problems...</p>
-          <div className="mt-2 w-12 h-12 mx-auto border-4 border-dashed border-indigo-500 rounded-full animate-spin"></div>
+          <div className="mt-2 w-12 h-12 mx-auto border-4 border-dashed border-primary rounded-full animate-spin"></div>
         </div>
       )}
       {isError && (
-        <div className="text-center text-red-400">Failed to load problems.</div>
+        <div className="text-center text-destructive">Failed to load problems.</div>
       )}
 
       {/* Problem Cards */}
@@ -175,7 +175,7 @@ const Practice = () => {
           {data.slice(0, 50).map((problem, index) => (
             <Card
               key={index}
-              className="bg-[#202040]/60 backdrop-blur-xl border border-[#323248] rounded-2xl shadow-xl hover:scale-[1.01] transition-all duration-200"
+              className="bg-card/60 backdrop-blur-xl border border-border rounded-2xl shadow-xl hover:scale-[1.01] transition-all duration-200"
             >
               <CardContent className="p-5 flex flex-col gap-3">
                 <div className="flex items-center gap-2 text-lg font-semibold">
@@ -185,13 +185,13 @@ const Practice = () => {
                     : problem.title}
                 </div>
 
-                <div className="flex flex-wrap gap-2 text-sm text-[#B6BBC4]">
+                <div className="flex flex-wrap gap-2 text-sm text-muted-foreground">
                   <Tag size={16} />
                   {isCF(problem)
                     ? problem.tags?.map((tag) => (
                         <span
                           key={tag}
-                          className="bg-[#31304D]/60 px-2 py-1 rounded-lg text-xs"
+                          className="bg-secondary/60 px-2 py-1 rounded-lg text-xs"
                         >
                           {tag}
                         </span>
@@ -199,7 +199,7 @@ const Practice = () => {
                     : problem.topicTags?.map((tag) => (
                         <span
                           key={tag.name}
-                          className="bg-[#31304D]/60 px-2 py-1 rounded-lg text-xs"
+                          className="bg-secondary/60 px-2 py-1 rounded-lg text-xs"
                         >
                           {tag.name}
                         </span>
@@ -214,7 +214,7 @@ const Practice = () => {
                   }
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="mt-2 inline-flex items-center gap-1 text-sm text-blue-300 hover:underline"
+                  className="mt-2 inline-flex items-center gap-1 text-sm text-primary hover:underline"
                 >
                   <ExternalLink size={16} />
                   {isCF(problem) ? "View on Codeforces" : "View on LeetCode"}

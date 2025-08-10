@@ -25,7 +25,7 @@ const NavItem = ({ icon, label, href, isCollapsed, closeSidebar }) => (
     }}
     className={cn(
       "flex items-center gap-2 rounded-lg px-3 py-2 transition-colors",
-      "hover:bg-[#B6BBC4]/20 text-[#B6BBC4] hover:text-[#F0ECE5]"
+      "hover:bg-muted/20 text-muted-foreground hover:text-foreground"
     )}
   >
     <div className="flex h-5 w-5 items-center justify-center">{icon}</div>
@@ -38,8 +38,9 @@ export const Sidebar = ({ isMobileOpen = false, closeSidebar = () => {} }) => {
 
   return (
     <div
-      className={cn(
-        "fixed sm:static z-40 h-screen overflow-y-auto transition-all duration-300 ease-in-out border-r bg-[#161A30] border-[#31304D]",
+    className={cn(
+      "fixed sm:static z-40 h-screen overflow-y-auto transition-all duration-300 ease-in-out border-r",
+      "bg-[hsl(var(--card))] border-[hsl(var(--border))] text-[hsl(var(--foreground))]",
         "flex flex-col", // Ensures stacking and pushing content
         isCollapsed ? "w-16" : "w-64",
         isMobileOpen ? "left-0" : "left-[-100%] sm:left-0"
@@ -58,8 +59,8 @@ export const Sidebar = ({ isMobileOpen = false, closeSidebar = () => {} }) => {
       </div>
 
       {/* Brand */}
-      <a href="/" className="flex h-14 items-center px-4 border-b border-[#31304D]">
-        <h2 className="font-bold text-xl text-[#F0ECE5]">
+      <a href="/" className="flex h-14 items-center px-4 border-b" style={{ borderColor: "hsl(var(--border))" }}>
+        <h2 className="font-bold text-xl">
           {isCollapsed ? "CA" : "CodeArena"}
         </h2>
       </a>
@@ -67,56 +68,56 @@ export const Sidebar = ({ isMobileOpen = false, closeSidebar = () => {} }) => {
       {/* Navigation */}
       <div className="flex flex-col gap-1 p-2 flex-1">
         <NavItem
-          icon={<Calendar className="h-4 w-4 text-[#B6BBC4]" />}
+          icon={<Calendar className="h-4 w-4" />}
           label="Contests"
           href="/contests"
           isCollapsed={isCollapsed}
           closeSidebar={closeSidebar}
         />
         <NavItem
-          icon={<Code className="h-4 w-4 text-[#B6BBC4]" />}
+          icon={<Code className="h-4 w-4" />}
           label="Practice"
           href="/practice"
           isCollapsed={isCollapsed}
           closeSidebar={closeSidebar}
         />
         <NavItem
-          icon={<Terminal className="h-4 w-4 text-[#B6BBC4]" />}
+          icon={<Terminal className="h-4 w-4" />}
           label="Code Editor"
           href="/questions"
           isCollapsed={isCollapsed}
           closeSidebar={closeSidebar}
         />
         <NavItem
-          icon={<Award className="h-4 w-4 text-[#B6BBC4]" />}
+          icon={<Award className="h-4 w-4" />}
           label="Leaderboard"
           href="/leaderboard"
           isCollapsed={isCollapsed}
           closeSidebar={closeSidebar}
         />
         <NavItem
-          icon={<Bot className="h-4 w-4 text-[#B6BBC4]" />}
+          icon={<Bot className="h-4 w-4" />}
           label="Internship Tracker"
           href="/intern"
           isCollapsed={isCollapsed}
           closeSidebar={closeSidebar}
         />
         <NavItem
-          icon={<User className="h-4 w-4 text-[#B6BBC4]" />}
+          icon={<User className="h-4 w-4" />}
           label="Profile"
           href="/profile"
           isCollapsed={isCollapsed}
           closeSidebar={closeSidebar}
         />
         <NavItem
-          icon={<Brain className="h-4 w-4 text-[#B6BBC4]" />}
+          icon={<Brain className="h-4 w-4" />}
           label="Learn"
           href="/learn"
           isCollapsed={isCollapsed}
           closeSidebar={closeSidebar}
         />
         <NavItem
-          icon={<Users className="h-4 w-4 text-[#B6BBC4]" />}
+          icon={<Users className="h-4 w-4" />}
           label="Peer Rooms"
           href="/room"
           isCollapsed={isCollapsed}
@@ -130,7 +131,7 @@ export const Sidebar = ({ isMobileOpen = false, closeSidebar = () => {} }) => {
         size="icon"
         className="m-2 hidden sm:block mt-auto ml-auto align-right"
         onClick={() => setIsCollapsed(!isCollapsed)}
-        style={{ color: "#B6BBC4", backgroundColor: "#161A30" }}
+        style={{ color: "hsl(var(--muted-foreground))", backgroundColor: "transparent" }}
       >
         {isCollapsed ? (
           <ChevronRight className="h-4 w-4" />

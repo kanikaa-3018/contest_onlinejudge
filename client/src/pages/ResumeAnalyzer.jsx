@@ -146,7 +146,7 @@ function ResumeAnalyzer() {
   const isAnalyzing = analyzeResumeMutation.isPending || analyzeSampleMutation.isPending;
 
   return (
-    <div className="min-h-screen bg-[#161a30]">
+    <div className="min-h-screen bg-background">
       
 
       {/* Main Content */}
@@ -154,7 +154,7 @@ function ResumeAnalyzer() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Upload Section */}
           <div className="lg:col-span-1 ">
-            <Card className="shadow-sm bg-[#1E1E2E]">
+            <Card className="shadow-sm bg-card">
               <CardContent className="p-6">
                 <div className="text-center mb-6">
                   <h2 className="text-2xl font-bold text-foreground mb-2">Upload Your Resume</h2>
@@ -195,7 +195,7 @@ function ResumeAnalyzer() {
             </Card>
 
             {/* Sample Resumes */}
-            <Card className="shadow-sm mt-6 bg-[#1E1E2E]">
+            <Card className="shadow-sm mt-6 bg-card">
               <CardContent className="p-6">
                 <h3 className="text-lg font-semibold text-foreground mb-4">Try Sample Resumes</h3>
                 <div className="space-y-3">
@@ -225,7 +225,7 @@ function ResumeAnalyzer() {
             {analysisData && !isLoadingAnalysis ? (
               <AnalysisReport analysis={analysisData} />
             ) : (
-              <Card className="shadow-sm bg-[#1E1E2E]">
+              <Card className="shadow-sm bg-card">
                 <CardContent className="p-12 text-center">
                   <FileText className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
                   <h3 className="text-lg font-medium text-foreground mb-2">No Analysis Yet</h3>
