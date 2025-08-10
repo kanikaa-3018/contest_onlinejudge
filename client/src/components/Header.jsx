@@ -36,13 +36,11 @@ export const Header = ({ toggleSidebar }) => {
 
   useEffect(() => {
     const storedTheme = localStorage.getItem("theme");
-    if (storedTheme === "dark") {
-      setDarkMode(true);
-      document.documentElement.classList.add("dark");
-    } else {
-      setDarkMode(false);
-      document.documentElement.classList.remove("dark");
-    }
+    const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const shouldDark = storedTheme ? storedTheme === "dark" : prefersDark;
+    setDarkMode(shouldDark);
+    document.documentElement.classList.toggle("dark", shouldDark);
+    document.documentElement.classList.toggle("light", !shouldDark);
 
     updateUserStatus();
 
@@ -54,8 +52,13 @@ export const Header = ({ toggleSidebar }) => {
   const toggleDarkMode = () => {
     setDarkMode((prev) => {
       const newMode = !prev;
-      document.documentElement.classList.toggle("dark", newMode);
-      localStorage.setItem("theme", newMode ? "dark" : "light");
+      const root = document.documentElement;
+      root.classList.toggle("dark", newMode);
+      root.classList.toggle("light", !newMode);
+      const theme = newMode ? "dark" : "light";
+      localStorage.setItem("theme", theme);
+      // Notify app of theme change
+      window.dispatchEvent(new CustomEvent("themechange", { detail: { theme } }));
       return newMode;
     });
   };
@@ -71,30 +74,28 @@ export const Header = ({ toggleSidebar }) => {
     <header
       className="flex h-14 items-center gap-4 px-4 lg:px-6 border-b justify-between"
       style={{
-        backgroundColor: "#161A30",
-        borderColor: "#31304D",
+        backgroundColor: "hsl(var(--card))",
+        borderColor: "hsl(var(--border))",
+        color: "hsl(var(--foreground))",
       }}
     >
       {/* Left section: search & hamburger */}
       <div className="flex items-center gap-4 flex-1">
         {toggleSidebar && (
           <button className="sm:hidden" onClick={toggleSidebar}>
-            <Menu className="h-6 w-6 text-[#F0ECE5]" />
+            <Menu className="h-6 w-6" />
           </button>
         )}
 
         <div className="relative w-full max-w-sm">
-          <Search
-            className="absolute left-2.5 top-2.5 h-4 w-4"
-            style={{ color: "#B6BBC4" }}
-          />
+      <Search className="absolute left-2.5 top-2.5 h-4 w-4 opacity-70" />
           <Input
             type="search"
             placeholder="Search problems, contests..."
             className="w-full appearance-none pl-8 shadow-none border-none"
             style={{
-              backgroundColor: "#31304D",
-              color: "#F0ECE5",
+        backgroundColor: "hsl(var(--input) / 0.25)",
+        color: "hsl(var(--foreground))",
               borderRadius: "6px",
             }}
           />
@@ -107,8 +108,8 @@ export const Header = ({ toggleSidebar }) => {
           onClick={toggleDarkMode}
           size="sm"
           style={{
-            backgroundColor: "#31304D",
-            color: "#F0ECE5",
+            backgroundColor: "hsl(var(--input) / 0.25)",
+            color: "hsl(var(--foreground))",
             border: "none",
           }}
         >
@@ -127,7 +128,7 @@ export const Header = ({ toggleSidebar }) => {
             <Avatar>
               <AvatarImage src="" alt="User Avatar" />
               <AvatarFallback
-                style={{ backgroundColor: "#B6BBC4", color: "#161A30" }}
+                style={{ backgroundColor: "hsl(var(--muted))", color: "hsl(var(--foreground))" }}
               >
                 {usernameInitials}
               </AvatarFallback>
@@ -136,8 +137,8 @@ export const Header = ({ toggleSidebar }) => {
               size="sm"
               onClick={handleLogout}
               style={{
-                backgroundColor: "#31304D",
-                color: "#F0ECE5",
+                backgroundColor: "hsl(var(--input) / 0.25)",
+                color: "hsl(var(--foreground))",
                 border: "none",
               }}
             >
@@ -149,8 +150,8 @@ export const Header = ({ toggleSidebar }) => {
             <Button
               size="sm"
               style={{
-                backgroundColor: "#31304D",
-                color: "#F0ECE5",
+                backgroundColor: "hsl(var(--input) / 0.25)",
+                color: "hsl(var(--foreground))",
                 border: "none",
               }}
             >

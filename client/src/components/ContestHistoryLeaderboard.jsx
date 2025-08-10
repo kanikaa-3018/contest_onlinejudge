@@ -59,7 +59,14 @@ const ContestHistoryLeaderboard = () => {
 
   if (!cfHandle) {
     return (
-      <Card className="bg-[#14142B] text-white border border-[#2A2A3B] max-w-lg mx-auto mt-8">
+      <Card 
+        className="border max-w-lg mx-auto mt-8"
+        style={{
+          backgroundColor: "hsl(var(--card))",
+          color: "hsl(var(--foreground))",
+          borderColor: "hsl(var(--border))"
+        }}
+      >
         <CardHeader>
           <CardTitle className="text-lg sm:text-xl">Missing Handle? Login now</CardTitle>
           <CardDescription className="text-sm sm:text-base text-gray-400">
@@ -69,12 +76,17 @@ const ContestHistoryLeaderboard = () => {
         <CardContent className="flex flex-col gap-4">
           <Input
             placeholder="Codeforces handle"
-            className="bg-[#1c1c35] text-white border-[#2A2A3B]"
+            className="border"
+            style={{
+              backgroundColor: "hsl(var(--card))",
+              color: "hsl(var(--foreground))",
+              borderColor: "hsl(var(--border))"
+            }}
             value={inputHandle}
             onChange={(e) => setInputHandle(e.target.value)}
           />
           {error && <p className="text-red-500 text-sm">{error}</p>}
-          <Button onClick={handleLogin} className="bg-[#00FFC6] text-black hover:bg-[#00e6b3]">
+          <Button onClick={handleLogin} className="bg-blue-600 text-white hover:bg-blue-700">
             Login
           </Button>
         </CardContent>
@@ -91,7 +103,14 @@ const ContestHistoryLeaderboard = () => {
         What else we offer?
       </h1>
 
-      <Card className="bg-[#14142B] text-white border border-[#2A2A3B]">
+      <Card 
+        className="border"
+        style={{
+          backgroundColor: "hsl(var(--card))",
+          color: "hsl(var(--foreground))",
+          borderColor: "hsl(var(--border))"
+        }}
+      >
         <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
           <div>
             <CardTitle className="text-lg sm:text-xl">Contest History</CardTitle>
@@ -99,19 +118,19 @@ const ContestHistoryLeaderboard = () => {
               Your performance in past Codeforces contests
             </CardDescription>
           </div>
-          <Award className="h-5 w-5 text-[#00FFC6]" />
+          <Award className="h-5 w-5 text-blue-500" />
         </CardHeader>
 
         <CardContent className="space-y-4">
           {/* Table view for desktop */}
           <div className="hidden sm:block overflow-x-auto">
             <table className="min-w-[700px] w-full text-left">
-              <thead className="bg-[#2A2A3B]">
+              <thead style={{ backgroundColor: "hsl(var(--muted))" }}>
                 <tr>
                   {["Contest", "Rank", "Old", "New", "Δ Rating"].map((header) => (
                     <th
                       key={header}
-                      className="px-4 py-3 text-xs text-[#00FFC6] uppercase"
+                      className="px-4 py-3 text-xs text-blue-500 uppercase"
                     >
                       {header}
                     </th>
@@ -120,7 +139,11 @@ const ContestHistoryLeaderboard = () => {
               </thead>
               <tbody>
                 {contestHistory.map((entry) => (
-                  <tr key={entry.id} className="border-b border-[#2A2A3B]">
+                  <tr 
+                    key={entry.id} 
+                    className="border-b"
+                    style={{ borderColor: "hsl(var(--border))" }}
+                  >
                     <td className="px-4 py-3 font-medium">{entry.contestName}</td>
                     <td className="px-4 py-3">{entry.rank}</td>
                     <td className="px-4 py-3">{entry.oldRating}</td>
@@ -143,9 +166,13 @@ const ContestHistoryLeaderboard = () => {
             {contestHistory.map((entry) => (
               <div
                 key={entry.id}
-                className="border border-[#2A2A3B] bg-[#1c1c35] rounded-lg p-4 shadow-sm"
+                className="border rounded-lg p-4 shadow-sm"
+                style={{
+                  backgroundColor: "hsl(var(--card))",
+                  borderColor: "hsl(var(--border))"
+                }}
               >
-                <p className="font-semibold text-[#00FFC6] text-sm mb-2">
+                <p className="font-semibold text-blue-500 text-sm mb-2">
                   {entry.contestName}
                 </p>
                 <div className="grid grid-cols-2 gap-2 text-xs text-white">
@@ -180,7 +207,7 @@ const ContestHistoryLeaderboard = () => {
         <CardFooter className="flex justify-center">
           <Button
             variant="outline"
-            className="border-[#00FFC6] text-[#00FFC6] w-full sm:w-auto"
+            className="border-blue-500 text-blue-500 w-full sm:w-auto"
             onClick={() => window.location.href = "/rating-graph"}
           >
             View Full Rating Graph

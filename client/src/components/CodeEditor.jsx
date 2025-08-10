@@ -57,6 +57,9 @@ const CodeEditor = ({ roomId, userId }) => {
   const [output, setOutput] = useState("");
   const [isRunning, setIsRunning] = useState(false);
   const [codeEdited, setCodeEdited] = useState(false);
+  const [isDark, setIsDark] = useState(
+    typeof window !== "undefined" && document.documentElement.classList.contains("dark")
+  );
 
   const emitCodeChange = useRef(
     debounce((value) => {
@@ -64,8 +67,11 @@ const CodeEditor = ({ roomId, userId }) => {
     }, 300)
   ).current;
 
-  function handleEditorDidMount(editor) {
+  function handleEditorDidMount(editor, monaco) {
     editorRef.current = editor;
+    try {
+      monaco?.editor?.setTheme(isDark ? "vs-dark" : "vs-light");
+    } catch {}
 
     editor.onDidChangeCursorPosition((e) => {
       const position = e.position;
@@ -224,6 +230,21 @@ const CodeEditor = ({ roomId, userId }) => {
     setCodeEdited(false);
   };
 
+  // Listen for theme changes to update Monaco theme
+  useEffect(() => {
+    const handler = (e) => {
+      const theme = e.detail?.theme;
+      const dark = theme === "dark";
+      setIsDark(dark);
+      const monaco = window.monaco;
+      if (monaco?.editor) {
+        monaco.editor.setTheme(dark ? "vs-dark" : "vs-light");
+      }
+    };
+    window.addEventListener("themechange", handler);
+    return () => window.removeEventListener("themechange", handler);
+  }, []);
+
   return (
     <div
       style={{
@@ -277,7 +298,7 @@ const CodeEditor = ({ roomId, userId }) => {
           height="100%"
           language={language}
           value={code}
-          theme="vs-dark"
+          theme={isDark ? "vs-dark" : "vs-light"}
           onMount={handleEditorDidMount}
           options={{
             minimap: { enabled: false },

@@ -115,13 +115,13 @@ const ContestCard = ({ contest }) => (
     animate={{ opacity: 1, scale: 1 }}
     transition={{ duration: 0.3 }}
   >
-    <Card className="bg-[#1E1E2E] text-[#F0ECE5] w-full rounded-2xl shadow hover:shadow-2xl">
+    <Card className="bg-card text-card-foreground w-full rounded-2xl shadow hover:shadow-2xl">
       <CardContent className="px-3 sm:px-4 py-3 space-y-3">
         <div className="flex justify-between items-start sm:items-center gap-2">
           <h3 className="text-base sm:text-lg font-semibold flex items-center gap-2">
             {getIcon(contest.site)} {contest.name}
           </h3>
-          <span className="text-xs uppercase bg-[#31304D] px-2 py-1 rounded whitespace-nowrap">
+          <span className="text-xs uppercase bg-primary text-primary-foreground px-2 py-1 rounded whitespace-nowrap">
             {contest.site}
           </span>
         </div>
@@ -199,8 +199,8 @@ const ContestCard = ({ contest }) => (
 
     if (!contests) {
       return {
-        backgroundColor: "white", // or "transparent"
-        color: "black",
+        backgroundColor: "hsl(var(--card))", 
+        color: "hsl(var(--foreground))",
       };
     }
 
@@ -247,14 +247,14 @@ const ContestCard = ({ contest }) => (
   };
 
   return (
-    <motion.div className="p-6 bg-[#161A30] min-h-screen font-sans">
-      <h2 className="text-3xl font-bold text-[#F0ECE5] mb-6">
+    <motion.div className="p-6 bg-background min-h-screen font-sans">
+      <h2 className="text-3xl font-bold text-foreground mb-6">
         Contests Dashboard
       </h2>
 
       <div className="flex flex-col md:flex-row md:justify-between items-start gap-4 mb-6">
         <select
-          className="bg-[#31304D] text-[#F0ECE5] py-2 px-3 rounded-md text-sm shadow"
+          className="bg-secondary text-secondary-foreground py-2 px-3 rounded-md text-sm shadow"
           onChange={(e) => setPlatformFilter(e.target.value)}
           value={platformFilter}
         >
@@ -310,7 +310,7 @@ const ContestCard = ({ contest }) => (
                 className="whitespace-pre-wrap"
                 style={{
                   backgroundColor: tooltipColor,
-                  color: tooltipColor === "#facc15" ? "#000" : "#fff",
+                  color: tooltipColor === "#facc15" ? "hsl(var(--foreground))" : "#fff",
                 }}
               >
                 {tooltipContent || "No contests"}
@@ -329,8 +329,8 @@ const ContestCard = ({ contest }) => (
             onClick={() => setActiveTab(tab)}
             className={`px-4 py-2 rounded-lg font-semibold ${
               activeTab === tab
-                ? "bg-[#31304D] text-white"
-                : "bg-transparent text-[#B6BBC4] hover:text-white"
+                ? "bg-primary text-primary-foreground"
+                : "bg-transparent text-muted-foreground hover:text-foreground"
             }`}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -383,7 +383,7 @@ const ContestCard = ({ contest }) => (
           {pastContests.length > 5 && (
             <button
               onClick={() => setShowAllPast((prev) => !prev)}
-              className="mt-4 px-4 py-2 bg-[#31304D] text-white rounded hover:bg-[#3e3c5a]"
+              className="mt-4 px-4 py-2 bg-primary text-primary-foreground rounded hover:bg-primary/80"
             >
               {showAllPast ? "Show Less" : "Show More"}
             </button>
@@ -393,7 +393,7 @@ const ContestCard = ({ contest }) => (
 
       {activeTab === "registered" && (
         <section>
-          <h3 className="text-2xl text-[#F0ECE5] font-semibold mb-4 flex items-center gap-2">
+          <h3 className="text-2xl text-foreground font-semibold mb-4 flex items-center gap-2">
             <FaCheckCircle className="text-blue-400" /> Registered Contests
           </h3>
           <motion.div
@@ -412,7 +412,7 @@ const ContestCard = ({ contest }) => (
           {registeredContests.length > 5 && (
             <button
               onClick={() => setShowAllRegistered((prev) => !prev)}
-              className="mt-4 px-4 py-2 bg-[#31304D] text-white rounded hover:bg-[#3e3c5a]"
+              className="mt-4 px-4 py-2 bg-primary text-primary-foreground rounded hover:bg-primary/80"
             >
               {showAllRegistered ? "Show Less" : "Show More"}
             </button>

@@ -10,6 +10,20 @@ const MyCalendar = () => {
   const [events, setEvents] = useState([]);
   const [view, setView] = useState('month');
   const [date, setDate] = useState(new Date());
+  const [isDark, setIsDark] = useState(false);
+
+  // Theme detection
+  useEffect(() => {
+    const checkTheme = () => {
+      setIsDark(document.documentElement.classList.contains('dark'));
+    };
+    
+    checkTheme();
+    const observer = new MutationObserver(checkTheme);
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+    
+    return () => observer.disconnect();
+  }, []);
 
   // Fetch both upcoming and recent contests
   useEffect(() => {
@@ -108,11 +122,15 @@ const MyCalendar = () => {
     );
   };
 
-  // Different styles for past and upcoming events
+  // Different styles for past and upcoming events - theme aware
   const eventStyleGetter = (event) => ({
     style: {
-      backgroundColor: event.status === 'upcoming' ? '#5202fa' : '#cdb5ff',
-      color: event.status === 'upcoming' ? '#fdfcff' : '#000000',
+      backgroundColor: event.status === 'upcoming' 
+        ? (isDark ? '#5202fa' : '#3b82f6') 
+        : (isDark ? '#cdb5ff' : '#94a3b8'),
+      color: event.status === 'upcoming' 
+        ? '#ffffff' 
+        : (isDark ? '#000000' : '#1f2937'),
       borderRadius: '8px',
       padding: '5px',
       fontSize: '0.75em',
@@ -120,7 +138,7 @@ const MyCalendar = () => {
       textAlign: 'center',
       cursor: 'pointer',
       backdropFilter: 'blur(4px)',
-      boxShadow: '0 2px 8px rgba(0, 0, 0, 0.4)',
+      boxShadow: isDark ? '0 2px 8px rgba(0, 0, 0, 0.4)' : '0 2px 8px rgba(0, 0, 0, 0.1)',
     },
   });
 
@@ -159,7 +177,7 @@ const MyCalendar = () => {
       {/* Month Name */}
       <h2 style={{
         textAlign: 'center',
-        color: '#F0ECE5',
+        color: isDark ? 'hsl(var(--foreground))' : 'hsl(var(--foreground))',
         marginBottom: '12px',
         fontSize: '20px',
         fontWeight: '500',
@@ -169,16 +187,18 @@ const MyCalendar = () => {
 
       {/* Controls */}
       <div style={{ textAlign: 'center', marginBottom: 10 }}>
-        <button onClick={handleBack} style={btnStyle}>← Back</button>
-        <button onClick={handleToday} style={btnStyle}>Today</button>
-        <button onClick={handleNext} style={btnStyle}>Next →</button>
+        <button onClick={handleBack} style={btnStyle(isDark)}>← Back</button>
+        <button onClick={handleToday} style={btnStyle(isDark)}>Today</button>
+        <button onClick={handleNext} style={btnStyle(isDark)}>Next →</button>
         {['month', 'week', 'day', 'agenda'].map(v => (
           <button
             key={v}
             onClick={() => setView(v)}
             style={{
-              ...btnStyle,
-              backgroundColor: view === v ? '#222831' : '#31304D',
+              ...btnStyle(isDark),
+              backgroundColor: view === v 
+                ? (isDark ? 'hsl(var(--primary))' : 'hsl(var(--primary))') 
+                : (isDark ? 'hsl(var(--secondary))' : 'hsl(var(--secondary))'),
             }}
           >
             {v.charAt(0).toUpperCase() + v.slice(1)} View
@@ -201,10 +221,10 @@ const MyCalendar = () => {
         eventPropGetter={eventStyleGetter}
         style={{
           height: '100%',
-          border: '1px solid #666',
+          border: isDark ? '1px solid #666' : '1px solid #d1d5db',
           borderRadius: '10px',
-          backgroundColor: '#1E1E2E',
-          color: '#F0ECE5',
+          backgroundColor: isDark ? 'hsl(var(--card))' : 'hsl(var(--card))',
+          color: isDark ? 'hsl(var(--card-foreground))' : 'hsl(var(--card-foreground))',
         }}
         toolbar={false}
         onSelectEvent={handleEventClick}
@@ -213,19 +233,19 @@ const MyCalendar = () => {
   );
 };
 
-const btnStyle = {
+const btnStyle = (isDark) => ({
   margin: '0 6px',
   padding: '8px 16px',
-  backgroundColor: '#2E2B4F',
-  color: '#F0ECE5',
-  border: '1px solid rgba(255, 255, 211, 0.1)',
+  backgroundColor: isDark ? 'hsl(var(--secondary))' : 'hsl(var(--secondary))',
+  color: isDark ? 'hsl(var(--secondary-foreground))' : 'hsl(var(--secondary-foreground))',
+  border: isDark ? '1px solid rgba(255, 255, 211, 0.1)' : '1px solid hsl(var(--border))',
   borderRadius: '8px',
   cursor: 'pointer',
   fontSize: '14px',
   fontWeight: 700,
-  boxShadow: '0 3px 6px rgba(0, 0, 0, 0.4)',
+  boxShadow: isDark ? '0 3px 6px rgba(0, 0, 0, 0.4)' : '0 3px 6px rgba(0, 0, 0, 0.1)',
   transition: 'all 0.25s ease',
-};
+});
 
 
 

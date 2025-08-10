@@ -60,7 +60,14 @@ const RecentSubmissions = () => {
 
   if (!cfHandle) {
     return (
-      <Card className="bg-[#14142B] text-white border border-[#2A2A3B] w-[350px] mx-auto">
+      <Card 
+        className="border w-[350px] mx-auto"
+        style={{
+          backgroundColor: "hsl(var(--card))",
+          color: "hsl(var(--foreground))",
+          borderColor: "hsl(var(--border))"
+        }}
+      >
         <CardHeader>
           <CardTitle>Login</CardTitle>
           <CardDescription className="text-gray-400">
@@ -70,12 +77,17 @@ const RecentSubmissions = () => {
         <CardContent className="flex flex-col gap-4">
           <Input
             placeholder="Codeforces handle"
-            className="bg-[#1c1c35] text-white border-[#2A2A3B]"
+            className="border"
+            style={{
+              backgroundColor: "hsl(var(--card))",
+              color: "hsl(var(--foreground))",
+              borderColor: "hsl(var(--border))"
+            }}
             value={inputHandle}
             onChange={(e) => setInputHandle(e.target.value)}
           />
           {error && <p className="text-red-500 text-sm">{error}</p>}
-          <Button onClick={handleLogin} className="bg-[#00FFC6] text-black hover:bg-[#00e6b3]">
+          <Button onClick={handleLogin} className="bg-blue-600 text-white hover:bg-blue-700">
             Login
           </Button>
         </CardContent>
@@ -87,7 +99,14 @@ const RecentSubmissions = () => {
   if (error) return <p className="text-red-500">{error}</p>;
 
   return (
-    <Card className="bg-[#14142B] text-white border border-[#2A2A3B]">
+    <Card 
+      className="border"
+      style={{
+        backgroundColor: "hsl(var(--card))",
+        color: "hsl(var(--foreground))",
+        borderColor: "hsl(var(--border))"
+      }}
+    >
       <CardHeader className="flex flex-row items-center justify-between">
         <div>
           <CardTitle>Recent Submissions</CardTitle>
@@ -95,19 +114,20 @@ const RecentSubmissions = () => {
             Your latest code submissions
           </CardDescription>
         </div>
-        <Code className="h-5 w-5 text-[#00FFC6]" />
+        <Code className="h-5 w-5 text-blue-500" />
       </CardHeader>
       <CardContent className="space-y-4 min-h-[400px]">
         {recentSubmissions.map((sub) => (
           <div
             key={sub.id}
-            className="flex flex-col space-y-2 rounded-md border p-3 border-[#2A2A3B]"
+            className="flex flex-col space-y-2 rounded-md border p-3"
+            style={{ borderColor: "hsl(var(--border))" }}
           >
             <div className="flex items-center justify-between">
-              <span className="font-medium text-[#00FFC6]">{sub.problem}</span>
+              <span className="font-medium text-blue-500">{sub.problem}</span>
               <Badge
                 className={`text-white ${
-                  sub.status === "Accepted" ? "bg-[#00FFA3]" : "bg-[#EF4444]"
+                  sub.status === "Accepted" ? "bg-green-500" : "bg-red-500"
                 }`}
               >
                 {sub.status}
@@ -122,7 +142,7 @@ const RecentSubmissions = () => {
         ))}
       </CardContent>
       <CardFooter>
-        <Button variant="outline" className="border-[#00FFC6] text-[#00FFC6]">
+        <Button variant="outline" className="border-blue-500 text-blue-500">
           View Submission History
         </Button>
       </CardFooter>

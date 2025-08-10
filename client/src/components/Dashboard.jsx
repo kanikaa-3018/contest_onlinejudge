@@ -59,7 +59,10 @@ const Dashboard = () => {
   return (
     <motion.div
       className="container py-6 space-y-8 px-4"
-      style={{ backgroundColor: "#161A30", color: "#E0E0E0" }}
+      style={{ 
+        backgroundColor: "hsl(var(--background))", 
+        color: "hsl(var(--foreground))" 
+      }}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.6 }}
@@ -81,7 +84,7 @@ const Dashboard = () => {
             Welcome back, user
           </h1>
         )} */}
-        <p className="text-sm text-gray-400">
+        <p className="text-sm" style={{ color: "hsl(var(--muted-foreground))" }}>
           Track your progress, join contests, and improve your coding skills
         </p>
       </motion.div>
@@ -125,7 +128,7 @@ const Dashboard = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1 }}
       >
-        <div className="text-gray-300 text-sm font-mono space-y-2">
+        <div className="text-sm font-mono space-y-2" style={{ color: "hsl(var(--muted-foreground))" }}>
           <p>{output}</p>
         </div>
       </motion.div>

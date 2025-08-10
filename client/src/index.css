@@ -268,12 +268,23 @@ body.light .subtext {
   color: #d86666;
 }
 
+.tree-item {
+  transition: all 0.2s ease;
+  margin: 1px 0;
+}
+
 .tree-item span {
-  color: #cccccc;
+  color: hsl(var(--foreground));
+  transition: color 0.2s ease;
+}
+
+.tree-item:hover {
+  background-color: hsl(var(--accent));
+  border-radius: 4px;
 }
 
 .tree-item:hover span {
-  color: #ffffff;
+  color: hsl(var(--primary));
 }
 /* Glassy Scrollbar */
 .custom-scrollbar::-webkit-scrollbar {
@@ -409,4 +420,36 @@ body.light .subtext {
   background-color: hsl(var(--accent)) !important;
   color: hsl(var(--accent-foreground)) !important;
   border-color: hsl(var(--border)) !important;
+}
+
+/* Calendar theme fixes */
+.rbc-calendar {
+  color: hsl(var(--foreground)) !important;
+}
+
+.rbc-month-view, .rbc-time-view {
+  background-color: hsl(var(--card)) !important;
+  color: hsl(var(--card-foreground)) !important;
+}
+
+.rbc-header {
+  color: hsl(var(--card-foreground)) !important;
+  background-color: hsl(var(--muted)) !important;
+  border-bottom: 1px solid hsl(var(--border)) !important;
+}
+
+.rbc-month-row .rbc-date-cell {
+  color: hsl(var(--card-foreground)) !important;
+}
+
+.rbc-off-range-bg {
+  background-color: hsl(var(--muted)) !important;
+}
+
+.rbc-today {
+  background-color: hsl(var(--accent)) !important;
+}
+
+.rbc-current-time-indicator {
+  background-color: hsl(var(--primary)) !important;
 }

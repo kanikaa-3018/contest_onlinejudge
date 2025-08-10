@@ -55,12 +55,15 @@ const toggleStatus = (id, field) => {
   return (
     <div
       className="min-h-screen p-6"
-      style={{ backgroundColor: "#161A30", color: "#B6BBC4" }}
+      style={{ 
+        backgroundColor: "hsl(var(--background))", 
+        color: "hsl(var(--foreground))" 
+      }}
     >
       <div
         className="max-w-7xl mx-auto"
         style={{
-          backgroundColor: "#161a30",
+          backgroundColor: "hsl(var(--card))",
           borderRadius: "8px",
           padding: "24px",
         }}
@@ -68,10 +71,10 @@ const toggleStatus = (id, field) => {
         {/* Header */}
         <div className="mb-8 flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold mb-2" style={{ color: "#fff" }}>
+            <h1 className="text-3xl font-bold mb-2" style={{ color: "hsl(var(--foreground))" }}>
               Internship Tracker
             </h1>
-            <p style={{ color: "#5A7184" }}>
+            <p style={{ color: "hsl(var(--muted-foreground))" }}>
               Track and manage your internship applications in one place
             </p>
           </div>
@@ -85,14 +88,14 @@ const toggleStatus = (id, field) => {
           <div className="relative w-full sm:max-w-xs">
             <Search
               className="absolute left-3 top-1/2 -translate-y-1/2"
-              style={{ color: "#1976D2", height: 16, width: 16 }}
+              style={{ color: "hsl(var(--primary))", height: 16, width: 16 }}
             />
             <Input
               className="pl-10"
               placeholder="Search companies or roles..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              style={{ borderColor: "#1976D2" }}
+              style={{ borderColor: "hsl(var(--border))" }}
             />
           </div>
           <div className="flex gap-2">
@@ -101,16 +104,16 @@ const toggleStatus = (id, field) => {
               onValueChange={(v) => setView(v)}
               className="sm:w-auto"
             >
-              <TabsList style={{ borderColor: "#1976D2" }}>
+              <TabsList style={{ borderColor: "hsl(var(--border))" }}>
                 <TabsTrigger
                   value="table"
-                  style={{ color: view === "table" ? "#1976D2" : "#5A7184" }}
+                  style={{ color: view === "table" ? "hsl(var(--primary))" : "hsl(var(--muted-foreground))" }}
                 >
                   Table
                 </TabsTrigger>
                 <TabsTrigger
                   value="cards"
-                  style={{ color: view === "cards" ? "#1976D2" : "#5A7184" }}
+                  style={{ color: view === "cards" ? "hsl(var(--primary))" : "hsl(var(--muted-foreground))" }}
                 >
                   Cards
                 </TabsTrigger>
@@ -119,8 +122,8 @@ const toggleStatus = (id, field) => {
           </div>
         </div>
 
-        {loading && <p style={{ color: "#1976D2" }}>Loading internships...</p>}
-        {error && <p style={{ color: "#D32F2F" }}>{error}</p>}
+        {loading && <p style={{ color: "hsl(var(--primary))" }}>Loading internships...</p>}
+        {error && <p style={{ color: "hsl(var(--destructive))" }}>{error}</p>}
 
         {!loading && !error && (
           <>
@@ -128,14 +131,22 @@ const toggleStatus = (id, field) => {
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-8">
               <Card
                 className="p-4 flex flex-col"
-                style={{ backgroundColor: "#31304D", color: "#fff" }}
+                style={{ 
+                  backgroundColor: "hsl(var(--card))", 
+                  color: "hsl(var(--foreground))",
+                  borderColor: "hsl(var(--border))"
+                }}
               >
                 <p className="text-sm">Total Applications</p>
                 <p className="text-2xl font-bold">{internships.length}</p>
               </Card>
               <Card
                 className="p-4 flex flex-col"
-                style={{ backgroundColor: "#31304D", color: "#fff" }}
+                style={{ 
+                  backgroundColor: "hsl(var(--card))", 
+                  color: "hsl(var(--foreground))",
+                  borderColor: "hsl(var(--border))"
+                }}
               >
                 <p className="text-sm">Applied</p>
                 <p className="text-2xl font-bold">
@@ -144,7 +155,11 @@ const toggleStatus = (id, field) => {
               </Card>
               <Card
                 className="p-4 flex flex-col"
-                style={{ backgroundColor: "#31304D", color: "#fff" }}
+                style={{ 
+                  backgroundColor: "hsl(var(--card))", 
+                  color: "hsl(var(--foreground))",
+                  borderColor: "hsl(var(--border))"
+                }}
               >
                 <p className="text-sm">Follow-ups Made</p>
                 <p className="text-2xl font-bold">
@@ -153,7 +168,11 @@ const toggleStatus = (id, field) => {
               </Card>
               <Card
                 className="p-4 flex flex-col"
-                style={{ backgroundColor: "#31304D", color: "#fff" }}
+                style={{ 
+                  backgroundColor: "hsl(var(--card))", 
+                  color: "hsl(var(--foreground))",
+                  borderColor: "hsl(var(--border))"
+                }}
               >
                 <p className="text-sm">Interviews</p>
                 <p className="text-2xl font-bold">

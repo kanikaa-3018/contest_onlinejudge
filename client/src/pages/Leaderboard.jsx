@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -28,8 +28,43 @@ const Leaderboard = () => {
   const [userData, setUserData] = useState(null);
   const [submitted, setSubmitted] = useState(false);
   const [showContestModal, setShowContestModal] = useState(false);
+  const [isDarkTheme, setIsDarkTheme] = useState(document.documentElement.classList.contains('dark'));
 
-  const COLORS = ["#8a56ac", "#5bc0be"];
+  // Theme detection effect
+  useEffect(() => {
+    const observer = new MutationObserver(() => {
+      setIsDarkTheme(document.documentElement.classList.contains('dark'));
+    });
+    
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['class']
+    });
+    
+    return () => observer.disconnect();
+  }, []);
+
+  // Theme-aware colors using CSS custom properties
+  const getThemeColors = () => {
+    return [
+      "hsl(var(--chart-1))",
+      "hsl(var(--chart-2))",
+      "hsl(var(--chart-3))",
+      "hsl(var(--chart-4))",
+      "hsl(var(--chart-5))",
+      "hsl(var(--primary))"
+    ];
+  };
+  
+  const getChartAxisColor = () => {
+    return "hsl(var(--foreground))";
+  };
+  
+  const getChartBarColor = () => {
+    return "hsl(var(--primary))";
+  };
+  
+  const COLORS = getThemeColors();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -173,7 +208,7 @@ const Leaderboard = () => {
       : 0;
 
   return (
-    <div className="p-6 bg-gradient-to-r from-[#161A30] via-[#1E1E2E] to-[#31304D] text-[#F0ECE5] min-h-screen">
+    <div className="p-6 bg-background text-foreground min-h-screen">
       <h2 className="text-3xl font-bold mb-6">Developer Leaderboard</h2>
 
       <div className="grid md:grid-cols-3 gap-4 mb-6">
@@ -200,7 +235,7 @@ const Leaderboard = () => {
 
       <Button
         onClick={handleSubmit}
-        className="mb-6 bg-blue-600 hover:bg-blue-700 transition-all"
+        className="mb-6 bg-primary hover:bg-primary/90 transition-all"
       >
         Generate Stats
       </Button>
@@ -208,57 +243,57 @@ const Leaderboard = () => {
       {submitted && userData && (
         <div className="mt-10 space-y-8">
           <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-2">
-            <div className="p-4 rounded-xl shadow-md bg-gradient-to-r from-purple-600 to-pink-600">
-              <FaCode className="mx-auto mb-2 text-2xl" />
+            <div className="p-4 rounded-xl shadow-md bg-card border border-border text-card-foreground">
+              <FaCode className="mx-auto mb-2 text-2xl text-primary" />
               <p className="font-semibold text-center">Total Solved</p>
               <p className="text-center text-3xl font-extrabold">
                 {userData.codeforcesData.solvedCount}
               </p>
             </div>
-            <div className="p-4 rounded-xl shadow-md bg-gradient-to-r from-indigo-600 to-blue-600">
-              <FaTrophy className="mx-auto mb-2 text-2xl" />
+            <div className="p-4 rounded-xl shadow-md bg-card border border-border text-card-foreground">
+              <FaTrophy className="mx-auto mb-2 text-2xl text-primary" />
               <p className="font-semibold text-center">Contests Participated</p>
               <p className="text-center text-3xl font-extrabold">
                 {userData.codeforcesData.contests.length}
               </p>
               <button
                 onClick={() => setShowContestModal(true)}
-                className="text-center italic text-xs underline text-blue-950 hover:text-blue-400 align-center ml-16"
+                className="text-center italic text-xs underline text-primary hover:text-primary/80 align-center ml-16"
               >
                 View List
               </button>
             </div>
-            <div className="p-4 rounded-xl shadow-md bg-gradient-to-r from-green-500 to-emerald-500">
-              <FaArrowUp className="mx-auto mb-2 text-2xl" />
+            <div className="p-4 rounded-xl shadow-md bg-card border border-border text-card-foreground">
+              <FaArrowUp className="mx-auto mb-2 text-2xl text-primary" />
               <p className="font-semibold text-center">Rating</p>
               <p className="text-center text-3xl font-extrabold">
                 {userData.codeforcesData.rating}
               </p>
-              <p className="text-center text-sm italic text-blue-950">
+              <p className="text-center text-sm italic text-muted-foreground">
                 Max: {userData.codeforcesData.maxRating}
               </p>
             </div>
-            <div className="p-4 rounded-xl shadow-md bg-gradient-to-r from-yellow-500 to-orange-500">
-              <FaArrowUp className="mx-auto mb-2 text-2xl" />
+            <div className="p-4 rounded-xl shadow-md bg-card border border-border text-card-foreground">
+              <FaArrowUp className="mx-auto mb-2 text-2xl text-primary" />
               <p className="font-semibold text-center">Rating Change</p>
               <p className="text-center text-3xl font-extrabold">
                 {ratingChange >= 0 ? `+${ratingChange}` : ratingChange}
               </p>
             </div>
-            <div className="p-4 rounded-xl shadow-md bg-gradient-to-r from-pink-500 to-red-500">
-              <FaGlobe className="mx-auto mb-2 text-2xl" />
+            <div className="p-4 rounded-xl shadow-md bg-card border border-border text-card-foreground">
+              <FaGlobe className="mx-auto mb-2 text-2xl text-primary" />
               <p className="font-semibold text-center">Rank</p>
               <p className="text-center text-3xl font-extrabold">
                 {userData.codeforcesData.rank}
               </p>
-              <p className="text-center text-sm italic text-blue-950">
+              <p className="text-center text-sm italic text-muted-foreground">
                 Max: {userData.codeforcesData.maxRank}
               </p>
             </div>
           </div>
 
           <div className="grid md:grid-cols-2 gap-6">
-            <Card className="bg-[#1E1E2E] rounded-xl shadow-lg">
+            <Card className="bg-card rounded-xl shadow-lg">
               <CardContent className="p-6">
                 <h3 className="text-2xl font-semibold mb-4">
                   Problems Solved by Platform
@@ -287,7 +322,7 @@ const Leaderboard = () => {
               </CardContent>
             </Card>
 
-            <Card className="bg-[#1E1E2E] rounded-xl shadow-lg">
+            <Card className="bg-card rounded-xl shadow-lg">
               <CardContent className="p-6">
                 <h3 className="text-2xl font-semibold mb-4">
                   Contests Participated
@@ -295,17 +330,17 @@ const Leaderboard = () => {
                 <ResponsiveContainer width="100%" height={300}>
                   <BarChart data={contestData}>
                     <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" stroke="#F0ECE5" />
-                    <YAxis stroke="#F0ECE5" />
+                    <XAxis dataKey="name" stroke={getChartAxisColor()} />
+                    <YAxis stroke={getChartAxisColor()} />
                     <Tooltip />
-                    <Bar dataKey="contests" fill="#8884d8" barSize={50} />
+                    <Bar dataKey="contests" fill={getChartBarColor()} barSize={50} />
                   </BarChart>
                 </ResponsiveContainer>
               </CardContent>
             </Card>
           </div>
 
-          <Card className="bg-[#1E1E2E] rounded-xl shadow-lg">
+          <Card className="bg-card rounded-xl shadow-lg">
             <CardContent className="p-6">
               <h3 className="text-2xl font-semibold mb-4">
                 Contribution Activity
@@ -325,14 +360,14 @@ const Leaderboard = () => {
                 })}
                 showWeekdayLabels
               />
-              <div className="flex items-center space-x-2 mt-4 text-sm text-gray-300">
+              <div className="flex items-center space-x-2 mt-4 text-sm text-muted-foreground">
                 <span>Less</span>
                 <div className="flex space-x-1">
-                  <div className="w-4 h-4 rounded bg-[#2c2c3e]" />
-                  <div className="w-4 h-4 rounded bg-[#4b5563]" />
-                  <div className="w-4 h-4 rounded bg-[#6b7280]" />
-                  <div className="w-4 h-4 rounded bg-[#9ca3af]" />
-                  <div className="w-4 h-4 rounded bg-[#d1d5db]" />
+                  <div className="w-4 h-4 rounded bg-muted" />
+                  <div className="w-4 h-4 rounded bg-muted-foreground/20" />
+                  <div className="w-4 h-4 rounded bg-muted-foreground/40" />
+                  <div className="w-4 h-4 rounded bg-muted-foreground/60" />
+                  <div className="w-4 h-4 rounded bg-muted-foreground/80" />
                 </div>
                 <span>More</span>
               </div>
@@ -341,7 +376,7 @@ const Leaderboard = () => {
 
           {showContestModal && (
             <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-xl bg-opacity-50">
-              <div className="bg-[#1E1E2E] rounded-xl p-6 max-w-2xl w-full shadow-lg text-white">
+              <div className="bg-card rounded-xl p-6 max-w-2xl w-full shadow-lg text-card-foreground">
                 <h3 className="text-xl font-semibold mb-4">
                   Codeforces Contests
                 </h3>
@@ -352,7 +387,7 @@ const Leaderboard = () => {
                         href={`https://codeforces.com/contest/${contest.contestId}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-blue-400 hover:underline"
+                        className="text-primary hover:underline"
                       >
                         {contest.contestName}
                       </a>
@@ -362,7 +397,7 @@ const Leaderboard = () => {
                 <div className="mt-4 text-right">
                   <Button
                     onClick={() => setShowContestModal(false)}
-                    className="bg-red-600 hover:bg-red-700"
+                    className="bg-destructive hover:bg-destructive/90"
                   >
                     Close
                   </Button>

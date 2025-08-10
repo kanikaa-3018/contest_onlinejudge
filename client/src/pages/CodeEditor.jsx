@@ -64,6 +64,9 @@ const CodeEditor = () => {
 
   const [loading, setLoading] = useState(false);
   const [feedback, setFeedback] = useState("");
+  const [isDark, setIsDark] = useState(
+    typeof window !== "undefined" && document.documentElement.classList.contains("dark")
+  );
 
   useEffect(() => {
     // Listener to check screen width
@@ -74,6 +77,21 @@ const CodeEditor = () => {
 
     window.addEventListener("resize", checkScreenSize);
     return () => window.removeEventListener("resize", checkScreenSize);
+  }, []);
+
+  // Sync Monaco theme with app theme
+  useEffect(() => {
+    const handler = (e) => {
+      const theme = e.detail?.theme;
+      const dark = theme === "dark";
+      setIsDark(dark);
+      const monaco = window.monaco;
+      if (monaco?.editor) {
+        monaco.editor.setTheme(dark ? "vs-dark" : "vs-light");
+      }
+    };
+    window.addEventListener("themechange", handler);
+    return () => window.removeEventListener("themechange", handler);
   }, []);
 
   useEffect(() => {
@@ -293,7 +311,13 @@ const CodeEditor = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#161A30] text-white p-4 flex flex-col">
+    <div 
+      className="min-h-screen p-4 flex flex-col"
+      style={{
+        backgroundColor: "hsl(var(--background))",
+        color: "hsl(var(--foreground))"
+      }}
+    >
       {/* Small Screen Toggle Buttons */}
       {isSmallScreen && (
         <div className="flex mb-4 space-x-4 justify-center">
@@ -326,7 +350,13 @@ const CodeEditor = () => {
           {view === "question" && (
             <div className="overflow-auto">
               {/* Question Panel (same as left panel in your Split) */}
-              <div className="bg-[#1E1E2E] p-6 rounded-xl shadow-lg">
+              <div 
+                className="p-6 rounded-xl shadow-lg"
+                style={{
+                  backgroundColor: "hsl(var(--card))",
+                  color: "hsl(var(--foreground))"
+                }}
+              >
                 <h1 className="text-3xl font-bold text-blue-400">
                   {question?.title}
                 </h1>
@@ -439,16 +469,21 @@ const CodeEditor = () => {
                   language={languageMap[language]}
                   value={code}
                   onChange={(val) => setCode(val)}
-                  theme="vs-dark"
+                  theme={isDark ? "vs-dark" : "vs-light"}
                 />
               </div>
 
               {/* Input / Output Boxes */}
               <div className="grid md:grid-cols-2 gap-4">
                 <div>
-                  <h3 className="text-white mb-2">Input</h3>
+                  <h3 className="mb-2" style={{ color: "hsl(var(--foreground))" }}>Input</h3>
                   <Textarea
-                    className="bg-[#1e1e1e] text-white"
+                    className="border"
+                    style={{ 
+                      backgroundColor: "hsl(var(--input) / 0.1)", 
+                      color: "hsl(var(--foreground))",
+                      borderColor: "hsl(var(--border))"
+                    }}
                     rows={4}
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
@@ -456,9 +491,14 @@ const CodeEditor = () => {
                   />
                 </div>
                 <div>
-                  <h3 className="text-white mb-2">Output</h3>
+                  <h3 className="mb-2" style={{ color: "hsl(var(--foreground))" }}>Output</h3>
                   <Textarea
-                    className="bg-[#1e1e1e] text-white"
+                    className="border"
+                    style={{ 
+                      backgroundColor: "hsl(var(--input) / 0.1)", 
+                      color: "hsl(var(--foreground))",
+                      borderColor: "hsl(var(--border))"
+                    }}
                     rows={4}
                     value={output}
                     readOnly
@@ -467,8 +507,8 @@ const CodeEditor = () => {
               </div>
 
               {/* Verdict */}
-              <div className="mt-2 p-4 border rounded bg-[#1e1e2f]">
-                <h3 className="text-white text-lg font-semibold mb-2">
+              <div className="mt-2 p-4 border rounded" style={{ backgroundColor: "hsl(var(--card))", borderColor: "hsl(var(--border))" }}>
+                <h3 className="text-lg font-semibold mb-2" style={{ color: "hsl(var(--foreground))" }}>
                   Verdict:
                 </h3>
                 <p
@@ -480,8 +520,17 @@ const CodeEditor = () => {
                       ? "text-yellow-400"
                       : verdict === "Failed"
                       ? "text-red-500"
-                      : "text-white"
+                      : ""
                   }`}
+                  style={
+                    !verdict || 
+                    (verdict !== "Success" && 
+                     verdict !== "Running all test cases..." && 
+                     verdict !== "Running..." && 
+                     verdict !== "Failed")
+                      ? { color: "hsl(var(--foreground))" }
+                      : {}
+                  }
                 >
                   {verdict ? `${verdict}: ${output}` : ""}
                 </p>
@@ -520,7 +569,13 @@ const CodeEditor = () => {
           direction="horizontal"
         >
           {/* Left Panel */}
-          <div className="bg-[#1E1E2E] p-6 rounded-xl shadow-lg overflow-auto">
+          <div 
+            className="p-6 rounded-xl shadow-lg overflow-auto"
+            style={{
+              backgroundColor: "hsl(var(--card))",
+              color: "hsl(var(--foreground))"
+            }}
+          >
             <h1 className="text-3xl font-bold text-blue-400">
               {question?.title}
             </h1>
@@ -622,15 +677,20 @@ const CodeEditor = () => {
                 language={languageMap[language]}
                 value={code}
                 onChange={(val) => setCode(val)}
-                theme="vs-dark"
+                theme={isDark ? "vs-dark" : "vs-light"}
               />
             </div>
 
             <div className="grid md:grid-cols-2 gap-4">
               <div>
-                <h3 className="text-white mb-2">Input</h3>
+                <h3 className="mb-2" style={{ color: "hsl(var(--foreground))" }}>Input</h3>
                 <Textarea
-                  className="bg-[#1e1e1e] text-white"
+                  className="border"
+                  style={{ 
+                    backgroundColor: "hsl(var(--input) / 0.1)", 
+                    color: "hsl(var(--foreground))",
+                    borderColor: "hsl(var(--border))"
+                  }}
                   rows={4}
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
@@ -638,9 +698,14 @@ const CodeEditor = () => {
                 />
               </div>
               <div>
-                <h3 className="text-white mb-2">Output</h3>
+                <h3 className="mb-2" style={{ color: "hsl(var(--foreground))" }}>Output</h3>
                 <Textarea
-                  className="bg-[#1e1e1e] text-white"
+                  className="border"
+                  style={{ 
+                    backgroundColor: "hsl(var(--input) / 0.1)", 
+                    color: "hsl(var(--foreground))",
+                    borderColor: "hsl(var(--border))"
+                  }}
                   rows={4}
                   value={output}
                   readOnly
@@ -648,8 +713,8 @@ const CodeEditor = () => {
               </div>
             </div>
 
-            <div className="mt-2 p-4 border rounded bg-[#1e1e2f]">
-              <h3 className="text-white text-lg font-semibold mb-2">
+            <div className="mt-2 p-4 border rounded" style={{ backgroundColor: "hsl(var(--card))", borderColor: "hsl(var(--border))" }}>
+              <h3 className="text-lg font-semibold mb-2" style={{ color: "hsl(var(--foreground))" }}>
                 Verdict:
               </h3>
               <p
@@ -661,8 +726,17 @@ const CodeEditor = () => {
                     ? "text-yellow-400"
                     : verdict === "Failed"
                     ? "text-red-500"
-                    : "text-white"
+                    : ""
                 }`}
+                style={
+                  !verdict || 
+                  (verdict !== "Success" && 
+                   verdict !== "Running all test cases..." && 
+                   verdict !== "Running..." && 
+                   verdict !== "Failed")
+                    ? { color: "hsl(var(--foreground))" }
+                    : {}
+                }
               >
                 {verdict ? `${verdict}: ${output}` : ""}
               </p>

@@ -10,13 +10,34 @@ const TreeItem = ({
   children 
 }) => {
   const [open, setOpen] = React.useState(isOpen);
+  const [isDark, setIsDark] = React.useState(document.documentElement.classList.contains('dark'));
+  
+  React.useEffect(() => {
+    const observer = new MutationObserver(() => {
+      setIsDark(document.documentElement.classList.contains('dark'));
+    });
+    
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['class']
+    });
+    
+    return () => observer.disconnect();
+  }, []);
+  
   const Icon = isFolder ? Folder : File;
+  
   const iconColor = isFolder 
-    ? open ? "#DCDCAA" : "#E8AB53" 
-    : name.endsWith(".js") || name.endsWith(".ts") ? "#4EC9B0" 
-    : name.endsWith(".json") ? "#CE9178"
-    : name.endsWith(".md") ? "#6A9955"
-    : "#CCCCCC";
+    ? open 
+      ? isDark ? "#DCDCAA" : "#8B7D3A"  // darker yellow for light mode
+      : isDark ? "#E8AB53" : "#B8860B"  // darker orange for light mode
+    : name.endsWith(".js") || name.endsWith(".ts") 
+      ? isDark ? "#4EC9B0" : "#2E8B7D"  // darker teal for light mode
+    : name.endsWith(".json") 
+      ? isDark ? "#CE9178" : "#A0522D"  // darker brown for light mode
+    : name.endsWith(".md") 
+      ? isDark ? "#6A9955" : "#4A6741"  // darker green for light mode
+    : isDark ? "#CCCCCC" : "#666666";   // darker gray for light mode
 
   return (
     <div
@@ -28,17 +49,17 @@ const TreeItem = ({
       }}
     >
       <div 
-        className="tree-item cursor-pointer"
+        className="tree-item cursor-pointer flex items-center py-1 px-2"
         onClick={() => isFolder && setOpen(!open)}
       >
         {isFolder && (
           <ChevronRight 
-            className={`mr-1 h-4 w-4 transition-transform ${open ? "rotate-90" : ""}`} 
-            color="#CCCCCC" 
+            className={`h-4 w-4 transition-transform ${open ? "rotate-90" : ""}`} 
+            color={isDark ? "#CCCCCC" : "#666666"} 
           />
         )}
-        <Icon className="mr-1.5 h-4 w-4" color={iconColor} />
-        <span className="text-sm">{name}</span>
+        <Icon className="h-4 w-4 flex-shrink-0" color={iconColor} />
+        <span className="text-sm text-foreground ml-1.5">{name}</span>
       </div>
       {open && children}
     </div>
@@ -46,8 +67,8 @@ const TreeItem = ({
 };
  const CodeTree = () => {
   return (
-    <div className="bg-vscode-bg border border-border rounded-md p-1 max-w-xs">
-      <div className="text-sm text-vscode-lineNumber font-medium py-2 px-3 border-b border-border">
+    <div className="bg-card border border-border rounded-md p-1 max-w-xs shadow-lg" style={{ backgroundColor: 'hsl(var(--card))' }}>
+      <div className="text-sm text-muted-foreground font-medium py-2 px-3 border-b border-border">
         EXPLORER
       </div>
       <div className="py-2">
