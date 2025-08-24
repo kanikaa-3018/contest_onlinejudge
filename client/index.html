@@ -11,6 +11,33 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
-    
+    <script>
+      // Theme toggle script
+      const root = document.documentElement;
+      const toggleBtn = document.getElementById("theme-toggle");
+
+      // Load the stored theme if exists
+      const savedTheme = localStorage.getItem("theme");
+
+      if (savedTheme === "light") {
+        root.classList.remove("dark");
+        toggleBtn.textContent = "Dark Mode";
+      } else {
+        root.classList.add("dark");
+        toggleBtn.textContent = "Light Mode";
+      }
+
+      toggleBtn.addEventListener("click", () => {
+        root.classList.toggle("dark");
+
+        if (root.classList.contains("dark")) {
+          localStorage.setItem("theme", "dark");
+          toggleBtn.textContent = "Light Mode";
+        } else {
+          localStorage.setItem("theme", "light");
+          toggleBtn.textContent = "Dark Mode";
+        }
+      });
+    </script>
   </body>
 </html>
